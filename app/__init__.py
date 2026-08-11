@@ -1,0 +1,3 @@
+"""
+Chittakala Application Package.
+"""

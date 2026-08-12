@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.api.health import router as health_router
+from app.api.art_forms import router as art_forms_router
 
 app = FastAPI(
     title="Chittakala API",
@@ -8,6 +9,7 @@ app = FastAPI(
 )
 
 app.include_router(health_router)
+app.include_router(art_forms_router)
 
 
 @app.get("/")

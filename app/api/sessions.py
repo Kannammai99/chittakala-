@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from app.models.session import Session, SessionCheckInUpdate, SessionCreate, SessionSummary
 from app.services.session_service import SessionService
+from app.services.upload_service import UploadService
 
 router = APIRouter(tags=["Sessions"])
 
@@ -21,6 +22,68 @@ async def create_session(session_in: SessionCreate):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
+
+
+@router.post(
+    "/sessions/{session_id}/drawing",
+    status_code=status.HTTP_200_OK,
+    summary="Upload user activity drawing image",
+    description="Validates drawing upload (JPEG/PNG only, max 5 MB, decoded header inspection) and attaches to session (FR-08, FR-09).",
+)
+async def upload_drawing(session_id: str, file: UploadFile = File(...)):
+    # 1. Verify session existence & status
+    session = SessionService.get_session(session_id)
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Session '{session_id}' not found or deleted.",
+        )
+    if session.status != "in_progress":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot upload drawing for session in '{session.status}' status.",
+        )
+
+    # 2. Read file contents
+    try:
+        file_bytes = await file.read()
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to read uploaded file payload.",
+        )
+
+    filename = file.filename or "drawing.jpg"
+    content_type = file.content_type or "image/jpeg"
+
+    # 3. Security & format validation (FR-08, FR-09)
+    try:
+        upload_result = UploadService.validate_and_save_drawing(
+            file_bytes=file_bytes,
+            filename=filename,
+            content_type=content_type,
+            session_id=session_id,
+        )
+        # Attach to session
+        SessionService.attach_drawing(session_id, upload_result["drawing_path"])
+        return upload_result
+    except ValueError as e:
+        err_msg = str(e)
+        if "exceeds maximum allowed limit" in err_msg.lower():
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=err_msg,
+            )
+        elif "unsupported file extension" in err_msg.lower() or "unsupported mime type" in err_msg.lower():
+            raise HTTPException(
+                status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                detail=err_msg,
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=err_msg,
+            )
 
 
 @router.patch(

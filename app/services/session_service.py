@@ -49,6 +49,18 @@ class SessionService:
         return session
 
     @classmethod
+    def attach_drawing(cls, session_id: str, drawing_path: str) -> Session:
+        """Attach validated drawing path to an active session."""
+        session = cls.get_session(session_id)
+        if not session:
+            raise KeyError(f"Session '{session_id}' not found or deleted.")
+        if session.status != "in_progress":
+            raise ValueError(f"Cannot upload drawing for session in '{session.status}' status.")
+        
+        session.drawing_path = drawing_path
+        return session
+
+    @classmethod
     def update_post_check_in(cls, session_id: str, post_check_in: PostCheckInOption) -> Session:
         """Update session post_check_in response."""
         session = cls.get_session(session_id)

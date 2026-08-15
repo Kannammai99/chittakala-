@@ -71,7 +71,7 @@ async def upload_drawing(session_id: str, file: UploadFile = File(...)):
         err_msg = str(e)
         if "exceeds maximum allowed limit" in err_msg.lower():
             raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                status_code=status.HTTP_413_CONTENT_TOO_LARGE,
                 detail=err_msg,
             )
         elif "unsupported file extension" in err_msg.lower() or "unsupported mime type" in err_msg.lower():

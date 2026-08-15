@@ -4,6 +4,12 @@ version = "0.1.0"
 description = "Backend API for Chittakala - Creative Wellness & Folk Art Application"
 requires-python = ">=3.10"
 
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:.*StarletteDeprecationWarning.*",
+    "ignore:.*deprecated.*:DeprecationWarning",
+]
+
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
@@ -11,3 +17,4 @@ extraPaths = [".", ".venv/Lib/site-packages"]
 
 [tool.pyrefly]
 search-paths = [".", ".venv/Lib/site-packages"]
+

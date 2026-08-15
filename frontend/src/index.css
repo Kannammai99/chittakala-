@@ -1,0 +1,329 @@
+/* ==========================================================================
+   Chittakala — Gen Z Vibrant Pop & Heritage Fusion Design System
+   ========================================================================== */
+
+:root {
+  /* Gen Z Bright Palette */
+  --color-bg-light: #F8FAFC;         /* Crisp Warm Light Canvas */
+  --color-surface-card: #FFFFFF;     /* Pure White Card Container */
+  --color-surface-elevated: #F1F5F9; /* Elevated Card Surface */
+  --color-border: #E2E8F0;          /* Soft Border */
+  --color-border-active: #FF523B;
+  
+  --color-accent-coral: #FF523B;    /* Electric Sunset Coral */
+  --color-accent-coral-hover: #E03E27;
+  --color-accent-coral-subtle: rgba(255, 82, 59, 0.1);
+  
+  --color-accent-indigo: #6366F1;   /* Vibrant Gen Z Indigo */
+  --color-accent-gold: #F59E0B;     /* Vibrant Sunburst Gold */
+  --color-accent-mint: #10B981;     /* Fresh Mint */
+  
+  --color-text-main: #0F172A;       /* Deep Slate Text - High Contrast */
+  --color-text-body: #334155;       /* Crisp Body Text */
+  --color-text-muted: #64748B;      /* Muted Text */
+  --color-text-dim: #94A3B8;
+
+  /* Typography */
+  --font-heading: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  /* Layout Boundaries */
+  --header-height: 72px;
+  --bottom-tab-height: 76px;
+
+  /* Touch Target Safeguard */
+  --min-touch-target: 48px;
+}
+
+/* Reset & Global Canvas */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--color-bg-light);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(255, 82, 59, 0.06), transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.06), transparent 40%);
+  color: var(--color-text-body);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   Header & Viewport Shell Architecture
+   ========================================================================== */
+
+/* Fixed Header */
+.app-header {
+  height: var(--header-height);
+  min-height: var(--header-height);
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-accent-coral), #FF7A00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  box-shadow: 0 6px 16px rgba(255, 82, 59, 0.3);
+}
+
+.brand-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+  color: var(--color-text-main);
+}
+
+.brand-badge {
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: var(--color-accent-coral-subtle);
+  color: var(--color-accent-coral);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* Middle Viewport Container */
+.content-viewport {
+  flex: 1;
+  margin-top: var(--header-height);
+  margin-bottom: var(--bottom-tab-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 24px 20px 36px 20px;
+  max-width: 640px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Rigid Bottom Navigation Bar */
+.bottom-nav {
+  height: var(--bottom-tab-height);
+  min-height: var(--bottom-tab-height);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0 8px;
+}
+
+/* Touch Bounding Box Safeguard (48x48px) */
+.nav-tab-btn {
+  min-width: var(--min-touch-target);
+  min-height: var(--min-touch-target);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  gap: 4px;
+}
+
+.nav-tab-btn:hover, .nav-tab-btn:focus-visible {
+  color: var(--color-accent-coral);
+  background: var(--color-accent-coral-subtle);
+  outline: none;
+}
+
+.nav-tab-btn.active {
+  color: var(--color-accent-coral);
+  font-weight: 800;
+}
+
+.nav-tab-btn.active svg {
+  stroke: var(--color-accent-coral);
+}
+
+/* ==========================================================================
+   Gen Z Pop Cards & Visual Components
+   ========================================================================== */
+
+.genz-card {
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.genz-card-interactive {
+  cursor: pointer;
+}
+
+.genz-card-interactive:hover {
+  border-color: var(--color-accent-coral);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(255, 82, 59, 0.12);
+}
+
+.genz-card-interactive.selected {
+  border-color: var(--color-accent-coral);
+  background-color: #FFF5F3;
+  box-shadow: 0 0 0 2px var(--color-accent-coral);
+}
+
+/* Hero Card Container */
+.genz-hero-card {
+  background: linear-gradient(135deg, #FFF5F3 0%, #FFFFFF 100%);
+  border: 2px solid #FFE4E0;
+  border-radius: 24px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 32px rgba(255, 82, 59, 0.08);
+}
+
+/* Pill CTA Buttons */
+.btn-genz-primary {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+  width: 100%;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, var(--color-accent-coral), #FF7A00);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(255, 82, 59, 0.35);
+  transition: all 0.25s ease;
+}
+
+.btn-genz-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(255, 82, 59, 0.45);
+}
+
+.btn-genz-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-genz-secondary {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+  padding: 14px 28px;
+  background-color: #F1F5F9;
+  color: var(--color-text-main);
+  border: 1px solid #E2E8F0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-genz-secondary:hover {
+  background-color: #E2E8F0;
+  color: var(--color-text-main);
+}
+
+/* Stylish Input Fields */
+.genz-input-field {
+  width: 100%;
+  min-height: var(--min-touch-target);
+  padding: 16px 20px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 16px;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.genz-input-field:focus {
+  outline: none;
+  border-color: var(--color-accent-coral);
+  box-shadow: 0 0 0 4px rgba(255, 82, 59, 0.15);
+}
+
+.genz-input-field::placeholder {
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+/* Pulsing Badge Indicator */
+.pulse-badge {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-accent-coral);
+  display: inline-block;
+}

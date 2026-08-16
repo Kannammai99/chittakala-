@@ -8,6 +8,8 @@ import { CategoryView } from "./components/CategoryView";
 import { ExampleCarouselView } from "./components/ExampleCarouselView";
 import { DrawingActivityView } from "./components/DrawingActivityView";
 import { SummaryView } from "./components/SummaryView";
+import { SettingsView } from "./components/SettingsView";
+import { SplashScreen } from "./components/SplashScreen";
 
 type ViewStep =
   | "welcome"
@@ -76,11 +78,19 @@ const ALL_INDIAN_ART_FORMS: ArtForm[] = [
 ];
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<"home" | "activity" | "settings">("home");
   const [step, setStep] = useState<ViewStep>("welcome");
 
-  // Operational state
-  const [displayName, setDisplayName] = useState<string>("");
+  // Operational state with 2-way localStorage sync
+  const [displayName, setDisplayName] = useState<string>(() => {
+    return localStorage.getItem("chittakala_display_name") || "";
+  });
+
+  const handleUpdateDisplayName = (val: string) => {
+    setDisplayName(val);
+    localStorage.setItem("chittakala_display_name", val);
+  };
   const [selectedCheckIn, setSelectedCheckIn] = useState<string>("busy");
   const [backendStatus, setBackendStatus] = useState<string>("Checking API...");
   
@@ -581,10 +591,17 @@ export default function App() {
 
   return (
     <>
+      {/* 0. ANIMATED PWA SPLASH SCREEN */}
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+
       {/* 1. FIXED TOP HEADER */}
       <header className="app-header">
         <div className="app-brand">
-          <div className="brand-icon">CK</div>
+          <img
+            src="/logo.jpg"
+            alt="Chittakala Logo"
+            style={{ width: "36px", height: "36px", borderRadius: "12px", objectFit: "cover", border: "1.5px solid #FF7A00" }}
+          />
           <div>
             <h1 className="brand-title">Chittakala</h1>
           </div>
@@ -599,79 +616,88 @@ export default function App() {
 
       {/* 2. MIDDLE VIEWPORT CONTAINER */}
       <main className="content-viewport">
-        {step === "welcome" && (
-          <WelcomeView
+        {activeTab === "settings" ? (
+          <SettingsView
             displayName={displayName}
-            setDisplayName={setDisplayName}
-            onStart={() => setStep("check_in")}
+            setDisplayName={handleUpdateDisplayName}
           />
-        )}
+        ) : (
+          <>
+            {step === "welcome" && (
+              <WelcomeView
+                displayName={displayName}
+                setDisplayName={handleUpdateDisplayName}
+                onStart={() => setStep("check_in")}
+              />
+            )}
 
-        {step === "check_in" && (
-          <CheckInView
-            selectedCheckIn={selectedCheckIn}
-            onSelectCheckIn={setSelectedCheckIn}
-            onContinue={() => setStep("art_forms")}
-            onSkip={() => setStep("art_forms")}
-          />
-        )}
+            {step === "check_in" && (
+              <CheckInView
+                selectedCheckIn={selectedCheckIn}
+                onSelectCheckIn={setSelectedCheckIn}
+                onContinue={() => setStep("art_forms")}
+                onSkip={() => setStep("art_forms")}
+              />
+            )}
 
-        {step === "art_forms" && (
-          <ArtFormView
-            artForms={artForms}
-            selectedArtFormId={selectedArtFormId}
-            onSelectArtForm={handleSelectArtForm}
-          />
-        )}
+            {step === "art_forms" && (
+              <ArtFormView
+                artForms={artForms}
+                selectedArtFormId={selectedArtFormId}
+                onSelectArtForm={handleSelectArtForm}
+              />
+            )}
 
-        {step === "categories" && (
-          <CategoryView
-            artFormTitle={selectedArtFormId === "warli" ? "Warli" : "Kolam"}
-            categories={categories}
-            selectedCategoryId={selectedCategoryId}
-            onSelectCategory={handleSelectCategory}
-            onBack={() => setStep("art_forms")}
-          />
-        )}
+            {step === "categories" && (
+              <CategoryView
+                artFormTitle={selectedArtFormId === "warli" ? "Warli" : "Kolam"}
+                categories={categories}
+                selectedCategoryId={selectedCategoryId}
+                onSelectCategory={handleSelectCategory}
+                onBack={() => setStep("art_forms")}
+              />
+            )}
 
-        {step === "carousel" && (
-          <ExampleCarouselView
-            categoryTitle={selectedCategoryId.replace("-", " ").toUpperCase()}
-            exercises={exercises}
-            onSelectExercise={handleSelectExercise}
-            onBack={() => setStep("categories")}
-          />
-        )}
+            {step === "carousel" && (
+              <ExampleCarouselView
+                categoryTitle={selectedCategoryId.replace("-", " ").toUpperCase()}
+                exercises={exercises}
+                onSelectExercise={handleSelectExercise}
+                onBack={() => setStep("categories")}
+              />
+            )}
 
-        {step === "drawing" && selectedExercise && (
-          <DrawingActivityView
-            exercise={selectedExercise}
-            onUpload={() => setStep("summary")}
-            onFinishWithoutAI={handleFinishWithoutAI}
-            onBack={() => setStep("carousel")}
-          />
-        )}
+            {step === "drawing" && selectedExercise && (
+              <DrawingActivityView
+                exercise={selectedExercise}
+                onUpload={() => setStep("summary")}
+                onFinishWithoutAI={handleFinishWithoutAI}
+                onBack={() => setStep("carousel")}
+              />
+            )}
 
-        {step === "summary" && (
-          <SummaryView
-            session={
-              currentSession || {
-                session_id: "sess_demo",
-                anonymous_user_id: "anon_demo",
-                display_name: displayName,
-                art_form_id: selectedArtFormId,
-                category_id: selectedCategoryId,
-                exercise_id: selectedExercise?.exercise_id || "warli-basic-01",
-                status: "completed",
-                pre_check_in: selectedCheckIn,
-                started_at: new Date().toISOString(),
-              }
-            }
-            onStartAnother={() => {
-              setStep("art_forms");
-            }}
-            onDeleteSession={handleDeleteSession}
-          />
+            {step === "summary" && (
+              <SummaryView
+                session={
+                  currentSession || {
+                    session_id: "sess_demo",
+                    anonymous_user_id: "anon_demo",
+                    display_name: displayName,
+                    art_form_id: selectedArtFormId,
+                    category_id: selectedCategoryId,
+                    exercise_id: selectedExercise?.exercise_id || "warli-basic-01",
+                    status: "completed",
+                    pre_check_in: selectedCheckIn,
+                    started_at: new Date().toISOString(),
+                  }
+                }
+                onStartAnother={() => {
+                  setStep("art_forms");
+                }}
+                onDeleteSession={handleDeleteSession}
+              />
+            )}
+          </>
         )}
       </main>
 

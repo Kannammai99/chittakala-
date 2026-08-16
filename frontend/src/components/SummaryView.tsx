@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle2, Trash2, RotateCcw } from "lucide-react";
+import { CheckCircle2, Trash2, RotateCcw, Sparkles, ShieldCheck } from "lucide-react";
 import { Session } from "../api/chittakalaClient";
 
 interface SummaryViewProps {
@@ -15,60 +15,133 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
 }) => {
   return (
     <div className="tab-view">
-      <div className="card-container" style={{ textAlign: "center", padding: "28px 16px" }}>
-        <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "rgba(6, 182, 212, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-          <CheckCircle2 size={36} color="var(--color-accent-cyan)" />
+      {/* Gen Z Achievement Hero Card */}
+      <div className="genz-hero-card" style={{ textAlign: "center", padding: "32px 20px" }}>
+        <div
+          style={{
+            width: "68px",
+            height: "68px",
+            borderRadius: "22px",
+            background: "linear-gradient(135deg, var(--color-accent-coral), #FF7A00)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 16px",
+            color: "#FFFFFF",
+            boxShadow: "0 8px 24px rgba(255, 82, 59, 0.35)",
+          }}
+        >
+          <CheckCircle2 size={38} />
         </div>
 
-        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.6rem", fontWeight: 800, marginBottom: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginBottom: "8px" }}>
+          <Sparkles size={16} color="var(--color-accent-coral)" />
+          <span style={{ color: "var(--color-accent-coral)", fontSize: "0.82rem", fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Mindful Session Recorded
+          </span>
+        </div>
+
+        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.9rem", fontWeight: 900, marginBottom: "8px", color: "#0F172A", letterSpacing: "-0.03em" }}>
           Creative Activity Complete!
         </h2>
 
-        <p style={{ color: "var(--color-text-muted)", fontSize: "0.9rem", marginBottom: "20px" }}>
-          {session.display_name ? `Great job, ${session.display_name}!` : "Great job completing your creative break!"}
+        <p style={{ color: "#475569", fontSize: "1.02rem", fontWeight: 500, marginBottom: "28px" }}>
+          {session.display_name ? `Awesome job, ${session.display_name}!` : "Great job completing your 5-minute creative pause!"}
         </p>
 
-        {/* Summary Details Box */}
-        <div style={{ background: "var(--color-bg-dark)", padding: "16px", borderRadius: "12px", textAlign: "left", marginBottom: "24px", display: "grid", gap: "8px", fontSize: "0.85rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: "var(--color-text-muted)" }}>Session ID:</span>
-            <span style={{ fontFamily: "monospace", color: "var(--color-accent-cyan)" }}>{session.session_id}</span>
+        {/* Gen Z Summary Details Box */}
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            padding: "20px",
+            borderRadius: "20px",
+            border: "2px solid #E2E8F0",
+            textAlign: "left",
+            marginBottom: "28px",
+            display: "grid",
+            gap: "12px",
+            fontSize: "0.9rem",
+            boxShadow: "0 6px 16px rgba(15, 23, 42, 0.04)",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ color: "#64748B", fontWeight: 600 }}>Session ID:</span>
+            <span style={{ fontFamily: "monospace", color: "var(--color-accent-coral)", fontWeight: 800, fontSize: "0.85rem", background: "rgba(255, 82, 59, 0.1)", padding: "2px 10px", borderRadius: "8px" }}>
+              {session.session_id}
+            </span>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: "var(--color-text-muted)" }}>Art Form:</span>
-            <span style={{ fontWeight: 600, textTransform: "capitalize" }}>{session.art_form_id}</span>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ color: "#64748B", fontWeight: 600 }}>Art Tradition:</span>
+            <span style={{ fontWeight: 800, color: "#0F172A", textTransform: "capitalize" }}>{session.art_form_id}</span>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: "var(--color-text-muted)" }}>Category:</span>
-            <span style={{ fontWeight: 600 }}>{session.category_id}</span>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ color: "#64748B", fontWeight: 600 }}>Category:</span>
+            <span style={{ fontWeight: 800, color: "#0F172A" }}>{session.category_id}</span>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: "var(--color-text-muted)" }}>Exercise ID:</span>
-            <span style={{ fontWeight: 600 }}>{session.exercise_id}</span>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ color: "#64748B", fontWeight: 600 }}>Exercise:</span>
+            <span style={{ fontWeight: 800, color: "#0F172A" }}>{session.exercise_id}</span>
           </div>
+
           {session.pre_check_in && (
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "var(--color-text-muted)" }}>Pace at Start:</span>
-              <span style={{ fontWeight: 600 }}>{session.pre_check_in}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ color: "#64748B", fontWeight: 600 }}>Initial Pace:</span>
+              <span style={{ fontWeight: 800, color: "#6366F1", textTransform: "capitalize" }}>{session.pre_check_in}</span>
             </div>
           )}
         </div>
 
-        {/* Action Controls */}
+        {/* Primary Action Buttons */}
         <div style={{ display: "grid", gap: "12px" }}>
-          <button className="btn-primary" onClick={onStartAnother}>
-            <RotateCcw size={18} /> Start Another Activity
-          </button>
-
-          <button
-            className="btn-secondary"
-            onClick={onDeleteSession}
-            style={{ color: "#EF4444", borderColor: "rgba(239, 68, 68, 0.3)" }}
-            aria-label="Delete Session and Associated Drawing Record"
-          >
-            <Trash2 size={18} /> Delete Session & Remove Image Data
+          <button className="btn-genz-primary" onClick={onStartAnother}>
+            <RotateCcw size={20} /> Start Another Activity
           </button>
         </div>
+      </div>
+
+      {/* Subtle Privacy & Data Protection Card */}
+      <div className="genz-card" style={{ padding: "20px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <ShieldCheck size={20} color="#10B981" />
+            <span style={{ fontSize: "0.9rem", fontWeight: 800, color: "#0F172A" }}>
+              Session Privacy
+            </span>
+          </div>
+          <span style={{ fontSize: "0.75rem", color: "#64748B", fontWeight: 600 }}>
+            Temporary Data
+          </span>
+        </div>
+
+        <p style={{ fontSize: "0.85rem", color: "#475569", lineHeight: 1.5, marginBottom: "14px", fontWeight: 500 }}>
+          Your session identity is anonymous. You can delete this session and any uploaded photograph at any time.
+        </p>
+
+        <button
+          onClick={onDeleteSession}
+          style={{
+            width: "100%",
+            padding: "10px 16px",
+            borderRadius: "12px",
+            background: "#F8FAFC",
+            border: "1px solid #E2E8F0",
+            color: "#64748B",
+            fontSize: "0.82rem",
+            fontWeight: 700,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px",
+            transition: "all 0.2s ease",
+          }}
+          aria-label="Delete Session and Associated Drawing Record"
+        >
+          <Trash2 size={16} /> Delete Session & Uploaded Photo
+        </button>
       </div>
     </div>
   );

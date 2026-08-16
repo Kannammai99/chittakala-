@@ -149,59 +149,396 @@ export default function App() {
         setStep("carousel");
       })
       .catch(() => {
-        setExercises([
-          {
-            exercise_id: `${selectedArtFormId}-ex-01`,
-            art_form_id: selectedArtFormId,
-            category_id: categoryId,
-            title: selectedArtFormId === "warli" ? "Standing Figure" : "Single-Loop 3x3 Grid",
-            art_form: selectedArtFormId === "warli" ? "Warli" : "Kolam",
-            difficulty: "beginner",
-            short_description: selectedArtFormId === "warli" ? "Draw a basic figure formed by geometric triangles." : "Connect a 3x3 dot grid using straight lines.",
-            reference_image_path: `/art/${selectedArtFormId}/${categoryId}/example-01.svg`,
-            visible_elements: ["one circular head", "two joined triangles"],
-            drawing_guidance: ["Draw a circle for the head.", "Draw two joined triangles."],
-            allowed_next_actions: ["repeat", "next_example", "finish"],
-            review_status: "reviewed",
-            estimated_minutes: 5,
-            active: true,
-          },
-          {
-            exercise_id: `${selectedArtFormId}-ex-02`,
-            art_form_id: selectedArtFormId,
-            category_id: categoryId,
-            title: selectedArtFormId === "warli" ? "Figure with Raised Arms" : "Square Star 4x4 Grid",
-            art_form: selectedArtFormId === "warli" ? "Warli" : "Kolam",
-            difficulty: "beginner",
-            short_description: selectedArtFormId === "warli" ? "Draw a figure celebrating with arms extended upward." : "Connect points into an 8-pointed star.",
-            reference_image_path: `/art/${selectedArtFormId}/${categoryId}/example-02.svg`,
-            visible_elements: ["circular head", "joined triangles", "raised arm lines"],
-            drawing_guidance: ["Start with torso triangles.", "Extend arms upward at 45 degrees."],
-            allowed_next_actions: ["repeat", "next_example", "finish"],
-            review_status: "reviewed",
-            estimated_minutes: 5,
-            active: true,
-          },
-          {
-            exercise_id: `${selectedArtFormId}-ex-03`,
-            art_form_id: selectedArtFormId,
-            category_id: categoryId,
-            title: selectedArtFormId === "warli" ? "Two Connected Figures" : "Cross Pattern 5x5 Grid",
-            art_form: selectedArtFormId === "warli" ? "Warli" : "Kolam",
-            difficulty: "intermediate",
-            short_description: selectedArtFormId === "warli" ? "Draw two figures holding hands side-by-side." : "Connect a 5-dot cross grid into a flower.",
-            reference_image_path: `/art/${selectedArtFormId}/${categoryId}/example-03.svg`,
-            visible_elements: ["two figures", "connecting arm line"],
-            drawing_guidance: ["Draw two figures side-by-side.", "Connect inner arms."],
-            allowed_next_actions: ["repeat", "finish"],
-            review_status: "reviewed",
-            estimated_minutes: 5,
-            active: true,
-          },
-        ]);
+        // Full category-specific fallback data matching ArtService seed
+        if (selectedArtFormId === "warli") {
+          if (categoryId === "basic-figures") {
+            setExercises([
+              {
+                exercise_id: "warli-basic-01",
+                art_form_id: "warli",
+                category_id: "basic-figures",
+                title: "Standing Figure",
+                art_form: "Warli",
+                difficulty: "beginner",
+                short_description: "Draw a basic standing figure formed by two inverted triangles.",
+                reference_image_path: "/art/warli/basic-figures/example-01.svg",
+                visible_elements: ["one circular head", "two joined triangles forming torso", "straight vertical leg lines"],
+                drawing_guidance: [
+                  "Draw a small circle for the head.",
+                  "Draw an upper triangle pointing downwards.",
+                  "Draw a lower triangle touching at the vertex, pointing upwards.",
+                  "Add simple straight lines for legs and feet."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "warli-basic-02",
+                art_form_id: "warli",
+                category_id: "basic-figures",
+                title: "Figure with Raised Arms",
+                art_form: "Warli",
+                difficulty: "beginner",
+                short_description: "Draw a figure celebrating with arms extended upward in joy.",
+                reference_image_path: "/art/warli/basic-figures/example-02.svg",
+                visible_elements: ["one circular head", "two joined triangles", "two upward angled arm lines"],
+                drawing_guidance: [
+                  "Start with head circle and joined torso triangles.",
+                  "Extend two arms outward and upward at a 45-degree angle.",
+                  "Add legs with slight knee bends."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "warli-basic-03",
+                art_form_id: "warli",
+                category_id: "basic-figures",
+                title: "Two Connected Figures",
+                art_form: "Warli",
+                difficulty: "beginner",
+                short_description: "Draw two Warli figures holding hands side-by-side.",
+                reference_image_path: "/art/warli/basic-figures/example-03.svg",
+                visible_elements: ["two circular heads", "four joined triangles", "connecting arm line between figures"],
+                drawing_guidance: [
+                  "Draw two standing triangular figures side-by-side.",
+                  "Connect the inner arm lines to show them holding hands.",
+                  "Keep distance balanced between both figures."
+                ],
+                allowed_next_actions: ["repeat", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+            ]);
+          } else if (categoryId === "figure-rows") {
+            setExercises([
+              {
+                exercise_id: "warli-rows-01",
+                art_form_id: "warli",
+                category_id: "figure-rows",
+                title: "Three-Figure Row",
+                art_form: "Warli",
+                difficulty: "beginner",
+                short_description: "Draw a rhythmically spaced horizontal row of three identical figures.",
+                reference_image_path: "/art/warli/figure-rows/example-01.svg",
+                visible_elements: ["three circular heads", "three joined triangle pairs", "even horizontal spacing"],
+                drawing_guidance: [
+                  "Draw a subtle horizontal baseline for orientation.",
+                  "Draw three equally spaced Warli figures along the line.",
+                  "Ensure heads and torso heights align evenly."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "warli-rows-02",
+                art_form_id: "warli",
+                category_id: "figure-rows",
+                title: "Alternating-Arm Row",
+                art_form: "Warli",
+                difficulty: "intermediate",
+                short_description: "Draw a row of figures alternating arm positions up and down.",
+                reference_image_path: "/art/warli/figure-rows/example-02.svg",
+                visible_elements: ["three figures", "alternating arm positions", "rhythmic horizontal pattern"],
+                drawing_guidance: [
+                  "Draw three Warli torsos in a row.",
+                  "Give figure 1 raised arms, figure 2 lowered arms, and figure 3 raised arms.",
+                  "Focus on steady visual rhythm across the row."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "warli-rows-03",
+                art_form_id: "warli",
+                category_id: "figure-rows",
+                title: "Village-Activity Row",
+                art_form: "Warli",
+                difficulty: "intermediate",
+                short_description: "Draw a row depicting figures carrying baskets or tools.",
+                reference_image_path: "/art/warli/figure-rows/example-03.svg",
+                visible_elements: ["three figures", "curved head basket arc", "dynamic posture lines"],
+                drawing_guidance: [
+                  "Draw three figures engaged in simple daily tasks.",
+                  "Add a small bowl/basket arc above the head of the center figure.",
+                  "Use clean, expressive stick lines."
+                ],
+                allowed_next_actions: ["repeat", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+            ]);
+          } else {
+            setExercises([
+              {
+                exercise_id: "warli-circles-01",
+                art_form_id: "warli",
+                category_id: "dancing-circles",
+                title: "Small Dancing Circle",
+                art_form: "Warli",
+                difficulty: "intermediate",
+                short_description: "Draw four figures joined in a small circular dance arrangement.",
+                reference_image_path: "/art/warli/dancing-circles/example-01.svg",
+                visible_elements: ["four circular heads", "circular arm loop", "inward facing triangular torsos"],
+                drawing_guidance: [
+                  "Lightly sketch a central circular guide.",
+                  "Place four Warli figures along the cardinal points facing inwards.",
+                  "Connect their hands to form a continuous circle of unity."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "warli-circles-02",
+                art_form_id: "warli",
+                category_id: "dancing-circles",
+                title: "Circle with Central Tree",
+                art_form: "Warli",
+                difficulty: "intermediate",
+                short_description: "Draw figures dancing around a central tree motif.",
+                reference_image_path: "/art/warli/dancing-circles/example-02.svg",
+                visible_elements: ["central vertical tree with branch arcs", "surrounding circular row of figures"],
+                drawing_guidance: [
+                  "Draw a central trunk line with leaf clusters.",
+                  "Draw figures forming a ring around the tree.",
+                  "Emphasize balance between center tree and outer ring."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "warli-circles-03",
+                art_form_id: "warli",
+                category_id: "dancing-circles",
+                title: "Tarpa Dance Composition",
+                art_form: "Warli",
+                difficulty: "advanced",
+                short_description: "Draw a spiral dance ring around a central musician figure.",
+                reference_image_path: "/art/warli/dancing-circles/example-03.svg",
+                visible_elements: ["center musician figure", "outer spiral chain of figures", "fluid curved dance line"],
+                drawing_guidance: [
+                  "Draw central musician holding a horn instrument.",
+                  "Draw a spiral chain of dancers curving around.",
+                  "Enjoy the continuous circular flow."
+                ],
+                allowed_next_actions: ["repeat", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+            ]);
+          }
+        } else {
+          // Kolam Categories
+          if (categoryId === "simple-dot-kolams") {
+            setExercises([
+              {
+                exercise_id: "kolam-dot-01",
+                art_form_id: "kolam",
+                category_id: "simple-dot-kolams",
+                title: "Single-Loop 3x3 Dot Grid",
+                art_form: "Kolam",
+                difficulty: "beginner",
+                short_description: "Connect a 3x3 dot grid using straight lines to form a star square.",
+                reference_image_path: "/art/kolam/simple-dot-kolams/example-01.svg",
+                visible_elements: ["3x3 dot grid", "outer diamond border line", "central cross pattern"],
+                drawing_guidance: [
+                  "Place 9 dots in a 3x3 square grid with even spacing.",
+                  "Connect the outer edge dots to form a diamond boundary.",
+                  "Draw straight lines through the center dot to complete symmetry."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "kolam-dot-02",
+                art_form_id: "kolam",
+                category_id: "simple-dot-kolams",
+                title: "Square Star 4x4 Grid",
+                art_form: "Kolam",
+                difficulty: "beginner",
+                short_description: "Draw a 4x4 dot grid and connect points into an 8-pointed star.",
+                reference_image_path: "/art/kolam/simple-dot-kolams/example-02.svg",
+                visible_elements: ["4x4 dot grid", "intersecting square motifs", "symmetrical star points"],
+                drawing_guidance: [
+                  "Place 16 dots in a neat 4x4 grid.",
+                  "Draw two overlapping squares angled at 45 degrees around dots.",
+                  "Keep line thickness smooth and steady."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "kolam-dot-03",
+                art_form_id: "kolam",
+                category_id: "simple-dot-kolams",
+                title: "Cross Pattern 5x5 Grid",
+                art_form: "Kolam",
+                difficulty: "intermediate",
+                short_description: "Connect a 5-dot cross grid into a traditional flower.",
+                reference_image_path: "/art/kolam/simple-dot-kolams/example-03.svg",
+                visible_elements: ["5-dot cross grid", "four petal triangles", "central square nucleus"],
+                drawing_guidance: [
+                  "Draw a 5-dot cross shape.",
+                  "Enclose each arm dot with a smooth triangular loop.",
+                  "Connect all petals back to central dot."
+                ],
+                allowed_next_actions: ["repeat", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+            ]);
+          } else if (categoryId === "loop-line-kolams") {
+            setExercises([
+              {
+                exercise_id: "kolam-loop-01",
+                art_form_id: "kolam",
+                category_id: "loop-line-kolams",
+                title: "Continuous Line Loop",
+                art_form: "Kolam",
+                difficulty: "intermediate",
+                short_description: "Weave an unbroken curved loop around a 3-dot matrix.",
+                reference_image_path: "/art/kolam/loop-line-kolams/example-01.svg",
+                visible_elements: ["3-dot center line", "continuous curved loop", "zero line intersections"],
+                drawing_guidance: [
+                  "Place 3 dots in a horizontal line.",
+                  "Curve smoothly around the first dot, past the second, and loop around third.",
+                  "Return to start point in one continuous fluid motion."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "kolam-loop-02",
+                art_form_id: "kolam",
+                category_id: "loop-line-kolams",
+                title: "Four-Corner Loop",
+                art_form: "Kolam",
+                difficulty: "intermediate",
+                short_description: "Weave four corner loops around a 3x3 dot matrix.",
+                reference_image_path: "/art/kolam/loop-line-kolams/example-02.svg",
+                visible_elements: ["3x3 dot grid", "four corner teardrop loops", "symmetrical central node"],
+                drawing_guidance: [
+                  "Place a 3x3 dot grid.",
+                  "Draw a teardrop loop weaving around each corner dot.",
+                  "Join all four loops cleanly in center matrix."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "kolam-loop-03",
+                art_form_id: "kolam",
+                category_id: "loop-line-kolams",
+                title: "Dual-Strand Loop",
+                art_form: "Kolam",
+                difficulty: "advanced",
+                short_description: "Weave two interlocking continuous loops through a 4x4 matrix.",
+                reference_image_path: "/art/kolam/loop-line-kolams/example-03.svg",
+                visible_elements: ["4x4 dot grid", "two distinct interlocking loops", "four-fold rotational symmetry"],
+                drawing_guidance: [
+                  "Place a 4x4 dot matrix.",
+                  "Weave strand 1 around inner 4 dots.",
+                  "Weave strand 2 around outer ring, interlocking with strand 1."
+                ],
+                allowed_next_actions: ["repeat", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+            ]);
+          } else {
+            setExercises([
+              {
+                exercise_id: "kolam-daily-01",
+                art_form_id: "kolam",
+                category_id: "decorative-daily-kolams",
+                title: "Lotus Motif Daily Kolam",
+                art_form: "Kolam",
+                difficulty: "intermediate",
+                short_description: "Draw a daily morning lotus blossom motif with petal curves.",
+                reference_image_path: "/art/kolam/decorative-daily-kolams/example-01.svg",
+                visible_elements: ["central lotus pod", "four outer curved petals", "symmetrical leaf arcs"],
+                drawing_guidance: [
+                  "Draw a small central circle.",
+                  "Extend four rounded lotus petal arcs radiating outward.",
+                  "Add leaf arcs between petals to ground motif."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "kolam-daily-02",
+                art_form_id: "kolam",
+                category_id: "decorative-daily-kolams",
+                title: "Morning Star Kolam",
+                art_form: "Kolam",
+                difficulty: "intermediate",
+                short_description: "Draw a morning star kolam featuring overlapping diamond petals.",
+                reference_image_path: "/art/kolam/decorative-daily-kolams/example-02.svg",
+                visible_elements: ["central star motif", "eight radiating diamond tips", "outer border arcs"],
+                drawing_guidance: [
+                  "Draw a central square dot matrix.",
+                  "Construct eight diamond points radiating evenly.",
+                  "Surround with clean scalloped border lines."
+                ],
+                allowed_next_actions: ["repeat", "next_example", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+              {
+                exercise_id: "kolam-daily-03",
+                art_form_id: "kolam",
+                category_id: "decorative-daily-kolams",
+                title: "Eight-Petal Floral Kolam",
+                art_form: "Kolam",
+                difficulty: "advanced",
+                short_description: "Draw an auspicious eight-petal floral kolam composition.",
+                reference_image_path: "/art/kolam/decorative-daily-kolams/example-03.svg",
+                visible_elements: ["center floral disc", "eight rounded petal curves", "outer corner accent dots"],
+                drawing_guidance: [
+                  "Start at center disc.",
+                  "Draw eight evenly spaced petal curves radiating outward.",
+                  "Add subtle accent dots at four outer corners."
+                ],
+                allowed_next_actions: ["repeat", "finish"],
+                review_status: "reviewed",
+                estimated_minutes: 5,
+                active: true,
+              },
+            ]);
+          }
+        }
         setStep("carousel");
       });
   };
+
 
 
   // Handle exercise selection -> Create operational session

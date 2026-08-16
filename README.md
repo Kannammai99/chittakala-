@@ -1,110 +1,121 @@
-# Chittakala API
+# Chittakala — Creative Wellness PWA (Warli & Kolam)
 
-Chittakala is a mobile-first creative-wellness platform that helps users intentionally transition from passive scrolling to active creation through Indian folk art (Warli & Kolam) and Gemini AI reflection.
+**Tagline**: *Pause the scroll. Create your moment.*  
+**Description**: Chittakala is a mobile-first creative-wellness PWA that helps users intentionally move from passive scrolling to active creation. Users browse curated Indian folk art examples (Warli & Kolam), recreate one with ordinary pen and paper, upload a photograph, and receive responsible Gemini AI reflection focused strictly on visible visual elements—without artistic grading or clinical diagnosis.
 
 ---
 
-## Project Structure
+## 🏗️ Project Architecture & Tech Stack
 
-```
+- **Frontend**: React 18, TypeScript, Vite 5, PWA Manifest (`manifest.json`), Offline Service Worker (`sw.js`), Dark Mode Design System (`#0B0F19` canvas, `#161B26` containers, `#06B6D4` cyan accents).
+- **Backend API**: Python 3.11+, FastAPI, Pydantic v2, Uvicorn, Pytest.
+- **AI & Agentic Framework**: Google AI Studio / Vertex AI Gemini Multimodal API (`google-genai` SDK), Google ADK (Agent Development Kit).
+- **Database & Cloud Storage**: Cloud Firestore (Operational store), Cloud Storage (`gs://chittakala-user-drawings/`).
+- **Cloud Infrastructure**: Google Cloud Run (Containerized FastAPI service with `--min-instances=0` scale-to-zero safeguard), Docker.
+- **Analytics & Reporting**: BigQuery & Looker Studio (Anonymous product & AI reliability analytics).
+
+---
+
+## 📁 Repository Structure
+
+```text
 chittakala/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   └── api/
-│       ├── __init__.py
-│       ├── art_forms.py
-│       └── health.py
+│   ├── api/
+│   │   ├── art_forms.py        # GET /art-forms, GET /art-forms/{id}/categories
+│   │   ├── exercises.py        # GET /categories/{id}/exercises, GET /exercises/{id}
+│   │   ├── health.py           # GET /health
+│   │   └── sessions.py         # POST /sessions, PATCH /check-in, POST /complete, GET /summary, DELETE /sessions/{id}, POST /drawing
+│   ├── models/
+│   │   ├── art_form.py         # ArtForm Pydantic schema
+│   │   ├── category.py         # Category Pydantic schema
+│   │   ├── exercise.py         # Exercise Pydantic schema
+│   │   └── session.py          # Session Pydantic schemas & validation rules
+│   ├── services/
+│   │   ├── art_service.py      # Domain repository (Warli & Kolam 18 activities)
+│   │   ├── session_service.py  # Session lifecycle repository
+│   │   └── upload_service.py   # 5 MB limit, JPEG/PNG & Pillow image header verification
+│   └── main.py                 # FastAPI application launcher
+├── frontend/
+│   ├── public/
+│   │   ├── manifest.json       # PWA Manifest (standalone, portrait)
+│   │   └── sw.js               # Service Worker offline caching strategy
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── chittakalaClient.ts # Typed API Client connecting to backend
+│   │   ├── components/         # Modular Screen Components (Welcome, CheckIn, ArtForm, Category, Carousel, Drawing, Summary)
+│   │   ├── App.tsx             # SPA Shell (Header, Scroll Viewport, Bottom Navigation)
+│   │   ├── index.css           # Dark Mode Canvas & 48x48px Touch Bounding Targets
+│   │   └── main.tsx            # React entry point
+│   ├── index.html              # Viewport tags, Google Fonts, SW registration
+│   ├── package.json            # React 18, Vite 5, Lucide Icons
+│   └── vite.config.ts          # Vite server (Port 3000 -> Proxy Port 8000)
+├── infrastructure/
+│   ├── gcp_setup.sh            # Automated Cloud Run & GCP provisioning script
 ├── tests/
-│   ├── __init__.py
-│   └── api/
-│       ├── __init__.py
-│       ├── test_art_forms.py
-│       └── test_health.py
+│   ├── api/                    # Health, Art Forms, Exercises, Sessions, Lifecycle & Deployed Smoke Tests
+│   └── security/               # 5 MB limit, MIME type, Pillow spoofing & corruption protection tests
+├── Dockerfile                  # Production container for Cloud Run
+├── .dockerignore               # Container build ignore rules
 ├── .gitignore
-├── pyrightconfig.json
-├── README.md
-└── requirements.txt
+├── requirements.txt            # Python dependencies
+└── README.md
 ```
 
 ---
 
-## Setup Instructions
+## 🚀 How to Run the Project Locally
 
-### 1. Create Virtual Environment
-```bash
-python -m venv .venv
-```
+To run and check the full Chittakala PWA application locally:
 
-### 2. Install Dependencies
-```powershell
-.\.venv\Scripts\pip.exe install -r requirements.txt
-```
+### Step 1: Start the Backend FastAPI Server (Port 8000)
 
----
-
-## Running the Application in Terminal
-
-### Direct Command (No Environment Activation Required)
-Run Uvicorn directly from `.venv`:
+Open a terminal in the project root `chittakala/`:
 
 ```powershell
-.\.venv\Scripts\uvicorn.exe app.main:app --reload
+# Direct command using project virtual environment:
+.\.venv\Scripts\uvicorn.exe app.main:app --reload --port 8000
 ```
 
-### With Activated Environment
-
-1. **Enable script execution in PowerShell** (if blocked):
-   ```powershell
-   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-   ```
-2. **Activate environment**:
-   ```powershell
-   .\.venv\Scripts\Activate.ps1
-   ```
-3. **Start server**:
-   ```bash
-   uvicorn app.main:app --reload
-   ```
-
-> 🌐 **Server Endpoints**:
-> - **Root**: http://127.0.0.1:8000/
-> - **Health Check**: http://127.0.0.1:8000/health
-> - **Art Forms API**: http://127.0.0.1:8000/art-forms
-> - **Interactive Swagger Docs**: http://127.0.0.1:8000/docs
-> - **ReDoc Documentation**: http://127.0.0.1:8000/redoc
+> 🌐 **Backend URLs**:
+> - **API Root**: `http://127.0.0.1:8000/`
+> - **Health Check**: `http://127.0.0.1:8000/health`
+> - **Interactive Swagger Docs**: `http://127.0.0.1:8000/docs`
 
 ---
 
-## Running Tests in Terminal
+### Step 2: Start the Frontend React PWA Server (Port 3000)
 
-### Direct Command (Recommended)
-Run `pytest` directly using `.venv`:
+Open a **second terminal** window in the `chittakala/frontend/` directory:
+
+```cmd
+cd frontend
+npm run dev
+```
+
+> 📱 **PWA Web App URL**:
+> Open your browser and go to: **`http://localhost:3000`**
+
+---
+
+## 🧪 Running Automated Test Suite
+
+To run all 30 unit, API, contract, lifecycle, and security tests:
 
 ```powershell
 .\.venv\Scripts\pytest.exe -v
 ```
 
-### With Activated Environment
-```powershell
-pytest -v
-```
-
-### Useful Test Commands
-
-```powershell
-# Run a specific test file
-.\.venv\Scripts\pytest.exe tests/api/test_art_forms.py -v
-
-# Run a specific test by function name
-.\.venv\Scripts\pytest.exe -k "test_get_art_forms_endpoint" -v
-```
-
 ---
 
-## Troubleshooting PowerShell Errors
+## 📅 Project Execution Status
 
-- **`Activate.ps1 cannot be loaded because running scripts is disabled`**:
-  Run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process` in PowerShell before activating.
-- **`pytest / uvicorn : The term is not recognized`**:
-  Use the direct executable path `.\.venv\Scripts\pytest.exe` or `.\.venv\Scripts\uvicorn.exe`.
+- ✅ **Day 1**: Project structure, Python venv, FastAPI baseline & `GET /health` endpoint + tests.
+- ✅ **Day 2**: Art-Form and Category domain models (`warli`, `kolam`, 6 categories) & APIs + tests.
+- ✅ **Day 3**: Exercise domain models & APIs for all 18 standalone activities + tests.
+- ✅ **Day 4**: Session creation API (`POST /sessions`) with display name & pre-check-in validation + tests.
+- ✅ **Day 5**: Session lifecycle APIs (`PATCH check-in`, `POST complete`, `GET summary`, `DELETE session`) + tests.
+- ✅ **Day 6**: Upload security validation (`POST /sessions/{id}/drawing`, 5MB limit, JPEG/PNG, header check) + tests.
+- ✅ **Day 7**: Production `Dockerfile`, `.dockerignore`, `gcp_setup.sh` script, and deployed smoke tests.
+- ✅ **Day 8**: React 18 + Vite 5 PWA Mobile Frontend Shell, Dark Mode Canvas design system (`#0B0F19`), PWA manifest, offline service worker (`sw.js`), 9-screen user journey flow, and 0-error production build.
+- 🎯 **Day 9 (Upcoming)**: Responsible Gemini AI Multimodal Feedback Service & Safety Reviewer Workflow.

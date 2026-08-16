@@ -24,7 +24,44 @@ ART_FORMS_SEED: List[ArtForm] = [
         display_order=2,
         active=True,
     ),
+    ArtForm(
+        art_form_id="madhubani",
+        title="Madhubani",
+        short_description="Mithila folk painting from Bihar featuring intricate dual-line borders, floral patterns, and nature motifs.",
+        thumbnail_path="/art/madhubani/preview.svg",
+        source_note="Mithila cultural heritage of Bihar, India",
+        display_order=3,
+        active=False,
+    ),
+    ArtForm(
+        art_form_id="gond",
+        title="Gond Art",
+        short_description="Tribal art of Madhya Pradesh crafted using signature fine dots, dashes, and rhythmic nature lines.",
+        thumbnail_path="/art/gond/preview.svg",
+        source_note="Gond indigenous tribal art of Central India",
+        display_order=4,
+        active=False,
+    ),
+    ArtForm(
+        art_form_id="pattachitra",
+        title="Pattachitra",
+        short_description="Ancient cloth scroll painting tradition of Odisha featuring bold black outlines and detailed mythic motifs.",
+        thumbnail_path="/art/pattachitra/preview.svg",
+        source_note="Heritage scroll art tradition of Odisha",
+        display_order=5,
+        active=False,
+    ),
+    ArtForm(
+        art_form_id="kalamkari",
+        title="Kalamkari",
+        short_description="Traditional hand-painted pen art of Andhra Pradesh featuring organic vine tendrils and peacock motifs.",
+        thumbnail_path="/art/kalamkari/preview.svg",
+        source_note="Hand-block and bamboo pen art of Andhra Pradesh",
+        display_order=6,
+        active=False,
+    ),
 ]
+
 
 CATEGORIES_SEED: List[Category] = [
     # Warli Categories

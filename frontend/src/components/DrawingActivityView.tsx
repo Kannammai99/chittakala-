@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Camera, Upload, Timer, CheckCircle, ArrowLeft, Play, Pause, RotateCcw, Sparkles } from "lucide-react";
+import { Camera, Upload, Timer, CheckCircle, ArrowLeft, Play, Pause, RotateCcw, Sparkles, Eye } from "lucide-react";
 import { Exercise } from "../api/chittakalaClient";
 
 interface DrawingActivityViewProps {
@@ -64,6 +64,37 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
           </h2>
           <span style={{ fontSize: "0.85rem", color: "var(--color-accent-coral)", fontWeight: 800 }}>
             5-Minute Pen & Paper Routine
+          </span>
+        </div>
+      </div>
+
+      {/* SVG Reference Display Card for Active Drawing */}
+      <div className="genz-card" style={{ marginBottom: "20px", textAlign: "center", padding: "20px" }}>
+        <div style={{ fontSize: "0.78rem", color: "var(--color-accent-coral)", fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+          <Eye size={16} /> Reference Artwork to Draw on Paper
+        </div>
+        
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "240px",
+            height: "180px",
+            margin: "0 auto",
+            borderRadius: "16px",
+            backgroundColor: "#F8FAFC",
+            border: "2px solid #E2E8F0",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+          }}
+        >
+          <h4 style={{ fontFamily: "var(--font-heading)", fontSize: "1.3rem", fontWeight: 900, color: "#0F172A" }}>
+            {exercise.title}
+          </h4>
+          <span style={{ fontSize: "0.75rem", color: "var(--color-accent-coral)", marginTop: "6px", fontWeight: 800, padding: "2px 10px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)" }}>
+            {exercise.art_form.toUpperCase()} • {exercise.difficulty.toUpperCase()}
           </span>
         </div>
       </div>

@@ -98,6 +98,25 @@ npm run dev
 
 ---
 
+### 📱 3 Easy Ways to View & Demo the App in Phone Format
+
+1. **Chrome DevTools Mobile Emulation (Instant on your PC)**:
+   - Open `http://localhost:3000` in Chrome.
+   - Press **`F12`** (or Right-Click ➔ *Inspect*).
+   - Click the **Device Toggle Icon** 📱 (or press `Ctrl + Shift + M`).
+   - Select **iPhone 14 Pro** or **Pixel 7** from the top dropdown.
+   - You will see the exact mobile PWA app with touch interactions and fixed mobile header/nav!
+
+2. **Local Network Access on your Real Smartphone**:
+   - Connect your phone and PC to the same Wi-Fi.
+   - Start Vite with `--host`: `cmd /c "cd /d C:\Users\91986\.gemini\antigravity\scratch\chittakala\frontend && npx vite --host"`
+   - Open `http://<your-pc-ip>:3000` in Chrome/Safari on your mobile phone!
+
+3. **Install as PWA App on Phone**:
+   - On your phone's browser, tap **"Add to Home Screen"** / **"Install Chittakala"**. It will install as an app icon with no browser bar!
+
+---
+
 ## 🧪 Running Automated Test Suite
 
 To run all 30 unit, API, contract, lifecycle, and security tests:
@@ -117,5 +136,5 @@ To run all 30 unit, API, contract, lifecycle, and security tests:
 - ✅ **Day 5**: Session lifecycle APIs (`PATCH check-in`, `POST complete`, `GET summary`, `DELETE session`) + tests.
 - ✅ **Day 6**: Upload security validation (`POST /sessions/{id}/drawing`, 5MB limit, JPEG/PNG, header check) + tests.
 - ✅ **Day 7**: Production `Dockerfile`, `.dockerignore`, `gcp_setup.sh` script, and deployed smoke tests.
-- ✅ **Day 8**: React 18 + Vite 5 PWA Mobile Frontend Shell, Dark Mode Canvas design system (`#0B0F19`), PWA manifest, offline service worker (`sw.js`), 9-screen user journey flow, and 0-error production build.
-- 🎯 **Day 9 (Upcoming)**: Responsible Gemini AI Multimodal Feedback Service & Safety Reviewer Workflow.
+- ✅ **Day 8**: React 18 + Vite 5 PWA Mobile Frontend Shell, Gen Z Sunset Coral UI design system (`#F8FAFC` canvas, `#FF523B` coral gradients), Concept 1 Visual Storytelling Banner, 3-tab navigation, custom Chittakala brand logo icon, 3.2s splash screen, real-time name sync, and 0-error production build.
+- 🚀 **Day 9 (Active)**: Responsible Gemini AI Multimodal Vision Service, non-clinical prompt engineering, structured Pydantic reflection schema, and safety guardrail suite.

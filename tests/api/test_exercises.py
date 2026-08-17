@@ -48,7 +48,7 @@ def test_get_exercise_by_id_single_item():
     assert data["exercise_id"] == "warli-basic-01"
     assert data["art_form_id"] == "warli"
     assert data["category_id"] == "basic-figures"
-    assert data["title"] == "Standing Figure"
+    assert data["title"] == "Dancing Warli Trio"
     assert len(data["visible_elements"]) > 0
     assert len(data["drawing_guidance"]) > 0
 

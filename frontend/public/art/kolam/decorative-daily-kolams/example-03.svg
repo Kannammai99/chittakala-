@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="100%" height="100%">
+  <rect width="300" height="300" fill="#991B1B" rx="20"/>
+  <!-- Grand 8-Petal Rosette Threshold Kolam -->
+  <circle cx="150" cy="150" r="34" fill="none" stroke="#FFFFFF" stroke-width="5"/>
+  <circle cx="150" cy="150" r="16" fill="#FDE68A"/>
+  <!-- Double-Contoured Petal Arcs -->
+  <path d="M 150,116 Q 180,60 150,32 Q 120,60 150,116 Z M 150,184 Q 180,240 150,268 Q 120,240 150,184 Z M 116,150 Q 60,180 32,150 Q 60,120 116,150 Z M 184,150 Q 240,180 268,150 Q 240,120 184,150 Z" fill="none" stroke="#FFFFFF" stroke-width="5"/>
+  <path d="M 125,125 Q 75,75 68,90 Q 90,68 125,125 Z M 175,125 Q 225,75 232,90 Q 210,68 175,125 Z M 125,175 Q 75,225 68,210 Q 90,232 125,175 Z M 175,175 Q 225,225 232,210 Q 210,232 175,175 Z" fill="none" stroke="#FDE68A" stroke-width="4"/>
+</svg>

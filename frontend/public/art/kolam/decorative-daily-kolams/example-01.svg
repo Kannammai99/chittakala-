@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="100%" height="100%">
+  <rect width="300" height="300" fill="#991B1B" rx="20"/>
+  <!-- Central Seed Pod -->
+  <circle cx="150" cy="150" r="26" fill="none" stroke="#FDE68A" stroke-width="5"/>
+  <circle cx="150" cy="150" r="8" fill="#FDE68A"/>
+  <!-- 8 Radiating Scalloped Lotus Petals -->
+  <path d="M 150,124 C 125,60 175,60 150,124 Z M 150,176 C 125,240 175,240 150,176 Z M 124,150 C 60,125 60,175 124,150 Z M 176,150 C 240,125 240,175 176,150 Z" fill="none" stroke="#FFFFFF" stroke-width="5"/>
+  <path d="M 131,131 C 85,85 110,60 131,131 Z M 169,131 C 215,85 190,60 169,131 Z M 131,169 C 85,215 110,240 131,169 Z M 169,169 C 215,215 190,240 169,169 Z" fill="none" stroke="#FDE68A" stroke-width="4"/>
+  <!-- Outer Corner Accent Dots -->
+  <circle cx="150" cy="35" r="6" fill="#FFFFFF"/>
+  <circle cx="150" cy="265" r="6" fill="#FFFFFF"/>
+  <circle cx="35" cy="150" r="6" fill="#FFFFFF"/>
+  <circle cx="265" cy="150" r="6" fill="#FFFFFF"/>
+</svg>

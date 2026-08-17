@@ -70,15 +70,15 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
 
       {/* SVG Reference Display Card for Active Drawing */}
       <div className="genz-card" style={{ marginBottom: "20px", textAlign: "center", padding: "20px" }}>
-        <div style={{ fontSize: "0.78rem", color: "var(--color-accent-coral)", fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+        <div style={{ fontSize: "0.78rem", color: "var(--color-accent-coral)", fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
           <Eye size={16} /> Reference Artwork to Draw on Paper
         </div>
         
         <div
           style={{
             width: "100%",
-            maxWidth: "240px",
-            height: "180px",
+            maxWidth: "260px",
+            height: "190px",
             margin: "0 auto",
             borderRadius: "16px",
             backgroundColor: "#F8FAFC",
@@ -87,13 +87,16 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding: "16px",
+            padding: "12px",
+            overflow: "hidden",
           }}
         >
-          <h4 style={{ fontFamily: "var(--font-heading)", fontSize: "1.3rem", fontWeight: 900, color: "#0F172A" }}>
-            {exercise.title}
-          </h4>
-          <span style={{ fontSize: "0.75rem", color: "var(--color-accent-coral)", marginTop: "6px", fontWeight: 800, padding: "2px 10px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)" }}>
+          <img
+            src={exercise.reference_image_path}
+            alt={exercise.title}
+            style={{ width: "100%", height: "140px", objectFit: "contain", display: "block" }}
+          />
+          <span style={{ fontSize: "0.72rem", color: "var(--color-accent-coral)", marginTop: "6px", fontWeight: 800, padding: "2px 10px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)" }}>
             {exercise.art_form.toUpperCase()} • {exercise.difficulty.toUpperCase()}
           </span>
         </div>

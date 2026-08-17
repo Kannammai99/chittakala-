@@ -64,13 +64,13 @@ export const ExampleCarouselView: React.FC<ExampleCarouselViewProps> = ({
 
       {/* Main Gen Z Card */}
       <div className="genz-card" style={{ textAlign: "center", padding: "28px 20px" }}>
-        {/* Curated SVG Visual Display Box */}
+        {/* Real SVG Reference Artwork Image Rendering */}
         <div
           style={{
             width: "100%",
             maxWidth: "280px",
             height: "220px",
-            margin: "0 auto 24px",
+            margin: "0 auto 20px",
             borderRadius: "20px",
             backgroundColor: "#F8FAFC",
             border: "2px solid #E2E8F0",
@@ -78,19 +78,28 @@ export const ExampleCarouselView: React.FC<ExampleCarouselViewProps> = ({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding: "20px",
+            padding: "16px",
+            overflow: "hidden",
+            boxShadow: "0 6px 16px rgba(15, 23, 42, 0.04)",
           }}
         >
-          <div style={{ fontSize: "0.78rem", color: "var(--color-accent-coral)", fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "8px" }}>
-            Curated SVG Reference
-          </div>
-          <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", fontWeight: 900, color: "#0F172A" }}>
-            {currentExercise.title}
-          </h3>
-          <span style={{ fontSize: "0.78rem", color: "var(--color-accent-coral)", marginTop: "6px", fontWeight: 800, padding: "4px 12px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)" }}>
-            DIFFICULTY: {currentExercise.difficulty.toUpperCase()}
+          <img
+            src={currentExercise.reference_image_path}
+            alt={currentExercise.title}
+            style={{ width: "100%", height: "150px", objectFit: "contain", display: "block" }}
+            onError={(e) => {
+              // Fallback if image path has issue
+              (e.target as HTMLElement).style.display = "none";
+            }}
+          />
+          <span style={{ fontSize: "0.75rem", color: "var(--color-accent-coral)", marginTop: "8px", fontWeight: 800, padding: "3px 12px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)" }}>
+            {currentExercise.art_form.toUpperCase()} • {currentExercise.difficulty.toUpperCase()}
           </span>
         </div>
+
+        <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", fontWeight: 900, color: "#0F172A", marginBottom: "8px" }}>
+          {currentExercise.title}
+        </h3>
 
         <p style={{ color: "#334155", fontSize: "0.98rem", lineHeight: 1.6, marginBottom: "24px", fontWeight: 500 }}>
           {currentExercise.short_description}

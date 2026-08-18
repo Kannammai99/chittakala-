@@ -57,21 +57,24 @@ export const ArtFormView: React.FC<ArtFormViewProps> = ({
               style={{
                 marginBottom: 0,
                 borderLeft: `5px solid ${style.color}`,
-                padding: "16px 18px",
+                padding: "14px 14px",
                 opacity: isActive ? 1 : 0.85,
                 cursor: isActive ? "pointer" : "default",
+                boxSizing: "border-box",
+                width: "100%",
+                overflow: "hidden",
               }}
               onClick={() => {
                 if (isActive) onSelectArtForm(af.art_form_id);
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px", gap: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
                   <div
                     style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "14px",
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "12px",
                       backgroundColor: style.bg,
                       display: "flex",
                       alignItems: "center",
@@ -79,40 +82,40 @@ export const ArtFormView: React.FC<ArtFormViewProps> = ({
                       flexShrink: 0,
                     }}
                   >
-                    <Palette size={22} color={style.color} />
+                    <Palette size={20} color={style.color} />
                   </div>
-                  <div>
-                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.2 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.15rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {af.title}
                     </h3>
-                    <span style={{ fontSize: "0.78rem", color: "#64748B", fontWeight: 700 }}>
+                    <span style={{ fontSize: "0.75rem", color: "#64748B", fontWeight: 700, display: "block", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {isActive ? "3 Categories • 9 Activities" : "Expansion Module"}
                     </span>
                   </div>
                 </div>
 
                 {isActive ? (
-                  <ChevronRight size={22} color="#94A3B8" style={{ flexShrink: 0 }} />
+                  <ChevronRight size={20} color="#94A3B8" style={{ flexShrink: 0 }} />
                 ) : (
-                  <span style={{ fontSize: "0.72rem", padding: "4px 10px", borderRadius: "9999px", background: "#F1F5F9", color: "#64748B", fontWeight: 800, display: "flex", alignItems: "center", gap: "4px", flexShrink: 0, whiteSpace: "nowrap" }}>
-                    <Lock size={12} /> Coming Soon
+                  <span style={{ fontSize: "0.7rem", padding: "3px 8px", borderRadius: "9999px", background: "#F1F5F9", color: "#64748B", fontWeight: 800, display: "flex", alignItems: "center", gap: "4px", flexShrink: 0, whiteSpace: "nowrap" }}>
+                    <Lock size={10} /> Coming Soon
                   </span>
                 )}
               </div>
 
-              <p style={{ fontSize: "0.88rem", color: "#334155", lineHeight: 1.5, marginBottom: "12px", fontWeight: 500 }}>
+              <p style={{ fontSize: "0.85rem", color: "#334155", lineHeight: 1.45, marginBottom: "10px", fontWeight: 500 }}>
                 {af.short_description}
               </p>
 
-              <div style={{ background: "#F8FAFC", padding: "8px 12px", borderRadius: "12px", border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+              <div style={{ background: "#F8FAFC", padding: "6px 10px", borderRadius: "10px", border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", width: "100%", boxSizing: "border-box" }}>
                 <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
-                  <span style={{ fontSize: "0.78rem", color: style.color, fontWeight: 800, display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    <Sparkles size={14} style={{ flexShrink: 0 }} /> {af.source_note || "Heritage Indian Folk Art"}
+                  <span style={{ fontSize: "0.75rem", color: style.color, fontWeight: 800, display: "flex", alignItems: "center", gap: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <Sparkles size={13} style={{ flexShrink: 0 }} /> {af.source_note || "Heritage Indian Folk Art"}
                   </span>
                 </div>
 
                 {isActive && (
-                  <span style={{ fontSize: "0.72rem", padding: "3px 10px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)", color: "var(--color-accent-coral)", fontWeight: 800, flexShrink: 0, whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 8px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)", color: "var(--color-accent-coral)", fontWeight: 800, flexShrink: 0, whiteSpace: "nowrap" }}>
                     Active Practice
                   </span>
                 )}

@@ -36,16 +36,17 @@ class GeminiReflectionResponse(BaseModel):
     )
 
 
-# System instructions enforcing non-clinical, non-judgmental, zero-grading guardrails
+# System instructions enforcing non-clinical, non-judgmental, zero-grading guardrails & non-art detection
 SYSTEM_INSTRUCTIONS = (
     "You are Chittakala AI, a warm, encouraging cultural art companion for Indian folk art routines (Kolam & Warli).\n"
     "Your role is to offer mindful visual reflection on user hand-drawn sketches on paper.\n"
     "STRICT GUARDRAILS & RULES:\n"
-    "1. ZERO NUMERICAL GRADING: Never output numbers, percentages, scores, or ratings (e.g., NO '8/10', '90%').\n"
-    "2. ZERO ARTISTIC JUDGMENT: Never criticize flaws, neatness, or precision. Praise the user's presence and effort.\n"
-    "3. ZERO CLINICAL OR HEALTH DIAGNOSIS: Never mention therapy, diagnosis, anxiety, or medical claims.\n"
-    "4. VISUAL REFLECTION: Describe specific shapes, lines, dots, or loops you see in the user's drawing.\n"
-    "5. Output MUST strictly conform to the requested JSON schema.\n"
+    "1. NON-ART / UNRELATED PHOTO DETECTION: If the uploaded image is NOT a hand-drawn artwork or sketch (e.g. a screenshot of a computer screen, financial report, photo of a person, or random object), set 'needs_retake': true, set 'visual_observation': 'The uploaded photo does not appear to contain a hand-drawn paper sketch. Please upload a clear photo of your paper drawing.', set 'encouragement': 'Whenever you are ready, capture a photo of your hand-drawn sketch to receive your visual reflection.', and set 'next_step': 'Take a quick photo of your drawing on paper and submit it again.'\n"
+    "2. ZERO NUMERICAL GRADING: Never output numbers, percentages, scores, or ratings (e.g., NO '8/10', '90%').\n"
+    "3. ZERO ARTISTIC JUDGMENT: Never criticize flaws, neatness, or precision. Praise the user's presence and effort.\n"
+    "4. ZERO CLINICAL OR HEALTH DIAGNOSIS: Never mention therapy, diagnosis, anxiety, or medical claims.\n"
+    "5. VISUAL REFLECTION: For valid drawings, describe specific shapes, lines, dots, or loops you see in the user's paper drawing.\n"
+    "6. Output MUST strictly conform to the requested JSON schema.\n"
 )
 
 
@@ -66,7 +67,7 @@ class GeminiReflectionService:
         """Safe local fallback reflection generator when API key is missing or offline."""
         if "kolam" in art_form_title.lower():
             return GeminiReflectionResponse(
-                visual_observation="Your drawing shows steady dot alignment and gentle flowing loops weaving smoothly on paper.",
+                visual_observation="Your sketch shows steady dot alignment and gentle flowing loops weaving smoothly on paper.",
                 encouragement="Taking this 5-minute pause to connect lines and dots brings a wonderful moment of focus.",
                 next_step="Try adding a small corner accent loop or repeat this simple pattern tomorrow.",
                 safety_status="safe",

@@ -599,12 +599,11 @@ export default function App() {
           <img
             src="/logo.jpg"
             alt="Chittakala Logo"
-            style={{ width: "36px", height: "36px", borderRadius: "12px", objectFit: "cover", border: "1.5px solid #FF7A00" }}
+            style={{ width: "34px", height: "34px", borderRadius: "10px", objectFit: "cover", border: "1.5px solid #FF7A00" }}
           />
           <div>
             <h1 className="brand-title">Chittakala</h1>
           </div>
-          <span className="brand-badge">PWA</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", fontWeight: 600 }}>
@@ -659,7 +658,10 @@ export default function App() {
 
             {step === "carousel" && (
               <ExampleCarouselView
-                categoryTitle={selectedCategoryId.replace("-", " ").toUpperCase()}
+                categoryTitle={
+                  categories.find((c) => c.category_id === selectedCategoryId)?.title ||
+                  selectedCategoryId.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+                }
                 exercises={exercises}
                 onSelectExercise={handleSelectExercise}
                 onBack={() => setStep("categories")}

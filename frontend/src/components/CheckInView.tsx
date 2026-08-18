@@ -23,17 +23,17 @@ export const CheckInView: React.FC<CheckInViewProps> = ({
   onSkip,
 }) => {
   return (
-    <div className="tab-view" style={{ padding: "0 4px" }}>
-      <div style={{ marginBottom: "12px" }}>
-        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.2rem", fontWeight: 900, marginBottom: "3px", color: "#0F172A", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+    <div className="tab-view">
+      <div style={{ marginBottom: "20px" }}>
+        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.45rem", fontWeight: 900, marginBottom: "6px", color: "#0F172A", letterSpacing: "-0.02em", lineHeight: 1.25 }}>
           How would you describe your current pace?
         </h2>
-        <p style={{ color: "#64748B", fontSize: "0.8rem", fontWeight: 500, lineHeight: 1.3 }}>
+        <p style={{ color: "#64748B", fontSize: "0.88rem", fontWeight: 500, lineHeight: 1.4 }}>
           This optional check-in customizes interface wording only. It is non-clinical.
         </p>
       </div>
 
-      <div style={{ display: "grid", gap: "8px", marginBottom: "14px" }}>
+      <div style={{ display: "grid", gap: "12px", marginBottom: "24px" }}>
         {CHECK_IN_OPTIONS.map((opt) => {
           const Icon = opt.icon;
           const isSelected = selectedCheckIn === opt.id;
@@ -42,37 +42,39 @@ export const CheckInView: React.FC<CheckInViewProps> = ({
               key={opt.id}
               className={`genz-card genz-card-interactive ${isSelected ? "selected" : ""}`}
               style={{
-                padding: "8px 12px",
+                padding: "14px 16px",
                 marginBottom: 0,
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
-                borderRadius: "14px",
+                gap: "14px",
+                borderRadius: "18px",
+                boxSizing: "border-box",
+                width: "100%",
               }}
               onClick={() => onSelectCheckIn(opt.id)}
             >
               <div
                 style={{
-                  width: "34px",
-                  height: "34px",
-                  borderRadius: "10px",
+                  width: "42px",
+                  height: "42px",
+                  borderRadius: "12px",
                   backgroundColor: isSelected ? "var(--color-accent-coral)" : "#F1F5F9",
                   color: isSelected ? "#FFFFFF" : "#0F172A",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
-                  boxShadow: isSelected ? "0 4px 12px rgba(255, 82, 59, 0.25)" : "none",
+                  boxShadow: isSelected ? "0 6px 16px rgba(255, 82, 59, 0.3)" : "none",
                 }}
               >
-                <Icon size={18} />
+                <Icon size={20} />
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
-                <h4 style={{ fontSize: "0.88rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.2 }}>
+                <h4 style={{ fontSize: "1rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.2 }}>
                   {opt.label}
                 </h4>
-                <p style={{ fontSize: "0.75rem", color: "#475569", marginTop: "1px", fontWeight: 500, lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <p style={{ fontSize: "0.82rem", color: "#475569", marginTop: "2px", fontWeight: 500, lineHeight: 1.35 }}>
                   {opt.desc}
                 </p>
               </div>
@@ -81,17 +83,17 @@ export const CheckInView: React.FC<CheckInViewProps> = ({
         })}
       </div>
 
-      <div style={{ display: "flex", gap: "10px" }}>
+      <div style={{ display: "flex", gap: "12px" }}>
         <button
           className="btn-genz-secondary"
-          style={{ flex: 1, padding: "10px 12px", fontSize: "0.82rem", minHeight: "42px" }}
+          style={{ flex: 1, padding: "14px 16px", fontSize: "0.9rem", minHeight: "48px" }}
           onClick={onSkip}
         >
-          Skip
+          Skip Check-in
         </button>
         <button
           className="btn-genz-primary"
-          style={{ flex: 2, padding: "10px 12px", fontSize: "0.85rem", minHeight: "42px" }}
+          style={{ flex: 2, padding: "14px 16px", fontSize: "0.92rem", minHeight: "48px" }}
           onClick={onContinue}
         >
           Continue to Art Forms

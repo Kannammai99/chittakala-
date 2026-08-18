@@ -570,6 +570,49 @@ export default function App() {
       });
   };
 
+  // Handle drawing upload & request Gemini AI Multimodal Reflection
+  const handleUploadDrawing = async (file: File) => {
+    if (!currentSession) {
+      setStep("summary");
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      await fetch(`/api/sessions/${currentSession.session_id}/drawing`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const reflectRes = await fetch(`/api/sessions/${currentSession.session_id}/reflect`, {
+        method: "POST",
+        body: formData,
+      });
+
+      let feedback = null;
+      if (reflectRes.ok) {
+        feedback = await reflectRes.json();
+      }
+
+      setCurrentSession({
+        ...currentSession,
+        status: "completed",
+        feedback: feedback || {
+          visual_observation: "Your drawing shows steady alignment and clean hand-drawn lines on paper.",
+          encouragement: "Taking a 5-minute creative pause brings focus and calm to your day.",
+          next_step: "Try repeating this pattern tomorrow or explore another category.",
+          safety_status: "safe",
+          needs_retake: false,
+          fallback_used: true,
+        },
+      });
+      setStep("summary");
+    } catch {
+      setStep("summary");
+    }
+  };
+
   // Finish session without AI feedback
   const handleFinishWithoutAI = () => {
     if (currentSession) {
@@ -671,7 +714,7 @@ export default function App() {
             {step === "drawing" && selectedExercise && (
               <DrawingActivityView
                 exercise={selectedExercise}
-                onUpload={() => setStep("summary")}
+                onUpload={handleUploadDrawing}
                 onFinishWithoutAI={handleFinishWithoutAI}
                 onBack={() => setStep("carousel")}
               />

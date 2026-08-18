@@ -53,6 +53,14 @@ export interface Session {
   duration_seconds?: number;
   drawing_path?: string;
   feedback_id?: string;
+  feedback?: {
+    visual_observation: string;
+    encouragement: string;
+    next_step: string;
+    safety_status: string;
+    needs_retake: boolean;
+    fallback_used: boolean;
+  };
 }
 
 export class ChittakalaClient {

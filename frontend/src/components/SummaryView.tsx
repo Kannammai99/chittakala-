@@ -94,6 +94,69 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
           )}
         </div>
 
+        {/* Gemini AI Multimodal Vision Reflection Display */}
+        {session.feedback && (
+          <div
+            style={{
+              background: "linear-gradient(135deg, #FFF5F3 0%, #FFFFFF 100%)",
+              border: "2px solid #FFE4E0",
+              borderRadius: "20px",
+              padding: "20px",
+              marginBottom: "24px",
+              textAlign: "left",
+              boxShadow: "0 8px 24px rgba(255, 82, 59, 0.08)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Sparkles size={20} color="var(--color-accent-coral)" />
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 900, color: "#0F172A" }}>
+                  Gemini AI Reflection
+                </h3>
+              </div>
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  padding: "3px 10px",
+                  borderRadius: "9999px",
+                  background: session.feedback.fallback_used ? "rgba(99, 102, 241, 0.12)" : "rgba(255, 82, 59, 0.12)",
+                  color: session.feedback.fallback_used ? "#6366F1" : "var(--color-accent-coral)",
+                  fontWeight: 800,
+                }}
+              >
+                {session.feedback.fallback_used ? "Local Reflection Mode" : "Live Gemini Vision"}
+              </span>
+            </div>
+
+            <div style={{ marginBottom: "12px" }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--color-accent-coral)", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "2px" }}>
+                Visual Observation
+              </span>
+              <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, fontWeight: 500 }}>
+                {session.feedback.visual_observation}
+              </p>
+            </div>
+
+            <div style={{ marginBottom: "12px" }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "2px" }}>
+                Mindful Encouragement
+              </span>
+              <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, fontWeight: 500 }}>
+                {session.feedback.encouragement}
+              </p>
+            </div>
+
+            <div>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "2px" }}>
+                Next Creative Step
+              </span>
+              <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, fontWeight: 500 }}>
+                {session.feedback.next_step}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Primary Action Buttons */}
         <div style={{ display: "grid", gap: "12px" }}>
           <button className="btn-genz-primary" onClick={onStartAnother}>

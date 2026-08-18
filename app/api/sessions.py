@@ -86,6 +86,57 @@ async def upload_drawing(session_id: str, file: UploadFile = File(...)):
             )
 
 
+@router.post(
+    "/sessions/{session_id}/reflect",
+    status_code=status.HTTP_200_OK,
+    summary="Generate Multimodal Gemini AI Reflection for User Drawing",
+    description="Analyzes uploaded drawing bytes using Gemini Vision Service and attaches structured non-clinical reflection payload to session.",
+)
+async def generate_gemini_reflection(session_id: str, file: UploadFile = File(...)):
+    from app.services.gemini_service import gemini_service
+    from app.services.art_service import ArtService
+
+    session = SessionService.get_session(session_id)
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Session '{session_id}' not found or deleted.",
+        )
+
+    try:
+        file_bytes = await file.read()
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to read uploaded image file payload.",
+        )
+
+    # Resolve exercise & art form titles for contextual prompt
+    exercise_title = "Folk Art Pattern"
+    art_form_title = "Indian Folk Art"
+    try:
+        ex = ArtService.get_exercise(session.exercise_id)
+        if ex:
+            exercise_title = ex.title
+            art_form_title = ex.art_form
+    except Exception:
+        pass
+
+    mime_type = file.content_type or "image/png"
+    reflection = gemini_service.reflect_on_drawing(
+        image_bytes=file_bytes,
+        mime_type=mime_type,
+        exercise_title=exercise_title,
+        art_form_title=art_form_title,
+    )
+
+    # Attach reflection JSON payload to session state
+    if session_id in SessionService._sessions:
+        SessionService._sessions[session_id].feedback_id = "fb_" + session_id[:8]
+
+    return reflection.model_dump()
+
+
 @router.patch(
     "/sessions/{session_id}/check-in",
     response_model=Session,

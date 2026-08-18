@@ -57,21 +57,21 @@ export const CategoryView: React.FC<CategoryViewProps> = ({
               style={{
                 cursor: "pointer",
                 marginBottom: 0,
-                padding: "14px 14px",
+                padding: "18px 18px",
                 borderLeft: `5px solid ${colorTheme.main}`,
                 boxSizing: "border-box",
                 width: "100%",
-                overflow: "hidden",
+                borderRadius: "20px",
               }}
               onClick={() => onSelectCategory(cat.category_id)}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px", gap: "8px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", gap: "10px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
                   <div
                     style={{
-                      width: "38px",
-                      height: "38px",
-                      borderRadius: "10px",
+                      width: "42px",
+                      height: "42px",
+                      borderRadius: "14px",
                       backgroundColor: colorTheme.bg,
                       display: "flex",
                       alignItems: "center",
@@ -79,31 +79,31 @@ export const CategoryView: React.FC<CategoryViewProps> = ({
                       flexShrink: 0,
                     }}
                   >
-                    <Layers size={18} color={colorTheme.main} />
+                    <Layers size={20} color={colorTheme.main} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.1rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.2rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.2 }}>
                       {cat.title}
                     </h3>
-                    <span style={{ fontSize: "0.74rem", color: colorTheme.main, fontWeight: 800, display: "block", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <span style={{ fontSize: "0.76rem", color: colorTheme.main, fontWeight: 800, display: "block", marginTop: "2px" }}>
                       3 Standalone Activities
                     </span>
                   </div>
                 </div>
-                <ChevronRight size={20} color="#94A3B8" style={{ flexShrink: 0 }} />
+                <ChevronRight size={22} color="#94A3B8" style={{ flexShrink: 0 }} />
               </div>
 
-              <p style={{ fontSize: "0.85rem", color: "#334155", lineHeight: 1.45, marginBottom: "10px", fontWeight: 500 }}>
+              <p style={{ fontSize: "0.88rem", color: "#334155", lineHeight: 1.55, marginBottom: "14px", fontWeight: 500 }}>
                 {cat.short_description}
               </p>
 
-              <div style={{ background: "#F8FAFC", padding: "6px 10px", borderRadius: "10px", border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", width: "100%", boxSizing: "border-box" }}>
+              <div style={{ background: "#F8FAFC", padding: "8px 12px", borderRadius: "12px", border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", width: "100%", boxSizing: "border-box" }}>
                 <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
-                  <span style={{ fontSize: "0.74rem", color: "#64748B", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    <Sparkles size={13} color={colorTheme.main} style={{ flexShrink: 0 }} /> Ready for 5-min creation
+                  <span style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 700, display: "flex", alignItems: "center", gap: "5px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <Sparkles size={14} color={colorTheme.main} style={{ flexShrink: 0 }} /> Ready for 5-min creation
                   </span>
                 </div>
-                <span style={{ fontSize: "0.7rem", padding: "2px 8px", borderRadius: "9999px", background: "rgba(99, 102, 241, 0.1)", color: "#6366F1", fontWeight: 800, flexShrink: 0, whiteSpace: "nowrap" }}>
+                <span style={{ fontSize: "0.72rem", padding: "3px 10px", borderRadius: "9999px", background: "rgba(99, 102, 241, 0.12)", color: "#6366F1", fontWeight: 800, flexShrink: 0, whiteSpace: "nowrap" }}>
                   Explore ➔
                 </span>
               </div>

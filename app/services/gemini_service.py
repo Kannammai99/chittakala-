@@ -110,7 +110,7 @@ class GeminiReflectionService:
             )
 
             response = self.client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-3.6-flash",
                 contents=[
                     types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
                     prompt
@@ -120,12 +120,17 @@ class GeminiReflectionService:
                     response_mime_type="application/json",
                     response_schema=GeminiReflectionResponse,
                     temperature=0.4,
-                    max_output_tokens=350,
+                    max_output_tokens=800,
                 )
             )
 
             if response and response.text:
-                reflection = GeminiReflectionResponse.model_validate_json(response.text)
+                text = response.text.strip()
+                if "```" in text:
+                    # Strip markdown json codeblock wrappers if present
+                    lines = [line for line in text.split("\n") if not line.strip().startswith("```")]
+                    text = "\n".join(lines).strip()
+                reflection = GeminiReflectionResponse.model_validate_json(text)
                 reflection.fallback_used = False
                 return reflection
             else:

@@ -19,6 +19,7 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
   const [timerActive, setTimerActive] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   useEffect(() => {
     let interval: any = null;
@@ -31,6 +32,13 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
     }
     return () => clearInterval(interval);
   }, [timerActive, timerSeconds]);
+
+  const handleSubmit = () => {
+    if (selectedFile && !isUploading) {
+      setIsUploading(true);
+      onUpload(selectedFile);
+    }
+  };
 
   const formatTimer = (totalSeconds: number) => {
     const mins = Math.floor(totalSeconds / 60);
@@ -207,8 +215,21 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
         {/* Gen Z Action Buttons */}
         <div style={{ display: "grid", gap: "12px" }}>
           {selectedFile && (
-            <button className="btn-genz-primary" onClick={() => onUpload(selectedFile)}>
-              <Upload size={20} /> Submit Photograph for AI Reflection
+            <button
+              className="btn-genz-primary"
+              onClick={handleSubmit}
+              disabled={isUploading}
+              style={{ opacity: isUploading ? 0.75 : 1, cursor: isUploading ? "wait" : "pointer" }}
+            >
+              {isUploading ? (
+                <>
+                  <Sparkles size={20} className="animate-spin" /> Analyzing Sketch with Gemini AI...
+                </>
+              ) : (
+                <>
+                  <Upload size={20} /> Submit Photograph for AI Reflection
+                </>
+              )}
             </button>
           )}
 

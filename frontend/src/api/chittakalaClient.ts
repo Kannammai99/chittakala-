@@ -1,4 +1,5 @@
-const BASE_URL = "/api";
+// @ts-ignore
+const BASE_URL = (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) || "https://chittakala-api-s2w5wrywxq-uc.a.run.app";
 
 export interface ArtForm {
   art_form_id: string;

@@ -26,6 +26,11 @@ venv/
 ENV/
 env/
 
+# Node / JS
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
 # Environment Variables
 .env
 .env.local
@@ -41,6 +46,9 @@ env/
 .coverage
 htmlcov/
 
-# Local Scratch / Storage
+# Local Scratch / Storage / Temporary Scripts
 uploads/
 scratch/
+deploy_cloud_run.py
+login_gcloud.py
+push_pwa_icons.py

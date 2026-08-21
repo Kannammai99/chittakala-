@@ -46,7 +46,7 @@ const ALL_INDIAN_ART_FORMS: ArtForm[] = [
     thumbnail_path: "/art/madhubani/preview.svg",
     source_note: "Mithila cultural heritage of Bihar",
     display_order: 3,
-    active: false,
+    active: true,
   },
   {
     art_form_id: "gond",
@@ -55,7 +55,7 @@ const ALL_INDIAN_ART_FORMS: ArtForm[] = [
     thumbnail_path: "/art/gond/preview.svg",
     source_note: "Gond indigenous tribal art of Central India",
     display_order: 4,
-    active: false,
+    active: true,
   },
   {
     art_form_id: "pattachitra",
@@ -138,6 +138,18 @@ export default function App() {
             { category_id: "basic-figures", art_form_id: "warli", title: "Basic Warli Figures & Motifs", short_description: "Beginner-friendly geometric figures, musicians, and village life.", thumbnail_path: "/art/warli/basic-figures/example-01.png", display_order: 1, active: true },
             { category_id: "figure-rows", art_form_id: "warli", title: "Warli Figure Rows & Scenes", short_description: "Rhythmic rows of dancers, seed sowing farmers, and village drummers.", thumbnail_path: "/art/warli/figure-rows/example-01.png", display_order: 2, active: true },
             { category_id: "dancing-circles", art_form_id: "warli", title: "Warli Circles & Sacred Murals", short_description: "Grand Tarpa dance rings, musician shrines, and sacred Tree of Life murals.", thumbnail_path: "/art/warli/dancing-circles/example-01.png", display_order: 3, active: true },
+          ]);
+        } else if (artFormId === "madhubani") {
+          setCategories([
+            { category_id: "madhubani-borders", art_form_id: "madhubani", title: "Mithila Dual-Line Borders", short_description: "Traditional double-lined geometric borders, lotus petals, and leaf creepers.", thumbnail_path: "/art/madhubani/borders/example-01.png", display_order: 1, active: true },
+            { category_id: "madhubani-nature", art_form_id: "madhubani", title: "Madhubani Peacock & Fish Motifs", short_description: "Symbolic fish of fertility and intricate double-outlined peacock feathers.", thumbnail_path: "/art/madhubani/nature/example-01.png", display_order: 2, active: true },
+            { category_id: "madhubani-sacred", art_form_id: "madhubani", title: "Sun & Tree of Life Geometry", short_description: "Sacred Surya motifs and branching Tree of Life filled with fine hatching.", thumbnail_path: "/art/madhubani/sacred/example-01.png", display_order: 3, active: true },
+          ]);
+        } else if (artFormId === "gond") {
+          setCategories([
+            { category_id: "gond-patterns", art_form_id: "gond", title: "Gond Dash & Dot Textures", short_description: "Signature fine line hatching, dots, and wavy fill patterns.", thumbnail_path: "/art/gond/patterns/example-01.png", display_order: 1, active: true },
+            { category_id: "gond-fauna", art_form_id: "gond", title: "Gond Forest Bird & Deer Motifs", short_description: "Flowing animal contours filled with rhythmic dots and line textures.", thumbnail_path: "/art/gond/fauna/example-01.png", display_order: 2, active: true },
+            { category_id: "gond-tree-of-life", art_form_id: "gond", title: "Gond Sacred Tree of Life", short_description: "Intertwined branches, sacred forest leaves, and perching birds.", thumbnail_path: "/art/gond/tree/example-01.png", display_order: 3, active: true },
           ]);
         } else {
           setCategories([
@@ -681,6 +693,7 @@ export default function App() {
                 onSelectCheckIn={setSelectedCheckIn}
                 onContinue={() => setStep("art_forms")}
                 onSkip={() => setStep("art_forms")}
+                onBackToHome={() => setStep("welcome")}
               />
             )}
 
@@ -694,7 +707,12 @@ export default function App() {
 
             {step === "categories" && (
               <CategoryView
-                artFormTitle={selectedArtFormId === "warli" ? "Warli" : "Kolam"}
+                artFormTitle={
+                  selectedArtFormId === "warli" ? "Warli" :
+                  selectedArtFormId === "kolam" ? "Kolam" :
+                  selectedArtFormId === "madhubani" ? "Madhubani" :
+                  selectedArtFormId === "gond" ? "Gond Art" : "Indian Folk Art"
+                }
                 categories={categories}
                 selectedCategoryId={selectedCategoryId}
                 onSelectCategory={handleSelectCategory}

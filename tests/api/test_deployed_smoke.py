@@ -28,7 +28,7 @@ def test_deployed_art_forms():
     response = client.get("/art-forms")
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 2
+    assert len(data) >= 2
     art_form_ids = [af["art_form_id"] for af in data]
     assert "warli" in art_form_ids
     assert "kolam" in art_form_ids

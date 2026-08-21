@@ -1,6 +1,6 @@
-import React from "react";
-import { CheckCircle2, Trash2, RotateCcw, Sparkles, ShieldCheck } from "lucide-react";
-import { Session } from "../api/chittakalaClient";
+import React, { useState } from "react";
+import { CheckCircle2, Trash2, RotateCcw, Sparkles, ShieldCheck, HeartHandshake, Smile, Zap, Wind, HelpCircle } from "lucide-react";
+import { Session, ChittakalaClient } from "../api/chittakalaClient";
 
 interface SummaryViewProps {
   session: Session;
@@ -8,11 +8,35 @@ interface SummaryViewProps {
   onDeleteSession: () => void;
 }
 
+const POST_CHECK_IN_OPTIONS = [
+  { id: "slower", label: "Slower", icon: Wind, desc: "Feeling more settled and calm" },
+  { id: "about-the-same", label: "About the same", icon: Smile, desc: "Feeling steady and balanced" },
+  { id: "faster", label: "Faster", icon: Zap, desc: "Feeling energized and active" },
+  { id: "prefer_not_to_say", label: "Prefer not to say", icon: HelpCircle, desc: "Keep response neutral" },
+];
+
 export const SummaryView: React.FC<SummaryViewProps> = ({
   session,
   onStartAnother,
   onDeleteSession,
 }) => {
+  const [selectedPostCheckIn, setSelectedPostCheckIn] = useState<string>(session.post_check_in || "");
+  const [isSavingPostCheckIn, setIsSavingPostCheckIn] = useState<boolean>(false);
+
+  const handleSelectPostCheckIn = async (choiceId: string) => {
+    setSelectedPostCheckIn(choiceId);
+    setIsSavingPostCheckIn(true);
+    try {
+      if (session.session_id && !session.session_id.startsWith("sess_local_")) {
+        await ChittakalaClient.updatePostCheckIn(session.session_id, choiceId);
+      }
+    } catch (e) {
+      console.warn("Failed to sync post check-in to server", e);
+    } finally {
+      setIsSavingPostCheckIn(false);
+    }
+  };
+
   const reflection = session.feedback || {
     visual_observation: session.art_form_id === "kolam"
       ? "Your drawing shows steady dot alignment and gentle flowing loops weaving smoothly on paper."
@@ -123,6 +147,71 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
           </div>
         </div>
 
+        {/* Interactive Post-Activity Check-In Card */}
+        <div
+          style={{
+            background: "#FFFFFF",
+            border: "2px solid #E2E8F0",
+            borderRadius: "20px",
+            padding: "20px",
+            marginBottom: "24px",
+            textAlign: "left",
+            boxShadow: "0 6px 18px rgba(15, 23, 42, 0.04)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+            <HeartHandshake size={20} color="#6366F1" />
+            <h3 style={{ fontSize: "1.05rem", fontWeight: 900, color: "#0F172A" }}>
+              Post-Routine Check-In
+            </h3>
+          </div>
+          <p style={{ color: "#64748B", fontSize: "0.85rem", fontWeight: 500, marginBottom: "16px" }}>
+            How does your mind feel after this 5-minute art routine? (Non-clinical & anonymous)
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+            {POST_CHECK_IN_OPTIONS.map((opt) => {
+              const Icon = opt.icon;
+              const isSelected = selectedPostCheckIn === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => handleSelectPostCheckIn(opt.id)}
+                  style={{
+                    padding: "12px 14px",
+                    borderRadius: "14px",
+                    border: isSelected ? "2px solid #6366F1" : "1.5px solid #E2E8F0",
+                    background: isSelected ? "linear-gradient(135deg, #EEF2FF 0%, #FFFFFF 100%)" : "#F8FAFC",
+                    color: isSelected ? "#4338CA" : "#334155",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <Icon size={16} color={isSelected ? "#4338CA" : "#64748B"} />
+                      <span style={{ fontWeight: 800, fontSize: "0.9rem" }}>{opt.label}</span>
+                    </div>
+                    {isSelected && <CheckCircle2 size={16} color="#6366F1" />}
+                  </div>
+                  <span style={{ fontSize: "0.75rem", color: "#64748B", fontWeight: 500, lineHeight: 1.25 }}>
+                    {opt.desc}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {isSavingPostCheckIn && (
+            <p style={{ fontSize: "0.78rem", color: "#6366F1", fontWeight: 700, marginTop: "10px", textAlign: "center" }}>
+              Syncing non-clinical telemetry...
+            </p>
+          )}
+        </div>
+
         {/* Gen Z Summary Details Box */}
         <div
           style={{
@@ -164,6 +253,13 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ color: "#64748B", fontWeight: 600 }}>Initial Pace:</span>
               <span style={{ fontWeight: 800, color: "#6366F1", textTransform: "capitalize" }}>{session.pre_check_in}</span>
+            </div>
+          )}
+
+          {selectedPostCheckIn && (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ color: "#64748B", fontWeight: 600 }}>Post Routine Feel:</span>
+              <span style={{ fontWeight: 800, color: "#10B981", textTransform: "capitalize" }}>{selectedPostCheckIn}</span>
             </div>
           )}
         </div>

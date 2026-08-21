@@ -1,11 +1,12 @@
 import React from "react";
-import { Smile, Zap, Wind, Flame, HelpCircle } from "lucide-react";
+import { Smile, Zap, Wind, Flame, HelpCircle, ArrowLeft } from "lucide-react";
 
 interface CheckInViewProps {
   selectedCheckIn: string;
   onSelectCheckIn: (choice: string) => void;
   onContinue: () => void;
   onSkip: () => void;
+  onBackToHome?: () => void;
 }
 
 const CHECK_IN_OPTIONS = [
@@ -21,9 +22,31 @@ export const CheckInView: React.FC<CheckInViewProps> = ({
   onSelectCheckIn,
   onContinue,
   onSkip,
+  onBackToHome,
 }) => {
   return (
     <div className="tab-view">
+      {/* Top Navigation Back to Home Button */}
+      <button
+        onClick={onBackToHome || onSkip}
+        style={{
+          background: "none",
+          border: "none",
+          color: "var(--color-accent-coral)",
+          fontSize: "0.9rem",
+          fontWeight: 800,
+          cursor: "pointer",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "6px",
+          marginBottom: "16px",
+          padding: "6px 0",
+        }}
+        aria-label="Back to Homepage"
+      >
+        <ArrowLeft size={18} /> Back to Home
+      </button>
+
       <div style={{ marginBottom: "20px" }}>
         <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.45rem", fontWeight: 900, marginBottom: "6px", color: "#0F172A", letterSpacing: "-0.02em", lineHeight: 1.25 }}>
           How would you describe your current pace?

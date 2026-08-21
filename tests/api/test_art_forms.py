@@ -10,11 +10,13 @@ def test_get_art_forms_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert len(data) == 2
+    assert len(data) == 4
 
     art_form_ids = [af["art_form_id"] for af in data]
     assert "warli" in art_form_ids
     assert "kolam" in art_form_ids
+    assert "madhubani" in art_form_ids
+    assert "gond" in art_form_ids
 
     for item in data:
         assert "art_form_id" in item

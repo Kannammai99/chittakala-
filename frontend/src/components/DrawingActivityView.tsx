@@ -233,9 +233,43 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
             </button>
           )}
 
-          <button className="btn-genz-secondary" onClick={onFinishWithoutAI}>
-            Complete Practice Without AI
-          </button>
+          {/* Option A: Secondary Action when AI is loading or for instant completion */}
+          {isUploading ? (
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "4px",
+                background: "linear-gradient(135deg, #FFF5F3 0%, #FFFFFF 100%)",
+                border: "1.5px solid #FFE4E0",
+                padding: "14px",
+                borderRadius: "16px",
+                boxShadow: "0 4px 12px rgba(255, 82, 59, 0.06)",
+              }}
+            >
+              <span style={{ fontSize: "0.82rem", color: "#64748B", fontWeight: 600, display: "block", marginBottom: "8px" }}>
+                ⏱️ Taking a moment?
+              </span>
+              <button
+                type="button"
+                className="btn-genz-secondary"
+                onClick={onFinishWithoutAI}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  fontSize: "0.88rem",
+                  fontWeight: 800,
+                  color: "var(--color-accent-coral)",
+                  borderColor: "var(--color-accent-coral)",
+                }}
+              >
+                Complete Practice Without AI →
+              </button>
+            </div>
+          ) : (
+            <button className="btn-genz-secondary" onClick={onFinishWithoutAI}>
+              Complete Practice Without AI
+            </button>
+          )}
         </div>
       </div>
     </div>

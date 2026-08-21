@@ -1,7 +1,8 @@
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile, status
 from app.models.session import Session, SessionCheckInUpdate, SessionCreate, SessionSummary
 from app.services.session_service import SessionService
 from app.services.upload_service import UploadService
+from app.services.telemetry_service import telemetry_service
 
 router = APIRouter(tags=["Sessions"])
 
@@ -90,7 +91,7 @@ async def upload_drawing(session_id: str, file: UploadFile = File(...)):
     "/sessions/{session_id}/reflect",
     status_code=status.HTTP_200_OK,
     summary="Generate Multimodal Gemini AI Reflection for User Drawing",
-    description="Analyzes uploaded drawing bytes using Gemini Vision Service and attaches structured non-clinical reflection payload to session.",
+    description="Analyzes uploaded drawing bytes using Gemini Vision Service & ADK Multi-Agent Architecture and attaches structured reflection.",
 )
 async def generate_gemini_reflection(session_id: str, file: UploadFile = File(...)):
     from app.services.gemini_service import gemini_service
@@ -125,6 +126,7 @@ async def generate_gemini_reflection(session_id: str, file: UploadFile = File(..
     mime_type = file.content_type or "image/png"
     reflection = gemini_service.reflect_on_drawing(
         image_bytes=file_bytes,
+        session_id=session_id,
         mime_type=mime_type,
         exercise_title=exercise_title,
         art_form_title=art_form_title,
@@ -158,11 +160,27 @@ async def update_post_check_in(session_id: str, check_in_in: SessionCheckInUpdat
     "/sessions/{session_id}/complete",
     response_model=Session,
     summary="Mark session as completed",
-    description="Sets status to completed, calculates duration_seconds, and sets completed_at timestamp.",
+    description="Sets status to completed, calculates duration_seconds, and streams product telemetry event to BigQuery.",
 )
-async def complete_session(session_id: str):
+async def complete_session(session_id: str, background_tasks: BackgroundTasks):
     try:
         session = SessionService.complete_session(session_id)
+        # Background task for non-blocking BigQuery streaming telemetry
+        pre_val = session.pre_check_in.value if session.pre_check_in else None
+        post_val = session.post_check_in.value if session.post_check_in else None
+
+        background_tasks.add_task(
+            telemetry_service.log_product_event,
+            session_id=session.session_id,
+            anonymous_user_id=session.anonymous_user_id,
+            art_form_id=session.art_form_id,
+            category_id=session.category_id,
+            exercise_id=session.exercise_id,
+            pre_check_in=pre_val,
+            post_check_in=post_val,
+            duration_seconds=session.duration_seconds,
+            status=session.status,
+        )
         return session
     except KeyError as e:
         raise HTTPException(

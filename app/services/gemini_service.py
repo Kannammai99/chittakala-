@@ -1,8 +1,12 @@
 import os
+import time
 import logging
 from typing import Optional
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
+
+from app.agents.coordinator import MultiAgentCoordinator
+from app.services.telemetry_service import telemetry_service
 
 load_dotenv()
 
@@ -36,20 +40,6 @@ class GeminiReflectionResponse(BaseModel):
     )
 
 
-# System instructions enforcing non-clinical, non-judgmental, zero-grading guardrails & non-art detection
-SYSTEM_INSTRUCTIONS = (
-    "You are Chittakala AI, a warm, encouraging cultural art companion for Indian folk art routines (Kolam & Warli).\n"
-    "Your role is to offer mindful visual reflection on user hand-drawn sketches on paper.\n"
-    "STRICT GUARDRAILS & RULES:\n"
-    "1. NON-ART / UNRELATED PHOTO DETECTION: If the uploaded image is NOT a hand-drawn artwork or sketch (e.g. a screenshot of a computer screen, financial report, photo of a person, or random object), set 'needs_retake': true, set 'visual_observation': 'The uploaded photo does not appear to contain a hand-drawn paper sketch. Please upload a clear photo of your paper drawing.', set 'encouragement': 'Whenever you are ready, capture a photo of your hand-drawn sketch to receive your visual reflection.', and set 'next_step': 'Take a quick photo of your drawing on paper and submit it again.'\n"
-    "2. ZERO NUMERICAL GRADING: Never output numbers, percentages, scores, or ratings (e.g., NO '8/10', '90%').\n"
-    "3. ZERO ARTISTIC JUDGMENT: Never criticize flaws, neatness, or precision. Praise the user's presence and effort.\n"
-    "4. ZERO CLINICAL OR HEALTH DIAGNOSIS: Never mention therapy, diagnosis, anxiety, or medical claims.\n"
-    "5. VISUAL REFLECTION: For valid drawings, describe specific shapes, lines, dots, or loops you see in the user's paper drawing.\n"
-    "6. Output MUST strictly conform to the requested JSON schema.\n"
-)
-
-
 class GeminiReflectionService:
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
@@ -59,64 +49,67 @@ class GeminiReflectionService:
             try:
                 from google import genai
                 self.client = genai.Client(api_key=self.api_key)
-                logger.info("GeminiReflectionService initialized with live Gemini API Client.")
+                logger.info("GeminiReflectionService initialized with live Gemini API Client & ADK Multi-Agent Coordinator.")
             except Exception as e:
                 logger.warning(f"Failed to initialize google-genai Client: {e}. Fallback mode active.")
 
     def generate_fallback_reflection(self, art_form_title: str = "Indian Folk Art") -> GeminiReflectionResponse:
-        """Safe local fallback reflection generator when API key is missing or offline."""
-        if "kolam" in art_form_title.lower():
-            return GeminiReflectionResponse(
-                visual_observation="Your sketch shows steady dot alignment and gentle flowing loops weaving smoothly on paper.",
-                encouragement="Taking this 5-minute pause to connect lines and dots brings a wonderful moment of focus.",
-                next_step="Try adding a small corner accent loop or repeat this simple pattern tomorrow.",
-                safety_status="safe",
-                needs_retake=False,
-                fallback_used=True
-            )
-        else: # Warli or default
-            return GeminiReflectionResponse(
-                visual_observation="Your sketch displays expressive triangular figures and clean geometric line rhythm.",
-                encouragement="Your hand-drawn figures capture the lively spirit of village celebration and story.",
-                next_step="Add a second figure holding hands or experiment with a rhythm row of stick figures.",
-                safety_status="safe",
-                needs_retake=False,
-                fallback_used=True
-            )
+        """Safe local fallback reflection generator using ADK Multi-Agent Coordinator."""
+        data = MultiAgentCoordinator.generate_fallback_synthesis(art_form_title)
+        return GeminiReflectionResponse(**data)
 
     def reflect_on_drawing(
         self,
         image_bytes: bytes,
+        session_id: str = "local_session",
         mime_type: str = "image/png",
         exercise_title: str = "Folk Art Exercise",
         art_form_title: str = "Indian Art"
     ) -> GeminiReflectionResponse:
         """
-        Analyze user drawing bytes using Gemini Multimodal Vision API.
-        Falls back safely if API Key is missing or request fails.
+        Analyze user drawing bytes using ADK Multi-Agent Vision Architecture & Gemini 3.6 Flash.
+        Logs latency and reliability events to BigQuery telemetry engine.
         """
+        start_time = time.time()
+        model_name = "gemini-3.6-flash"
+
         if not self.client or not self.api_key:
-            logger.info("No Gemini API key configured. Returning safe local fallback reflection.")
-            return self.generate_fallback_reflection(art_form_title)
+            logger.info("No Gemini API key configured. Serving fallback reflection.")
+            fallback_res = self.generate_fallback_reflection(art_form_title)
+            latency_ms = int((time.time() - start_time) * 1000)
+            telemetry_service.log_ai_reliability_event(
+                session_id=session_id,
+                model_name=model_name,
+                latency_ms=latency_ms,
+                fallback_used=True,
+                safety_status=fallback_res.safety_status,
+                needs_retake=fallback_res.needs_retake
+            )
+            return fallback_res
 
         try:
             from google import genai
             from google.genai import types
 
+            system_instruction = MultiAgentCoordinator.get_orchestrated_system_instruction(
+                art_form_title=art_form_title,
+                exercise_title=exercise_title
+            )
+
             prompt = (
                 f"Analyze this hand-drawn {art_form_title} sketch of '{exercise_title}'.\n"
-                f"Observe the hand-drawn lines, dots, curves, or triangular figures on paper.\n"
+                f"Observe the hand-drawn lines, dots, curves, or geometric motifs on paper.\n"
                 f"Provide a warm, encouraging 3-part reflection adhering strictly to the JSON schema."
             )
 
             response = self.client.models.generate_content(
-                model="gemini-3.6-flash",
+                model=model_name,
                 contents=[
                     types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
                     prompt
                 ],
                 config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_INSTRUCTIONS,
+                    system_instruction=system_instruction,
                     response_mime_type="application/json",
                     response_schema=GeminiReflectionResponse,
                     temperature=0.4,
@@ -124,22 +117,53 @@ class GeminiReflectionService:
                 )
             )
 
+            latency_ms = int((time.time() - start_time) * 1000)
+
             if response and response.text:
                 text = response.text.strip()
                 if "```" in text:
-                    # Strip markdown json codeblock wrappers if present
                     lines = [line for line in text.split("\n") if not line.strip().startswith("```")]
                     text = "\n".join(lines).strip()
                 reflection = GeminiReflectionResponse.model_validate_json(text)
                 reflection.fallback_used = False
+
+                telemetry_service.log_ai_reliability_event(
+                    session_id=session_id,
+                    model_name=model_name,
+                    latency_ms=latency_ms,
+                    fallback_used=False,
+                    safety_status=reflection.safety_status,
+                    needs_retake=reflection.needs_retake
+                )
                 return reflection
             else:
                 logger.warning("Empty response from Gemini API. Using fallback.")
-                return self.generate_fallback_reflection(art_form_title)
+                fallback_res = self.generate_fallback_reflection(art_form_title)
+                telemetry_service.log_ai_reliability_event(
+                    session_id=session_id,
+                    model_name=model_name,
+                    latency_ms=latency_ms,
+                    fallback_used=True,
+                    safety_status="safe",
+                    needs_retake=False,
+                    error_message="Empty API response"
+                )
+                return fallback_res
 
         except Exception as e:
             logger.error(f"Gemini API reflection error: {e}. Falling back safely.")
-            return self.generate_fallback_reflection(art_form_title)
+            latency_ms = int((time.time() - start_time) * 1000)
+            fallback_res = self.generate_fallback_reflection(art_form_title)
+            telemetry_service.log_ai_reliability_event(
+                session_id=session_id,
+                model_name=model_name,
+                latency_ms=latency_ms,
+                fallback_used=True,
+                safety_status="safe",
+                needs_retake=False,
+                error_message=str(e)
+            )
+            return fallback_res
 
 
 # Global singleton instance

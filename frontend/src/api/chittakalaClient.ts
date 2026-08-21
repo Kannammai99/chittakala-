@@ -1,5 +1,10 @@
 // @ts-ignore
-const BASE_URL = (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) || "https://chittakala-api-s2w5wrywxq-uc.a.run.app";
+const getBaseUrl = (): string => {
+  if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+    return "http://localhost:8000";
+  }
+  return (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) || "https://chittakala-api-s2w5wrywxq-uc.a.run.app";
+};
 
 export interface ArtForm {
   art_form_id: string;
@@ -66,25 +71,25 @@ export interface Session {
 
 export class ChittakalaClient {
   static async checkHealth(): Promise<{ status: string; service: string }> {
-    const res = await fetch(`${BASE_URL}/health`);
+    const res = await fetch(`${getBaseUrl()}/health`);
     if (!res.ok) throw new Error("Backend API health check failed");
     return res.json();
   }
 
   static async getArtForms(): Promise<ArtForm[]> {
-    const res = await fetch(`${BASE_URL}/art-forms`);
+    const res = await fetch(`${getBaseUrl()}/art-forms`);
     if (!res.ok) throw new Error("Failed to fetch art forms");
     return res.json();
   }
 
   static async getCategories(artFormId: string): Promise<Category[]> {
-    const res = await fetch(`${BASE_URL}/art-forms/${artFormId}/categories`);
+    const res = await fetch(`${getBaseUrl()}/art-forms/${artFormId}/categories`);
     if (!res.ok) throw new Error(`Failed to fetch categories for ${artFormId}`);
     return res.json();
   }
 
   static async getExercises(categoryId: string): Promise<Exercise[]> {
-    const res = await fetch(`${BASE_URL}/categories/${categoryId}/exercises`);
+    const res = await fetch(`${getBaseUrl()}/categories/${categoryId}/exercises`);
     if (!res.ok) throw new Error(`Failed to fetch exercises for category ${categoryId}`);
     return res.json();
   }
@@ -96,7 +101,7 @@ export class ChittakalaClient {
     display_name?: string;
     pre_check_in?: string;
   }): Promise<Session> {
-    const res = await fetch(`${BASE_URL}/sessions`, {
+    const res = await fetch(`${getBaseUrl()}/sessions`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -111,7 +116,7 @@ export class ChittakalaClient {
   static async uploadDrawing(sessionId: string, file: File): Promise<any> {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch(`${BASE_URL}/sessions/${sessionId}/drawing`, {
+    const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}/drawing`, {
       method: "POST",
       body: formData,
     });
@@ -122,11 +127,29 @@ export class ChittakalaClient {
   static async requestReflection(sessionId: string, file: File): Promise<any> {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch(`${BASE_URL}/sessions/${sessionId}/reflect`, {
+    const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}/reflect`, {
       method: "POST",
       body: formData,
     });
     if (!res.ok) throw new Error("Failed to generate reflection");
+    return res.json();
+  }
+
+  static async updatePostCheckIn(sessionId: string, postCheckIn: string): Promise<Session> {
+    const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}/check-in`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ post_check_in: postCheckIn }),
+    });
+    if (!res.ok) throw new Error("Failed to update post check-in");
+    return res.json();
+  }
+
+  static async completeSession(sessionId: string): Promise<Session> {
+    const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}/complete`, {
+      method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to complete session");
     return res.json();
   }
 }

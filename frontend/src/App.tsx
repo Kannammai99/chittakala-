@@ -589,28 +589,21 @@ export default function App() {
       return;
     }
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      await fetch(`/api/sessions/${currentSession.session_id}/drawing`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const reflectRes = await fetch(`/api/sessions/${currentSession.session_id}/reflect`, {
-        method: "POST",
-        body: formData,
-      });
-
-      let feedback = null;
-      if (reflectRes.ok) {
-        feedback = await reflectRes.json();
-      }
+      await ChittakalaClient.uploadDrawing(currentSession.session_id, file).catch(() => {});
+      const feedback = await ChittakalaClient.requestReflection(currentSession.session_id, file);
 
       setCurrentSession({
         ...currentSession,
         status: "completed",
-        feedback: feedback || {
+        feedback: feedback,
+      });
+      setStep("summary");
+    } catch (err) {
+      console.warn("Gemini AI reflection error, using local fallback", err);
+      setCurrentSession({
+        ...currentSession,
+        status: "completed",
+        feedback: {
           visual_observation: "Your drawing shows steady alignment and clean hand-drawn lines on paper.",
           encouragement: "Taking a 5-minute creative pause brings focus and calm to your day.",
           next_step: "Try repeating this pattern tomorrow or explore another category.",
@@ -619,8 +612,6 @@ export default function App() {
           fallback_used: true,
         },
       });
-      setStep("summary");
-    } catch {
       setStep("summary");
     }
   };

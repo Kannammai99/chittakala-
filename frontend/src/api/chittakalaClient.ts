@@ -107,4 +107,26 @@ export class ChittakalaClient {
     }
     return res.json();
   }
+
+  static async uploadDrawing(sessionId: string, file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(`${BASE_URL}/sessions/${sessionId}/drawing`, {
+      method: "POST",
+      body: formData,
+    });
+    if (!res.ok) throw new Error("Failed to upload drawing");
+    return res.json();
+  }
+
+  static async requestReflection(sessionId: string, file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(`${BASE_URL}/sessions/${sessionId}/reflect`, {
+      method: "POST",
+      body: formData,
+    });
+    if (!res.ok) throw new Error("Failed to generate reflection");
+    return res.json();
+  }
 }

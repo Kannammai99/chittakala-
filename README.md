@@ -1,4 +1,4 @@
-# Chittakala (चित्तकला) — Creative Wellness PWA (Warli, Kolam, Madhubani & Gond Art)
+# Chittakala (चित्तकला) — Creative Wellness 
 
 **Tagline**: *Pause the scroll. Create your moment.*  
 **Description**: Chittakala is a mobile-first creative-wellness PWA that helps users intentionally move from passive scrolling to active creation. Users browse curated Indian folk art examples (**Warli**, **Kolam**, **Madhubani**, and **Gond Art**), recreate one with ordinary pen and paper, upload a photograph, and receive responsible Gemini AI reflection focused strictly on visible visual elements—without artistic grading or clinical diagnosis.

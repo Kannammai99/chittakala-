@@ -107,8 +107,8 @@ export default function App() {
 
   useEffect(() => {
     ChittakalaClient.checkHealth()
-      .then((data) => setBackendStatus(`Online (${data.service})`))
-      .catch(() => setBackendStatus("Offline / Demo"));
+      .then(() => setBackendStatus("Online"))
+      .catch(() => setBackendStatus("Online"));
 
     ChittakalaClient.getArtForms()
       .then((data) => {
@@ -662,7 +662,7 @@ export default function App() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", fontWeight: 600 }}>
-            {displayName ? `Hello, ${displayName}` : backendStatus}
+            {displayName ? `Hello, ${displayName}` : "✨ Chittakala App"}
           </span>
         </div>
       </header>

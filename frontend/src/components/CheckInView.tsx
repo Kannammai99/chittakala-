@@ -25,7 +25,7 @@ export const CheckInView: React.FC<CheckInViewProps> = ({
   onBackToHome,
 }) => {
   return (
-    <div className="tab-view">
+    <div className="tab-view" style={{ paddingTop: "20px" }}>
       {/* Top Navigation Back to Home Button */}
       <button
         onClick={onBackToHome || onSkip}
@@ -47,16 +47,16 @@ export const CheckInView: React.FC<CheckInViewProps> = ({
         <ArrowLeft size={18} /> Back to Home
       </button>
 
-      <div style={{ marginBottom: "20px" }}>
-        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.45rem", fontWeight: 900, marginBottom: "6px", color: "#0F172A", letterSpacing: "-0.02em", lineHeight: 1.25 }}>
+      <div style={{ marginBottom: "24px", marginTop: "10px" }}>
+        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.55rem", fontWeight: 900, marginBottom: "8px", color: "#0F172A", letterSpacing: "-0.02em", lineHeight: 1.25 }}>
           How would you describe your current pace?
         </h2>
-        <p style={{ color: "#64748B", fontSize: "0.88rem", fontWeight: 500, lineHeight: 1.4 }}>
+        <p style={{ color: "#64748B", fontSize: "0.9rem", fontWeight: 500, lineHeight: 1.45 }}>
           This optional check-in customizes interface wording only. It is non-clinical.
         </p>
       </div>
 
-      <div style={{ display: "grid", gap: "12px", marginBottom: "24px" }}>
+      <div style={{ display: "grid", gap: "12px", marginBottom: "28px" }}>
         {CHECK_IN_OPTIONS.map((opt) => {
           const Icon = opt.icon;
           const isSelected = selectedCheckIn === opt.id;
@@ -106,20 +106,21 @@ export const CheckInView: React.FC<CheckInViewProps> = ({
         })}
       </div>
 
-      <div style={{ display: "flex", gap: "12px" }}>
+      {/* Mobile Responsive Full-Width Vertical Action Stack */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
+        <button
+          className="btn-genz-primary"
+          style={{ width: "100%", padding: "14px 16px", fontSize: "0.95rem", minHeight: "48px", justifyContent: "center" }}
+          onClick={onContinue}
+        >
+          Continue to Art Forms →
+        </button>
         <button
           className="btn-genz-secondary"
-          style={{ flex: 1, padding: "14px 16px", fontSize: "0.9rem", minHeight: "48px" }}
+          style={{ width: "100%", padding: "12px 16px", fontSize: "0.9rem", minHeight: "44px", justifyContent: "center" }}
           onClick={onSkip}
         >
           Skip Check-in
-        </button>
-        <button
-          className="btn-genz-primary"
-          style={{ flex: 2, padding: "14px 16px", fontSize: "0.92rem", minHeight: "48px" }}
-          onClick={onContinue}
-        >
-          Continue to Art Forms
         </button>
       </div>
     </div>

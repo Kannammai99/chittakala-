@@ -63,9 +63,6 @@ export const WelcomeView: React.FC<WelcomeViewProps> = ({
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
-            <span style={{ fontSize: "0.78rem", color: "#64748B", display: "block", marginTop: "-10px", fontWeight: 500 }}>
-              Stored locally on your device; never sent to analytics or AI models.
-            </span>
           </div>
 
           <button className="btn-genz-primary" onClick={onStart} aria-label="Start Creative Pause">

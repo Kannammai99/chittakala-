@@ -105,6 +105,15 @@ export default function App() {
 
   const [currentSession, setCurrentSession] = useState<Session | null>(null);
 
+  // Auto scroll to top on every navigation step or tab change
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    const appViewport = document.querySelector(".content-viewport") || document.querySelector("main") || document.querySelector(".tab-view");
+    if (appViewport) {
+      appViewport.scrollTop = 0;
+    }
+  }, [step, activeTab]);
+
   useEffect(() => {
     ChittakalaClient.checkHealth()
       .then(() => setBackendStatus("Online"))
@@ -683,7 +692,10 @@ export default function App() {
               <WelcomeView
                 displayName={displayName}
                 setDisplayName={handleUpdateDisplayName}
-                onStart={() => setStep("check_in")}
+                onStart={() => {
+                  setActiveTab("activity");
+                  setStep("check_in");
+                }}
               />
             )}
 
@@ -784,8 +796,7 @@ export default function App() {
           className={`nav-tab-btn ${activeTab === "activity" ? "active" : ""}`}
           onClick={() => {
             setActiveTab("activity");
-            if (selectedExercise) setStep("drawing");
-            else setStep("art_forms");
+            setStep("art_forms");
           }}
           aria-label="Activity Session Tab"
         >

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Home, Activity, Settings } from "lucide-react";
+import { Home, Activity, Settings, BookOpen } from "lucide-react";
 import { ChittakalaClient, ArtForm, Category, Exercise, Session } from "./api/chittakalaClient";
 import { WelcomeView } from "./components/WelcomeView";
 import { CheckInView } from "./components/CheckInView";
@@ -9,6 +9,7 @@ import { ExampleCarouselView } from "./components/ExampleCarouselView";
 import { DrawingActivityView } from "./components/DrawingActivityView";
 import { SummaryView } from "./components/SummaryView";
 import { SettingsView } from "./components/SettingsView";
+import { DiscoverView } from "./components/DiscoverView";
 import { SplashScreen } from "./components/SplashScreen";
 
 type ViewStep =
@@ -79,7 +80,7 @@ const ALL_INDIAN_ART_FORMS: ArtForm[] = [
 
 export default function App() {
   const [showSplash, setShowSplash] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<"home" | "activity" | "settings">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "activity" | "discover" | "settings">("home");
   const [step, setStep] = useState<ViewStep>("welcome");
 
   // Operational state with 2-way localStorage sync
@@ -136,10 +137,10 @@ export default function App() {
   // Fetch categories when art form changes
   const handleSelectArtForm = (artFormId: string) => {
     setSelectedArtFormId(artFormId);
+    setStep("categories");
     ChittakalaClient.getCategories(artFormId)
       .then((cats) => {
         setCategories(cats);
-        setStep("categories");
       })
       .catch(() => {
         if (artFormId === "warli") {
@@ -171,401 +172,410 @@ export default function App() {
       });
   };
 
+  // Helper function to return fallback exercises synchronously
+  const getFallbackExercises = (artFormId: string, categoryId: string): Exercise[] => {
+    if (artFormId === "warli") {
+      if (categoryId === "basic-figures") {
+        return [
+          {
+            exercise_id: "warli-basic-01",
+            art_form_id: "warli",
+            category_id: "basic-figures",
+            title: "Dancing Warli Trio",
+            art_form: "Warli",
+            difficulty: "beginner",
+            short_description: "Draw a dynamic trio of Warli figures expressing joyful movement with bent knees and raised arms.",
+            reference_image_path: "/art/warli/basic-figures/example-01.png",
+            visible_elements: ["three triangular Warli figures", "dynamic bent leg postures", "raised arm dance lines"],
+            drawing_guidance: [
+              "Draw three circular heads at slightly varied heights.",
+              "Construct triangular torsos pointing down and skirts pointing up.",
+              "Add expressive bent-knee leg lines and raised arm angles."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "warli-basic-02",
+            art_form_id: "warli",
+            category_id: "basic-figures",
+            title: "Warli Dhol & Gong Musicians",
+            art_form: "Warli",
+            difficulty: "beginner",
+            short_description: "Draw two Warli musicians playing a large village drum and gong with drumsticks.",
+            reference_image_path: "/art/warli/basic-figures/example-02.png",
+            visible_elements: ["two Warli figures", "large circular village drum", "raised drumsticks and hair bun"],
+            drawing_guidance: [
+              "Draw a large circular drum between two figures.",
+              "Form two Warli figures on either side of the drum.",
+              "Draw arm lines holding drumsticks raised toward the drum surface."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "warli-basic-03",
+            art_form_id: "warli",
+            category_id: "basic-figures",
+            title: "Warli Daily Life Procession",
+            art_form: "Warli",
+            difficulty: "beginner",
+            short_description: "Draw a Warli village procession featuring a pot carrier, firewood carrier, horse rider, and shepherd.",
+            reference_image_path: "/art/warli/basic-figures/example-03.png",
+            visible_elements: ["water pot carrier figure", "firewood bundle carrier", "figure riding a horse", "shepherd with staff"],
+            drawing_guidance: [
+              "Draw four Warli figures across your paper.",
+              "Add a water pot on the first figure's head and a firewood bundle on the second.",
+              "Construct a triangular horse motif under the third figure and a walking staff for the fourth."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      } else if (categoryId === "figure-rows") {
+        return [
+          {
+            exercise_id: "warli-rows-01",
+            art_form_id: "warli",
+            category_id: "figure-rows",
+            title: "Hand-Holding Warli Dancers Row",
+            art_form: "Warli",
+            difficulty: "intermediate",
+            short_description: "Draw a horizontal row of five Warli figures holding hands in rhythmic celebration.",
+            reference_image_path: "/art/warli/figure-rows/example-01.png",
+            visible_elements: ["five triangular Warli torsos", "connecting curved hand lines", "rhythmic bent leg postures"],
+            drawing_guidance: [
+              "Draw five equally spaced circular heads in a horizontal line.",
+              "Form triangular torsos under each head.",
+              "Connect their inner arm lines in a smooth wave to show them holding hands."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "warli-rows-02",
+            art_form_id: "warli",
+            category_id: "figure-rows",
+            title: "Warli Seed Sowing & Harvest Scene",
+            art_form: "Warli",
+            difficulty: "intermediate",
+            short_description: "Draw two Warli farmers engaged in sowing seeds and holding a harvest bowl.",
+            reference_image_path: "/art/warli/figure-rows/example-02.png",
+            visible_elements: ["sowing farmer figure", "harvest bowl holder figure", "scattered seed dots and grass tufts"],
+            drawing_guidance: [
+              "Draw two Warli figures facing each other.",
+              "Draw a bowl arc in the hands of the right figure.",
+              "Add scattered seed dots falling from the left figure's hand and grass tufts along the ground."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "warli-rows-03",
+            art_form_id: "warli",
+            category_id: "figure-rows",
+            title: "Warli Drummer Musician Scene",
+            art_form: "Warli",
+            difficulty: "intermediate",
+            short_description: "Draw a Warli figure playing a traditional village drum with drumsticks.",
+            reference_image_path: "/art/warli/figure-rows/example-03.png",
+            visible_elements: ["center Warli musician", "large decorated drum bowl", "raised drumsticks and hair tuft"],
+            drawing_guidance: [
+              "Draw a large bowl-shaped drum with decorative inner arcs.",
+              "Construct a Warli figure sitting or standing behind the drum.",
+              "Add raised arm lines holding drumsticks above the drum surface."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      } else {
+        return [
+          {
+            exercise_id: "warli-circles-01",
+            art_form_id: "warli",
+            category_id: "dancing-circles",
+            title: "Circular Tarpa Dance Ring",
+            art_form: "Warli",
+            difficulty: "challenging",
+            short_description: "Draw a grand circular Tarpa dance ring of twelve Warli figures enclosed by a leafy border frame.",
+            reference_image_path: "/art/warli/dancing-circles/example-01.png",
+            visible_elements: ["twelve-dancer circular ring", "interlocked hand lines", "outer leafy border frame"],
+            drawing_guidance: [
+              "Lightly sketch a central circular guide on paper.",
+              "Place twelve Warli figures evenly spaced along the ring.",
+              "Connect their hand lines in a smooth wave and frame the composition with a leafy border."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "warli-circles-02",
+            art_form_id: "warli",
+            category_id: "dancing-circles",
+            title: "Warli Ritual Musician Shrine",
+            art_form: "Warli",
+            difficulty: "challenging",
+            short_description: "Draw a central Warli drum player enclosed by sixteen traditional Dhol drums and fern sprigs.",
+            reference_image_path: "/art/warli/dancing-circles/example-02.png",
+            visible_elements: ["center Warli drummer", "inner square border", "sixteen surrounding Dhol drums and fern sprigs"],
+            drawing_guidance: [
+              "Draw a central Warli drummer sitting behind a large bowl drum inside a square frame.",
+              "Surround the frame with sixteen traditional Dhol drums on all four sides.",
+              "Add delicate fern sprigs at the four outer corners."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "warli-circles-03",
+            art_form_id: "warli",
+            category_id: "dancing-circles",
+            title: "Sacred Banyan Tree & Festival Village Mural",
+            art_form: "Warli",
+            difficulty: "challenging",
+            short_description: "Draw a grand Warli Tree of Life filled with nesting birds, perching peacock, musicians, and village dancers.",
+            reference_image_path: "/art/warli/dancing-circles/example-03.png",
+            visible_elements: ["central Tree of Life with nesting birds", "perching peacock motif", "village musicians and dancers below"],
+            drawing_guidance: [
+              "Draw a central branching Tree of Life with a perching peacock and dense leaf circles.",
+              "Add village musicians and dancers around the base of the tree.",
+              "Complete with a bottom row of interlocked festival dancers and border trim."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      }
+    } else {
+      // Kolam Categories
+      if (categoryId === "simple-dot-kolams") {
+        return [
+          {
+            exercise_id: "kolam-dot-01",
+            art_form_id: "kolam",
+            category_id: "simple-dot-kolams",
+            title: "Continuous Cross Sikku Loop Kolam",
+            art_form: "Kolam",
+            difficulty: "beginner",
+            short_description: "Weave an unbroken continuous line loop around a 5-dot cross grid on paper.",
+            reference_image_path: "/art/kolam/simple-dot-kolams/example-01.png",
+            visible_elements: ["5-dot cross grid", "single unbroken fluid line loop", "symmetrical corner loops"],
+            drawing_guidance: [
+              "Place 5 dots in a symmetrical cross formation on paper.",
+              "Start at top dot, weaving smoothly around outer dots without lifting pen.",
+              "Complete fluid loop back to starting point."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "kolam-dot-02",
+            art_form_id: "kolam",
+            category_id: "simple-dot-kolams",
+            title: "Diamond Frame 4-Petal Floral Kolam",
+            art_form: "Kolam",
+            difficulty: "beginner",
+            short_description: "Draw a central 4-petal flower enclosed by a diamond frame and outer scalloped petals.",
+            reference_image_path: "/art/kolam/simple-dot-kolams/example-02.png",
+            visible_elements: ["center 4-petal blossom", "outer diamond boundary line", "scalloped outer petal arcs"],
+            drawing_guidance: [
+              "Draw a central 4-petal flower blossom on paper.",
+              "Enclose flower within a 45-degree angled diamond frame.",
+              "Surround diamond with scalloped outer petal curves."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "kolam-dot-03",
+            art_form_id: "kolam",
+            category_id: "simple-dot-kolams",
+            title: "Snowflake 6-Petal Rosette Sikku Kolam",
+            art_form: "Kolam",
+            difficulty: "intermediate",
+            short_description: "Draw a central 6-petal rosette with radiating Sikku loops around a dot matrix.",
+            reference_image_path: "/art/kolam/simple-dot-kolams/example-03.png",
+            visible_elements: ["central 6-petal rosette", "radiating outer Sikku loops", "dot matrix accents"],
+            drawing_guidance: [
+              "Draw a 6-petal floral rosette at center of paper.",
+              "Place surrounding accent dots evenly around perimeter.",
+              "Weave delicate outer Sikku loops around each dot to complete snowflake pattern."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      } else if (categoryId === "loop-line-kolams") {
+        return [
+          {
+            exercise_id: "kolam-loop-01",
+            art_form_id: "kolam",
+            category_id: "loop-line-kolams",
+            title: "Radiant Lotus Corner Loop Kolam",
+            art_form: "Kolam",
+            difficulty: "intermediate",
+            short_description: "Draw a symmetrical Kolam with a central 8-pointed star and four corner lotus blossoms.",
+            reference_image_path: "/art/kolam/loop-line-kolams/example-01.png",
+            visible_elements: ["central 8-pointed star nucleus", "four concentric curved side loops", "four corner lotus blossoms"],
+            drawing_guidance: [
+              "Draw central 8-pointed star nucleus.",
+              "Add four sets of concentric curved line loops around cardinal sides.",
+              "Finish by drawing four stylized lotus blossoms at each outer corner."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "kolam-loop-02",
+            art_form_id: "kolam",
+            category_id: "loop-line-kolams",
+            title: "Cross-Form Sikku Loop Matrix",
+            art_form: "Kolam",
+            difficulty: "intermediate",
+            short_description: "Weave an unbroken continuous line loop into a cross-shaped Sikku matrix around a dot grid.",
+            reference_image_path: "/art/kolam/loop-line-kolams/example-02.png",
+            visible_elements: ["center dot grid", "cross-shaped continuous line loops", "four outer teardrop loops"],
+            drawing_guidance: [
+              "Set up cross-shaped dot matrix.",
+              "Weave continuous curved lines through central square rows.",
+              "Loop around outer four extension dots to complete cross."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "kolam-loop-03",
+            art_form_id: "kolam",
+            category_id: "loop-line-kolams",
+            title: "Interlocking Brahma Mudi Sikku Strand",
+            art_form: "Kolam",
+            difficulty: "intermediate",
+            short_description: "Weave a traditional Tamil Nadu Brahma Mudi Sikku strand in fluid diagonal loops around a dot grid.",
+            reference_image_path: "/art/kolam/loop-line-kolams/example-03.png",
+            visible_elements: ["diagonal dot matrix", "interlocking fluid S-loops", "corner teardrop loops"],
+            drawing_guidance: [
+              "Place diagonal dot grid.",
+              "Trace continuous fluid lines weaving diagonally between dot nodes.",
+              "Loop smoothly at each outer corner to close unbroken strand."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      } else {
+        return [
+          {
+            exercise_id: "kolam-daily-01",
+            art_form_id: "kolam",
+            category_id: "decorative-daily-kolams",
+            title: "Square Sikku Weaved Matrix Kolam",
+            art_form: "Kolam",
+            difficulty: "challenging",
+            short_description: "Draw a complex, symmetrical multi-loop Sikku matrix on a square grid with accent dots.",
+            reference_image_path: "/art/kolam/decorative-daily-kolams/example-01.png",
+            visible_elements: ["central dot pod", "interlocking woven line matrix", "accent dots"],
+            drawing_guidance: [
+              "Place a symmetrical multi-dot grid.",
+              "Weave continuous curved strands around dots to build inner and outer square loops.",
+              "Add subtle accent dots inside loop nodes."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "kolam-daily-02",
+            art_form_id: "kolam",
+            category_id: "decorative-daily-kolams",
+            title: "Dual Triangular Sikku Weaved Matrix Kolam",
+            art_form: "Kolam",
+            difficulty: "challenging",
+            short_description: "Draw two interlocking triangular Sikku dot matrices woven with continuous loops and corner accents.",
+            reference_image_path: "/art/kolam/decorative-daily-kolams/example-02.png",
+            visible_elements: ["twin triangular dot matrices", "continuous woven grid lines", "accent dots"],
+            drawing_guidance: [
+              "Place two adjacent triangular dot grid formations.",
+              "Weave continuous curved lines through grid rows to build inner square mesh.",
+              "Loop around outer edges and add accent dots at nodes."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "kolam-daily-03",
+            art_form_id: "kolam",
+            category_id: "decorative-daily-kolams",
+            title: "Kambi Brahma Mudi Sikku Threshold Kolam",
+            art_form: "Kolam",
+            difficulty: "challenging",
+            short_description: "Draw an authentic Tamil Nadu Kambi Brahma Mudi Kolam with corner flame loops and outer tendrils.",
+            reference_image_path: "/art/kolam/decorative-daily-kolams/example-03.png",
+            visible_elements: ["center 4-loop nucleus", "interlocking corner flame loops", "radiating outer flame tendrils"],
+            drawing_guidance: [
+              "Draw central 4-loop nucleus matrix.",
+              "Weave four corner flame loops intertwining around outer dot matrix.",
+              "Finish with radiating outer flame accent tips."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      }
+    }
+  };
+
   // Fetch exercises when category is selected
   const handleSelectCategory = (categoryId: string) => {
     setSelectedCategoryId(categoryId);
+    // Instant synchronous state update so old category exercises are never shown!
+    const initialExs = getFallbackExercises(selectedArtFormId, categoryId);
+    setExercises(initialExs);
+    setStep("carousel");
+
     ChittakalaClient.getExercises(categoryId)
       .then((exs) => {
-        setExercises(exs);
-        setStep("carousel");
+        if (exs && exs.length > 0) {
+          setExercises(exs);
+        }
       })
       .catch(() => {
-        // Full category-specific fallback data matching ArtService seed
-        if (selectedArtFormId === "warli") {
-          if (categoryId === "basic-figures") {
-            setExercises([
-              {
-                exercise_id: "warli-basic-01",
-                art_form_id: "warli",
-                category_id: "basic-figures",
-                title: "Dancing Warli Trio",
-                art_form: "Warli",
-                difficulty: "beginner",
-                short_description: "Draw a dynamic trio of Warli figures expressing joyful movement with bent knees and raised arms.",
-                reference_image_path: "/art/warli/basic-figures/example-01.png",
-                visible_elements: ["three triangular Warli figures", "dynamic bent leg postures", "raised arm dance lines"],
-                drawing_guidance: [
-                  "Draw three circular heads at slightly varied heights.",
-                  "Construct triangular torsos pointing down and skirts pointing up.",
-                  "Add expressive bent-knee leg lines and raised arm angles."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "warli-basic-02",
-                art_form_id: "warli",
-                category_id: "basic-figures",
-                title: "Warli Dhol & Gong Musicians",
-                art_form: "Warli",
-                difficulty: "beginner",
-                short_description: "Draw two Warli musicians playing a large village drum and gong with drumsticks.",
-                reference_image_path: "/art/warli/basic-figures/example-02.png",
-                visible_elements: ["two Warli figures", "large circular village drum", "raised drumsticks and hair bun"],
-                drawing_guidance: [
-                  "Draw a large circular drum between two figures.",
-                  "Form two Warli figures on either side of the drum.",
-                  "Draw arm lines holding drumsticks raised toward the drum surface."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "warli-basic-03",
-                art_form_id: "warli",
-                category_id: "basic-figures",
-                title: "Warli Daily Life Procession",
-                art_form: "Warli",
-                difficulty: "beginner",
-                short_description: "Draw a Warli village procession featuring a pot carrier, firewood carrier, horse rider, and shepherd.",
-                reference_image_path: "/art/warli/basic-figures/example-03.png",
-                visible_elements: ["water pot carrier figure", "firewood bundle carrier", "figure riding a horse", "shepherd with staff"],
-                drawing_guidance: [
-                  "Draw four Warli figures across your paper.",
-                  "Add a water pot on the first figure's head and a firewood bundle on the second.",
-                  "Construct a triangular horse motif under the third figure and a walking staff for the fourth."
-                ],
-                allowed_next_actions: ["repeat", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-            ]);
-          } else if (categoryId === "figure-rows") {
-            setExercises([
-              {
-                exercise_id: "warli-rows-01",
-                art_form_id: "warli",
-                category_id: "figure-rows",
-                title: "Hand-Holding Warli Dancers Row",
-                art_form: "Warli",
-                difficulty: "intermediate",
-                short_description: "Draw a horizontal row of five Warli figures holding hands in rhythmic celebration.",
-                reference_image_path: "/art/warli/figure-rows/example-01.png",
-                visible_elements: ["five triangular Warli torsos", "connecting curved hand lines", "rhythmic bent leg postures"],
-                drawing_guidance: [
-                  "Draw five equally spaced circular heads in a horizontal line.",
-                  "Form triangular torsos under each head.",
-                  "Connect their inner arm lines in a smooth wave to show them holding hands."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "warli-rows-02",
-                art_form_id: "warli",
-                category_id: "figure-rows",
-                title: "Warli Seed Sowing & Harvest Scene",
-                art_form: "Warli",
-                difficulty: "intermediate",
-                short_description: "Draw two Warli farmers engaged in sowing seeds and holding a harvest bowl.",
-                reference_image_path: "/art/warli/figure-rows/example-02.png",
-                visible_elements: ["sowing farmer figure", "harvest bowl holder figure", "scattered seed dots and grass tufts"],
-                drawing_guidance: [
-                  "Draw two Warli figures facing each other.",
-                  "Draw a bowl arc in the hands of the right figure.",
-                  "Add scattered seed dots falling from the left figure's hand and grass tufts along the ground."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "warli-rows-03",
-                art_form_id: "warli",
-                category_id: "figure-rows",
-                title: "Warli Drummer Musician Scene",
-                art_form: "Warli",
-                difficulty: "intermediate",
-                short_description: "Draw a Warli figure playing a traditional village drum with drumsticks.",
-                reference_image_path: "/art/warli/figure-rows/example-03.png",
-                visible_elements: ["center Warli musician", "large decorated drum bowl", "raised drumsticks and hair tuft"],
-                drawing_guidance: [
-                  "Draw a large bowl-shaped drum with decorative inner arcs.",
-                  "Construct a Warli figure sitting or standing behind the drum.",
-                  "Add raised arm lines holding drumsticks above the drum surface."
-                ],
-                allowed_next_actions: ["repeat", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-            ]);
-          } else {
-            setExercises([
-              {
-                exercise_id: "warli-circles-01",
-                art_form_id: "warli",
-                category_id: "dancing-circles",
-                title: "Circular Tarpa Dance Ring",
-                art_form: "Warli",
-                difficulty: "challenging",
-                short_description: "Draw a grand circular Tarpa dance ring of twelve Warli figures enclosed by a leafy border frame.",
-                reference_image_path: "/art/warli/dancing-circles/example-01.png",
-                visible_elements: ["twelve-dancer circular ring", "interlocked hand lines", "outer leafy border frame"],
-                drawing_guidance: [
-                  "Lightly sketch a central circular guide on paper.",
-                  "Place twelve Warli figures evenly spaced along the ring.",
-                  "Connect their hand lines in a smooth wave and frame the composition with a leafy border."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "warli-circles-02",
-                art_form_id: "warli",
-                category_id: "dancing-circles",
-                title: "Warli Ritual Musician Shrine",
-                art_form: "Warli",
-                difficulty: "challenging",
-                short_description: "Draw a central Warli drum player enclosed by sixteen traditional Dhol drums and fern sprigs.",
-                reference_image_path: "/art/warli/dancing-circles/example-02.png",
-                visible_elements: ["center Warli drummer", "inner square border", "sixteen surrounding Dhol drums and fern sprigs"],
-                drawing_guidance: [
-                  "Draw a central Warli drummer sitting behind a large bowl drum inside a square frame.",
-                  "Surround the frame with sixteen traditional Dhol drums on all four sides.",
-                  "Add delicate fern sprigs at the four outer corners."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "warli-circles-03",
-                art_form_id: "warli",
-                category_id: "dancing-circles",
-                title: "Sacred Banyan Tree & Festival Village Mural",
-                art_form: "Warli",
-                difficulty: "challenging",
-                short_description: "Draw a grand Warli Tree of Life filled with nesting birds, perching peacock, musicians, and village dancers.",
-                reference_image_path: "/art/warli/dancing-circles/example-03.png",
-                visible_elements: ["central Tree of Life with nesting birds", "perching peacock motif", "village musicians and dancers below"],
-                drawing_guidance: [
-                  "Draw a central branching Tree of Life with a perching peacock and dense leaf circles.",
-                  "Add village musicians and dancers around the base of the tree.",
-                  "Complete with a bottom row of interlocked festival dancers and border trim."
-                ],
-                allowed_next_actions: ["repeat", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-            ]);
-          }
-        } else {
-          // Kolam Categories
-          if (categoryId === "simple-dot-kolams") {
-            setExercises([
-              {
-                exercise_id: "kolam-dot-01",
-                art_form_id: "kolam",
-                category_id: "simple-dot-kolams",
-                title: "Continuous Cross Sikku Loop Kolam",
-                art_form: "Kolam",
-                difficulty: "beginner",
-                short_description: "Weave an unbroken continuous line loop around a 5-dot cross grid on paper.",
-                reference_image_path: "/art/kolam/simple-dot-kolams/example-01.png",
-                visible_elements: ["5-dot cross grid", "single unbroken fluid line loop", "symmetrical corner loops"],
-                drawing_guidance: [
-                  "Place 5 dots in a symmetrical cross formation on paper.",
-                  "Start at top dot, weaving smoothly around outer dots without lifting pen.",
-                  "Complete fluid loop back to starting point."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "kolam-dot-02",
-                art_form_id: "kolam",
-                category_id: "simple-dot-kolams",
-                title: "Diamond Frame 4-Petal Floral Kolam",
-                art_form: "Kolam",
-                difficulty: "beginner",
-                short_description: "Draw a central 4-petal flower enclosed by a diamond frame and outer scalloped petals.",
-                reference_image_path: "/art/kolam/simple-dot-kolams/example-02.png",
-                visible_elements: ["center 4-petal blossom", "outer diamond boundary line", "scalloped outer petal arcs"],
-                drawing_guidance: [
-                  "Draw a central 4-petal flower blossom on paper.",
-                  "Enclose flower within a 45-degree angled diamond frame.",
-                  "Surround diamond with scalloped outer petal curves."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "kolam-dot-03",
-                art_form_id: "kolam",
-                category_id: "simple-dot-kolams",
-                title: "Snowflake 6-Petal Rosette Sikku Kolam",
-                art_form: "Kolam",
-                difficulty: "intermediate",
-                short_description: "Draw a central 6-petal rosette with radiating Sikku loops around a dot matrix.",
-                reference_image_path: "/art/kolam/simple-dot-kolams/example-03.png",
-                visible_elements: ["central 6-petal rosette", "radiating outer Sikku loops", "dot matrix accents"],
-                drawing_guidance: [
-                  "Draw a 6-petal floral rosette at center of paper.",
-                  "Place surrounding accent dots evenly around perimeter.",
-                  "Weave delicate outer Sikku loops around each dot to complete snowflake pattern."
-                ],
-                allowed_next_actions: ["repeat", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-            ]);
-          } else if (categoryId === "loop-line-kolams") {
-            setExercises([
-              {
-                exercise_id: "kolam-loop-01",
-                art_form_id: "kolam",
-                category_id: "loop-line-kolams",
-                title: "Radiant Lotus Corner Loop Kolam",
-                art_form: "Kolam",
-                difficulty: "intermediate",
-                short_description: "Draw a symmetrical Kolam with a central 8-pointed star and four corner lotus blossoms.",
-                reference_image_path: "/art/kolam/loop-line-kolams/example-01.png",
-                visible_elements: ["central 8-pointed star nucleus", "four concentric curved side loops", "four corner lotus blossoms"],
-                drawing_guidance: [
-                  "Draw central 8-pointed star nucleus.",
-                  "Add four sets of concentric curved line loops around cardinal sides.",
-                  "Finish by drawing four stylized lotus blossoms at each outer corner."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "kolam-loop-02",
-                art_form_id: "kolam",
-                category_id: "loop-line-kolams",
-                title: "Cross-Form Sikku Loop Matrix",
-                art_form: "Kolam",
-                difficulty: "intermediate",
-                short_description: "Weave an unbroken continuous line loop into a cross-shaped Sikku matrix around a dot grid.",
-                reference_image_path: "/art/kolam/loop-line-kolams/example-02.png",
-                visible_elements: ["center dot grid", "cross-shaped continuous line loops", "four outer teardrop loops"],
-                drawing_guidance: [
-                  "Set up cross-shaped dot matrix.",
-                  "Weave continuous curved lines through central square rows.",
-                  "Loop around outer four extension dots to complete cross."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "kolam-loop-03",
-                art_form_id: "kolam",
-                category_id: "loop-line-kolams",
-                title: "Interlocking Brahma Mudi Sikku Strand",
-                art_form: "Kolam",
-                difficulty: "intermediate",
-                short_description: "Weave a traditional Tamil Nadu Brahma Mudi Sikku strand in fluid diagonal loops around a dot grid.",
-                reference_image_path: "/art/kolam/loop-line-kolams/example-03.png",
-                visible_elements: ["diagonal dot matrix", "interlocking fluid S-loops", "corner teardrop loops"],
-                drawing_guidance: [
-                  "Place diagonal dot grid.",
-                  "Trace continuous fluid lines weaving diagonally between dot nodes.",
-                  "Loop smoothly at each outer corner to close unbroken strand."
-                ],
-                allowed_next_actions: ["repeat", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-            ]);
-          } else {
-            setExercises([
-              {
-                exercise_id: "kolam-daily-01",
-                art_form_id: "kolam",
-                category_id: "decorative-daily-kolams",
-                title: "Square Sikku Weaved Matrix Kolam",
-                art_form: "Kolam",
-                difficulty: "challenging",
-                short_description: "Draw a complex, symmetrical multi-loop Sikku matrix on a square grid with accent dots.",
-                reference_image_path: "/art/kolam/decorative-daily-kolams/example-01.png",
-                visible_elements: ["central dot pod", "interlocking woven line matrix", "accent dots"],
-                drawing_guidance: [
-                  "Place a symmetrical multi-dot grid.",
-                  "Weave continuous curved strands around dots to build inner and outer square loops.",
-                  "Add subtle accent dots inside loop nodes."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "kolam-daily-02",
-                art_form_id: "kolam",
-                category_id: "decorative-daily-kolams",
-                title: "Dual Triangular Sikku Weaved Matrix Kolam",
-                art_form: "Kolam",
-                difficulty: "challenging",
-                short_description: "Draw two interlocking triangular Sikku dot matrices woven with continuous loops and corner accents.",
-                reference_image_path: "/art/kolam/decorative-daily-kolams/example-02.png",
-                visible_elements: ["twin triangular dot matrices", "continuous woven grid lines", "accent dots"],
-                drawing_guidance: [
-                  "Place two adjacent triangular dot grid formations.",
-                  "Weave continuous curved lines through grid rows to build inner square mesh.",
-                  "Loop around outer edges and add accent dots at nodes."
-                ],
-                allowed_next_actions: ["repeat", "next_example", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-              {
-                exercise_id: "kolam-daily-03",
-                art_form_id: "kolam",
-                category_id: "decorative-daily-kolams",
-                title: "Kambi Brahma Mudi Sikku Threshold Kolam",
-                art_form: "Kolam",
-                difficulty: "challenging",
-                short_description: "Draw an authentic Tamil Nadu Kambi Brahma Mudi Kolam with corner flame loops and outer tendrils.",
-                reference_image_path: "/art/kolam/decorative-daily-kolams/example-03.png",
-                visible_elements: ["center 4-loop nucleus", "interlocking corner flame loops", "radiating outer flame tendrils"],
-                drawing_guidance: [
-                  "Draw central 4-loop nucleus matrix.",
-                  "Weave four corner flame loops intertwining around outer dot matrix.",
-                  "Finish with radiating outer flame accent tips."
-                ],
-                allowed_next_actions: ["repeat", "finish"],
-                review_status: "reviewed",
-                estimated_minutes: 5,
-                active: true,
-              },
-            ]);
-          }
-        }
-        setStep("carousel");
+        // Synchronous fallback already set above
       });
   };
 
@@ -686,6 +696,13 @@ export default function App() {
             displayName={displayName}
             setDisplayName={handleUpdateDisplayName}
           />
+        ) : activeTab === "discover" ? (
+          <DiscoverView
+            onSelectArtForm={(artFormId) => {
+              handleSelectArtForm(artFormId);
+              setActiveTab("activity");
+            }}
+          />
         ) : (
           <>
             {step === "welcome" && (
@@ -802,6 +819,17 @@ export default function App() {
         >
           <Activity size={22} />
           <span>Activity</span>
+        </button>
+
+        <button
+          className={`nav-tab-btn ${activeTab === "discover" ? "active" : ""}`}
+          onClick={() => {
+            setActiveTab("discover");
+          }}
+          aria-label="Discover Heritage Stories Tab"
+        >
+          <BookOpen size={22} />
+          <span>Discover</span>
         </button>
 
         <button

@@ -121,36 +121,112 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
           ))}
         </ol>
 
-        {/* Gen Z 5-Minute Timer Card */}
-        <div style={{ background: "#F8FAFC", padding: "16px 20px", borderRadius: "20px", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+        {/* Gen Z 5-Minute Timer Card (Responsive 2-Row Layout) */}
+        <div
+          style={{
+            background: "#F8FAFC",
+            padding: "14px 16px",
+            borderRadius: "20px",
+            border: "1.5px solid #E2E8F0",
+            marginBottom: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}
+        >
+          {/* Header Row */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "rgba(255, 82, 59, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "10px",
+                background: "rgba(255, 82, 59, 0.1)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
               <Timer size={20} color="var(--color-accent-coral)" />
             </div>
             <div>
-              <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#0F172A" }}>5-Min Timer</div>
-              <div style={{ fontSize: "0.75rem", color: "#64748B", fontWeight: 500 }}>Optional focus pace</div>
+              <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "#0F172A" }}>5-Min Timer</div>
+              <div style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 500 }}>Optional focus pace for drawing</div>
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={{ fontFamily: "var(--font-heading)", fontSize: "1.4rem", fontWeight: 900, color: "var(--color-accent-coral)" }}>
+          {/* Controls Row */}
+          <div
+            style={{
+              background: "#FFFFFF",
+              padding: "10px 16px",
+              borderRadius: "14px",
+              border: "1px solid #E2E8F0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              boxShadow: "0 2px 8px rgba(15, 23, 42, 0.03)",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "1.6rem",
+                fontWeight: 900,
+                color: "var(--color-accent-coral)",
+                letterSpacing: "0.02em",
+              }}
+            >
               {formatTimer(timerSeconds)}
             </span>
-            <button
-              onClick={() => setTimerActive(!timerActive)}
-              style={{ width: "36px", height: "36px", borderRadius: "9999px", background: "var(--color-accent-coral)", border: "none", color: "#FFFFFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-              aria-label="Toggle Timer"
-            >
-              {timerActive ? <Pause size={18} /> : <Play size={18} />}
-            </button>
-            <button
-              onClick={() => { setTimerSeconds(300); setTimerActive(false); }}
-              style={{ width: "36px", height: "36px", borderRadius: "9999px", background: "#F1F5F9", border: "none", color: "#64748B", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-              aria-label="Reset Timer"
-            >
-              <RotateCcw size={16} />
-            </button>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <button
+                onClick={() => setTimerActive(!timerActive)}
+                style={{
+                  height: "38px",
+                  padding: "0 16px",
+                  borderRadius: "9999px",
+                  background: "var(--color-accent-coral)",
+                  border: "none",
+                  color: "#FFFFFF",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "0.85rem",
+                  fontWeight: 800,
+                  boxShadow: "0 4px 12px rgba(255, 82, 59, 0.25)",
+                }}
+                aria-label="Toggle Timer"
+              >
+                {timerActive ? <Pause size={16} /> : <Play size={16} />}
+                <span>{timerActive ? "Pause" : "Start"}</span>
+              </button>
+              <button
+                onClick={() => {
+                  setTimerSeconds(300);
+                  setTimerActive(false);
+                }}
+                style={{
+                  width: "38px",
+                  height: "38px",
+                  borderRadius: "9999px",
+                  background: "#F1F5F9",
+                  border: "none",
+                  color: "#64748B",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+                aria-label="Reset Timer"
+              >
+                <RotateCcw size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </div>

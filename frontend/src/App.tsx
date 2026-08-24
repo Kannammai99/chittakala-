@@ -144,41 +144,51 @@ export default function App() {
     }
   }, [step, exercises.length, selectedArtFormId, selectedCategoryId]);
 
+  // Helper function to return fallback categories synchronously
+  const getFallbackCategories = (artFormId: string): Category[] => {
+    if (artFormId === "warli") {
+      return [
+        { category_id: "basic-figures", art_form_id: "warli", title: "Basic Warli Figures & Motifs", short_description: "Beginner-friendly geometric figures, musicians, and village life.", thumbnail_path: "/art/warli/basic-figures/example-01.png", display_order: 1, active: true },
+        { category_id: "figure-rows", art_form_id: "warli", title: "Warli Figure Rows & Scenes", short_description: "Rhythmic rows of dancers, seed sowing farmers, and village drummers.", thumbnail_path: "/art/warli/figure-rows/example-01.png", display_order: 2, active: true },
+        { category_id: "dancing-circles", art_form_id: "warli", title: "Warli Circles & Sacred Murals", short_description: "Grand Tarpa dance rings, musician shrines, and sacred Tree of Life murals.", thumbnail_path: "/art/warli/dancing-circles/example-01.png", display_order: 3, active: true },
+      ];
+    } else if (artFormId === "madhubani") {
+      return [
+        { category_id: "madhubani-borders", art_form_id: "madhubani", title: "Mithila Dual-Line Borders", short_description: "Traditional double-lined geometric borders, lotus petals, and leaf creepers.", thumbnail_path: "/art/madhubani/borders/example-01.png", display_order: 1, active: true },
+        { category_id: "madhubani-nature", art_form_id: "madhubani", title: "Madhubani Bird & Fish Motifs", short_description: "Symbolic fish of fertility and intricate double-outlined songbird and royal bird motifs.", thumbnail_path: "/art/madhubani/nature/example-01.png", display_order: 2, active: true },
+        { category_id: "madhubani-sacred", art_form_id: "madhubani", title: "Sun & Tree of Life Geometry", short_description: "Sacred Surya motifs and branching Tree of Life filled with fine hatching.", thumbnail_path: "/art/madhubani/sacred/example-01.png", display_order: 3, active: true },
+      ];
+    } else if (artFormId === "gond") {
+      return [
+        { category_id: "gond-patterns", art_form_id: "gond", title: "Gond Bird Motifs & Pattern Textures", short_description: "Vibrant tribal birds, perching pairs, and royal peacocks filled with signature Gond dashes, dots, and wave textures.", thumbnail_path: "/art/gond/patterns/example-01.png", display_order: 1, active: true },
+        { category_id: "gond-fauna", art_form_id: "gond", title: "Gond Forest Stag & Aquatic Fauna", short_description: "Sacred antler-tree forest stag, arched peacock feather plumes, and swimming aquatic fish in river reeds.", thumbnail_path: "/art/gond/fauna/example-01.png", display_order: 2, active: true },
+        { category_id: "gond-tree-of-life", art_form_id: "gond", title: "Gond Sacred Tree & Blooming Canopy", short_description: "Intertwined Tree of Life trunks, golden Mahua berry canopy, and perching songbirds in floral vines.", thumbnail_path: "/art/gond/tree/example-01.png", display_order: 3, active: true },
+      ];
+    } else {
+      return [
+        { category_id: "5x5-dots", art_form_id: "kolam", title: "5x5 Dot Grid Pulli Kolams", short_description: "Beginner-friendly dot grids, continuous line loops, and floral blossoms.", thumbnail_path: "/art/kolam/5x5-dots/example-01.png", display_order: 1, active: true },
+        { category_id: "7x7-dots", art_form_id: "kolam", title: "7x7 Dot Grid Pulli Kolams", short_description: "Flowing curved loops, cross-form Sikku matrices, and interlocking strands.", thumbnail_path: "/art/kolam/7x7-dots/example-01.png", display_order: 2, active: true },
+        { category_id: "9x9-dots", art_form_id: "kolam", title: "9x9 Dot Grid Pulli Kolams", short_description: "Intricate multi-loop Sikku matrices, dual triangular grids, and Kambi Kolams.", thumbnail_path: "/art/kolam/9x9-dots/example-01.png", display_order: 3, active: true },
+      ];
+    }
+  };
+
   // Fetch categories when art form changes
   const handleSelectArtForm = (artFormId: string) => {
     setSelectedArtFormId(artFormId);
+    // Instant synchronous state update so old categories are NEVER displayed during network fetch!
+    const initialCats = getFallbackCategories(artFormId);
+    setCategories(initialCats);
     setStep("categories");
+
     ChittakalaClient.getCategories(artFormId)
       .then((cats) => {
-        setCategories(cats);
+        if (cats && cats.length > 0) {
+          setCategories(cats);
+        }
       })
       .catch(() => {
-        if (artFormId === "warli") {
-          setCategories([
-            { category_id: "basic-figures", art_form_id: "warli", title: "Basic Warli Figures & Motifs", short_description: "Beginner-friendly geometric figures, musicians, and village life.", thumbnail_path: "/art/warli/basic-figures/example-01.png", display_order: 1, active: true },
-            { category_id: "figure-rows", art_form_id: "warli", title: "Warli Figure Rows & Scenes", short_description: "Rhythmic rows of dancers, seed sowing farmers, and village drummers.", thumbnail_path: "/art/warli/figure-rows/example-01.png", display_order: 2, active: true },
-            { category_id: "dancing-circles", art_form_id: "warli", title: "Warli Circles & Sacred Murals", short_description: "Grand Tarpa dance rings, musician shrines, and sacred Tree of Life murals.", thumbnail_path: "/art/warli/dancing-circles/example-01.png", display_order: 3, active: true },
-          ]);
-        } else if (artFormId === "madhubani") {
-          setCategories([
-            { category_id: "madhubani-borders", art_form_id: "madhubani", title: "Mithila Dual-Line Borders", short_description: "Traditional double-lined geometric borders, lotus petals, and leaf creepers.", thumbnail_path: "/art/madhubani/borders/example-01.png", display_order: 1, active: true },
-            { category_id: "madhubani-nature", art_form_id: "madhubani", title: "Madhubani Bird & Fish Motifs", short_description: "Symbolic fish of fertility and intricate double-outlined songbird and royal bird motifs.", thumbnail_path: "/art/madhubani/nature/example-01.png", display_order: 2, active: true },
-            { category_id: "madhubani-sacred", art_form_id: "madhubani", title: "Sun & Tree of Life Geometry", short_description: "Sacred Surya motifs and branching Tree of Life filled with fine hatching.", thumbnail_path: "/art/madhubani/sacred/example-01.png", display_order: 3, active: true },
-          ]);
-        } else if (artFormId === "gond") {
-          setCategories([
-            { category_id: "gond-patterns", art_form_id: "gond", title: "Gond Dash & Dot Textures", short_description: "Signature fine line hatching, dots, and wavy fill patterns.", thumbnail_path: "/art/gond/patterns/example-01.png", display_order: 1, active: true },
-            { category_id: "gond-fauna", art_form_id: "gond", title: "Gond Forest Bird & Deer Motifs", short_description: "Flowing animal contours filled with rhythmic dots and line textures.", thumbnail_path: "/art/gond/fauna/example-01.png", display_order: 2, active: true },
-            { category_id: "gond-tree-of-life", art_form_id: "gond", title: "Gond Sacred Tree of Life", short_description: "Intertwined branches, sacred forest leaves, and perching birds.", thumbnail_path: "/art/gond/tree/example-01.png", display_order: 3, active: true },
-          ]);
-        } else {
-          setCategories([
-            { category_id: "simple-dot-kolams", art_form_id: "kolam", title: "Simple Pulli & Line Kolams", short_description: "Beginner-friendly dot grids, continuous line loops, and floral blossoms.", thumbnail_path: "/art/kolam/simple-dot-kolams/example-01.png", display_order: 1, active: true },
-            { category_id: "loop-line-kolams", art_form_id: "kolam", title: "Sikku & Brahma Mudi Kolams", short_description: "Flowing curved loops, cross-form Sikku matrices, and interlocking strands.", thumbnail_path: "/art/kolam/loop-line-kolams/example-01.png", display_order: 2, active: true },
-            { category_id: "decorative-daily-kolams", art_form_id: "kolam", title: "Grand Padma & Sikku Matrices", short_description: "Intricate multi-loop Sikku matrices, dual triangular grids, and Kambi Kolams.", thumbnail_path: "/art/kolam/decorative-daily-kolams/example-01.png", display_order: 3, active: true },
-          ]);
-        }
-        setStep("categories");
+        // Fallback already set synchronously above
       });
   };
 
@@ -650,7 +660,7 @@ export default function App() {
             category_id: "madhubani-nature",
             title: "Madhubani Step-by-Step Songbird Motif",
             art_form: "Madhubani",
-            difficulty: "beginner",
+            difficulty: "intermediate",
             short_description: "Draw a step-by-step Madhubani songbird featuring a bright yellow head, double-lined contours, patterned orange wing feathers, and a blue floral belly.",
             reference_image_path: "/art/madhubani/nature/example-01.png",
             visible_elements: ["stylized songbird profile", "yellow head with circular eye", "patterned orange wing feathers with dots", "blue belly with floral accents", "double-line body contour"],
@@ -690,7 +700,7 @@ export default function App() {
             category_id: "madhubani-nature",
             title: "Madhubani Sacred Fish Medallion Motif",
             art_form: "Madhubani",
-            difficulty: "beginner",
+            difficulty: "intermediate",
             short_description: "Draw a step-by-step Madhubani pink & purple fish motif enclosed within a circular blue water medallion with double-lined fins and scalloped dot borders.",
             reference_image_path: "/art/madhubani/nature/example-03.png",
             visible_elements: ["pink and purple sacred fish motif", "circular blue water medallion", "scalloped outer dot rim", "double-line fins and scale fills"],
@@ -713,7 +723,7 @@ export default function App() {
             category_id: "madhubani-sacred",
             title: "Madhubani Step-by-Step Royal Peacock",
             art_form: "Madhubani",
-            difficulty: "beginner",
+            difficulty: "challenging",
             short_description: "Draw a step-by-step Madhubani royal peacock featuring a blue body, crown crest pins, patterned wings with fine hatching, fan-tail feather eye-spots, perching on a lotus stem.",
             reference_image_path: "/art/madhubani/sacred/example-01.png",
             visible_elements: ["blue royal peacock profile", "crown crest pins with colored tips", "patterned wing with black/grey hatching", "fan-tail feathers with eye-spots", "perching red lotus flower stem"],
@@ -733,7 +743,7 @@ export default function App() {
             category_id: "madhubani-sacred",
             title: "Ceremonial Madhubani Surya Sun Medallion",
             art_form: "Madhubani",
-            difficulty: "intermediate",
+            difficulty: "challenging",
             short_description: "Draw a ceremonial Madhubani Sun (Surya) medallion featuring a yellow face with tilak, mustache, double-line eyes, concentric hatching rings, and radiating red triangular rays.",
             reference_image_path: "/art/madhubani/sacred/example-02.png",
             visible_elements: ["central yellow Sun face with tilak and mustache", "concentric hatching line rings (Kachni)", "radiating red triangular sun rays", "outer double-line rim"],
@@ -761,6 +771,197 @@ export default function App() {
               "Draw a curving brown tree trunk branching out across your paper frame.",
               "Draw three stylized perching birds on main branches.",
               "Add dense green leaves, red lotus blossoms, and enclose in a double-line red geometric border."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      }
+    } else if (effectiveArtForm === "gond") {
+      if (categoryId === "gond-patterns") {
+        return [
+          {
+            exercise_id: "gond-pattern-01",
+            art_form_id: "gond",
+            category_id: "gond-patterns",
+            title: "Gond Sun Disc & Four Tribal Birds",
+            art_form: "Gond Art",
+            difficulty: "beginner",
+            short_description: "Draw a colorful Gond composition featuring a central orange sun disc surrounded by four vibrant tribal birds and leaf sprigs filled with fine dot and dash hatching.",
+            reference_image_path: "/art/gond/patterns/example-01.png",
+            visible_elements: ["central orange sun disc", "four vibrant tribal birds (blue, red, orange, pink)", "surrounding green leaf sprigs", "signature Gond vertical dash and dot line fills"],
+            drawing_guidance: [
+              "Draw a bold central orange sun disc at the top.",
+              "Construct four stylized bird contours perching together below the sun.",
+              "Fill bird bodies with Gond signature vertical dashes, dots, and leaf sprigs."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "gond-pattern-02",
+            art_form_id: "gond",
+            category_id: "gond-patterns",
+            title: "Gond Twin Songbirds under Mahua Tree",
+            art_form: "Gond Art",
+            difficulty: "beginner",
+            short_description: "Draw a pair of blue and red Gond songbirds perching beneath a striped Mahua tree branch filled with yellow buds and scalloped wing textures.",
+            reference_image_path: "/art/gond/patterns/example-02.png",
+            visible_elements: ["twin songbirds (blue and red)", "striped Mahua tree branch with yellow buds", "neck dash lines and scalloped wing scale fills"],
+            drawing_guidance: [
+              "Draw the curving striped trunk and branches of a Mahua tree with yellow bud tips.",
+              "Construct two stylized songbirds facing each other at the base of the trunk.",
+              "Fill bird necks with fine vertical dash lines and wings with yellow/red scalloped scale curves."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "gond-pattern-03",
+            art_form_id: "gond",
+            category_id: "gond-patterns",
+            title: "Gond Arch-Crested Royal Peacock on Leafy Branch",
+            art_form: "Gond Art",
+            difficulty: "beginner",
+            short_description: "Draw a majestic Gond royal peacock featuring a blue body, an arching yellow crest plume with leaf tendrils, perching on a green-leafed branch.",
+            reference_image_path: "/art/gond/patterns/example-03.png",
+            visible_elements: ["blue royal peacock profile", "arching yellow crest plume with leaf tendrils", "fine parallel line hatching", "perching green-leafed brown branch"],
+            drawing_guidance: [
+              "Draw a perching green-leafed branch and the curved body contour of a peacock.",
+              "Construct an arching yellow crest plume sweeping overhead with circular leaf tendrils.",
+              "Fill the peacock body with fine blue wave textures and yellow stripe accents."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      } else if (categoryId === "gond-fauna") {
+        return [
+          {
+            exercise_id: "gond-fauna-01",
+            art_form_id: "gond",
+            category_id: "gond-fauna",
+            title: "Gond Antler-Tree Sacred Forest Stag",
+            art_form: "Gond Art",
+            difficulty: "intermediate",
+            short_description: "Draw an authentic Gond blue and purple forest stag whose antlers transform into a sprawling Tree of Life canopy filled with green leaves and songbirds.",
+            reference_image_path: "/art/gond/fauna/example-01.png",
+            visible_elements: ["blue and purple stag body contour", "sprawling antler-tree canopy with green leaves", "perching songbirds in antlers and on back", "small turtle companion below"],
+            drawing_guidance: [
+              "Draw the curved neck and body of the blue/purple stag.",
+              "Construct branching tree antlers spreading upward into a dense leafy canopy.",
+              "Fill the body with fine wave textures and add perching birds and a small turtle below."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "gond-fauna-02",
+            art_form_id: "gond",
+            category_id: "gond-fauna",
+            title: "Gond Arching Feather Plume Peacock",
+            art_form: "Gond Art",
+            difficulty: "intermediate",
+            short_description: "Draw a royal blue Gond peacock featuring striped tail branches crowned with green/orange oval feather eye-spots and fine hatching lines.",
+            reference_image_path: "/art/gond/fauna/example-02.png",
+            visible_elements: ["royal blue peacock contour", "striped tail branches with green and orange eye-spots", "fine neck hatching lines", "green wing with parallel vein fills"],
+            drawing_guidance: [
+              "Draw the royal blue head and neck profile of the peacock.",
+              "Construct arching striped tail branches crowned with green and orange oval eye-spots.",
+              "Fill the body and wings with signature Gond fine hatching lines."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "gond-fauna-03",
+            art_form_id: "gond",
+            category_id: "gond-fauna",
+            title: "Gond Trio of Swimming Aquatic Fish",
+            art_form: "Gond Art",
+            difficulty: "intermediate",
+            short_description: "Draw three curvilinear Gond fish (orange, blue, grey) swimming through tall green aquatic reed grasses, filled with dot matrices and scale patterns.",
+            reference_image_path: "/art/gond/fauna/example-03.png",
+            visible_elements: ["trio of curvilinear fish (orange, blue, grey)", "tall green aquatic reed grasses", "signature Gond dot matrix fills", "scalloped scale patterns"],
+            drawing_guidance: [
+              "Draw three curving fish body outlines swimming upward and downward.",
+              "Fill the background with tall green aquatic reed grass blades.",
+              "Pattern the fish bodies with Gond dot matrices, scalloped scale arcs, and grey tail fins."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      } else if (categoryId === "gond-tree-of-life") {
+        return [
+          {
+            exercise_id: "gond-tree-01",
+            art_form_id: "gond",
+            category_id: "gond-tree-of-life",
+            title: "Gond Intertwined Tree of Life Mural",
+            art_form: "Gond Art",
+            difficulty: "challenging",
+            short_description: "Draw an authentic Gond Tree of Life featuring intertwined brown and green trunks with dense clusters of red and green teardrop-shaped leaves.",
+            reference_image_path: "/art/gond/tree/example-01.png",
+            visible_elements: ["intertwined brown and green tree trunks", "clusters of red teardrop-shaped leaves", "clusters of green teardrop-shaped leaves", "fine trunk bark line textures"],
+            drawing_guidance: [
+              "Draw two winding, intertwined tree trunks curving across the canvas.",
+              "Construct branching limb clusters filled with green and red teardrop leaves.",
+              "Pattern the trunks with fine parallel bark lines and leaf textures."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "gond-tree-02",
+            art_form_id: "gond",
+            category_id: "gond-tree-of-life",
+            title: "Gond Mother Bird & Golden Mahua Canopy",
+            art_form: "Gond Art",
+            difficulty: "challenging",
+            short_description: "Draw a Gond mother bird feeding her chick beneath a dense arching golden Mahua berry tree canopy enclosed in a orange saw-tooth border frame.",
+            reference_image_path: "/art/gond/tree/example-02.png",
+            visible_elements: ["mother bird and nestling chick", "dense golden Mahua berry tree canopy", "orange saw-tooth geometric border", "dot matrix body fills"],
+            drawing_guidance: [
+              "Enclose your canvas in an orange saw-tooth triangular border frame.",
+              "Draw the mother bird feeding her chick at the center of the tree trunk.",
+              "Surround the birds with a dense arching canopy of golden Mahua berries and fine dot textures."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "gond-tree-03",
+            art_form_id: "gond",
+            category_id: "gond-tree-of-life",
+            title: "Gond Vibrant Songbird in Blooming Floral Vine",
+            art_form: "Gond Art",
+            difficulty: "challenging",
+            short_description: "Draw a vibrant Gond songbird with a yellow head and red striped tail perching among blooming pink and orange flowers on a leafy vine.",
+            reference_image_path: "/art/gond/tree/example-03.png",
+            visible_elements: ["yellow-headed songbird with red striped tail", "blooming pink and orange 6-petal flowers", "climbing vine branch with green leaves", "blue wing with white dot pattern"],
+            drawing_guidance: [
+              "Draw climbing vine stems with blooming pink and orange flowers.",
+              "Construct a perching songbird with a yellow head, blue wing, and long red striped tail.",
+              "Fill flowers and wings with fine dot patterns and leaf line veins."
             ],
             allowed_next_actions: ["repeat", "finish"],
             review_status: "reviewed",

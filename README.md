@@ -43,6 +43,11 @@ chittakala/
 │   └── README.md               # Looker Studio Executive Dashboard integration guide
 ├── frontend/
 │   ├── public/
+│   │   ├── art/
+│   │   │   ├── gond/           # Authentic Gond Art assets (patterns, fauna, tree)
+│   │   │   ├── kolam/          # Authentic Kolam assets (5x5, 7x7, 9x9 dot grids)
+│   │   │   ├── madhubani/      # Authentic Madhubani assets (borders, nature, sacred)
+│   │   │   └── warli/          # Authentic Warli assets (basic, rows, circles)
 │   │   ├── manifest.json       # PWA Manifest (standalone, portrait)
 │   │   └── sw.js               # Service Worker offline caching strategy
 │   ├── src/
@@ -67,6 +72,19 @@ chittakala/
 ├── requirements.txt            # Python dependencies (google-genai, google-cloud-bigquery)
 └── README.md
 ```
+
+---
+
+## 🎨 Progressive Learning Path & Authentic Art Collections
+
+Chittakala structures each traditional art form into a standardized 3-tier progressive learning hierarchy:
+
+| Art Form | Category 1 (Beginner 🌱) | Category 2 (Intermediate 🌿) | Category 3 (Challenging 🌳) |
+| :--- | :--- | :--- | :--- |
+| **Warli** | `Basic Warli Figures & Motifs` | `Warli Figure Rows & Scenes` | `Warli Circles & Sacred Murals` |
+| **Kolam** | `5x5 Dot Grid Pulli Kolams` | `7x7 Dot Grid Pulli Kolams` | `9x9 Dot Grid Pulli Kolams` |
+| **Madhubani** | `Mithila Dual-Line Borders` | `Madhubani Bird & Fish Motifs` | `Sun & Tree of Life Geometry` |
+| **Gond Art** | `Gond Bird Motifs & Pattern Textures` | `Gond Forest Stag & Aquatic Fauna` | `Gond Sacred Tree & Blooming Canopy` |
 
 ---
 
@@ -115,6 +133,7 @@ To run all 43 unit, API, contract, lifecycle, security, expansion art, and AI ev
 - ✅ **BigQuery Telemetry Engine**: Streamed `product_events` and `ai_reliability_events` to GCP (`chittakala-12345`).
 - ✅ **Looker Studio Dashboards**: Provisioned `v_mood_shift_summary` and `v_ai_performance_summary` analytical views.
 - ✅ **ADK Multi-Agent Vision Subsystem**: Implemented `VisualObserverAgent`, `MindfulCoachAgent`, `SafetyAuditorAgent`, and `MultiAgentCoordinator`.
-- ✅ **Expansion Art Modules**: Activated **Madhubani** (Bihar) and **Gond Art** (Madhya Pradesh) alongside **Warli** and **Kolam**.
-- ✅ **Modern UX Enhancements**: Added `← Back to Home` button, **Option A** instant completion button (`Complete Practice Without AI →`), and deduplicated post check-in sync.
+- ✅ **Expansion Art Modules**: Activated **Madhubani** (Bihar) and **Gond Art** (Madhya Pradesh) with authentic reference imagery across all 3 categories.
+- ✅ **Standardized Progressive Difficulty**: Aligned Category 1 (Beginner), Category 2 (Intermediate), and Category 3 (Challenging) across all 4 art forms.
+- ✅ **Instant State Transitions**: Implemented 0ms synchronous category and exercise fallbacks eliminating screen loading flashes.
 - ✅ **100% Test Pass Rate**: 43 / 43 Pytest tests passing cleanly.

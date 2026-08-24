@@ -134,6 +134,16 @@ export default function App() {
       });
   }, []);
 
+  // Safety recovery effect to ensure exercises are never empty on carousel step
+  useEffect(() => {
+    if (step === "carousel" && exercises.length === 0 && selectedCategoryId) {
+      const recovery = getFallbackExercises(selectedArtFormId, selectedCategoryId);
+      if (recovery.length > 0) {
+        setExercises(recovery);
+      }
+    }
+  }, [step, exercises.length, selectedArtFormId, selectedCategoryId]);
+
   // Fetch categories when art form changes
   const handleSelectArtForm = (artFormId: string) => {
     setSelectedArtFormId(artFormId);
@@ -152,7 +162,7 @@ export default function App() {
         } else if (artFormId === "madhubani") {
           setCategories([
             { category_id: "madhubani-borders", art_form_id: "madhubani", title: "Mithila Dual-Line Borders", short_description: "Traditional double-lined geometric borders, lotus petals, and leaf creepers.", thumbnail_path: "/art/madhubani/borders/example-01.png", display_order: 1, active: true },
-            { category_id: "madhubani-nature", art_form_id: "madhubani", title: "Madhubani Peacock & Fish Motifs", short_description: "Symbolic fish of fertility and intricate double-outlined peacock feathers.", thumbnail_path: "/art/madhubani/nature/example-01.png", display_order: 2, active: true },
+            { category_id: "madhubani-nature", art_form_id: "madhubani", title: "Madhubani Bird & Fish Motifs", short_description: "Symbolic fish of fertility and intricate double-outlined songbird and royal bird motifs.", thumbnail_path: "/art/madhubani/nature/example-01.png", display_order: 2, active: true },
             { category_id: "madhubani-sacred", art_form_id: "madhubani", title: "Sun & Tree of Life Geometry", short_description: "Sacred Surya motifs and branching Tree of Life filled with fine hatching.", thumbnail_path: "/art/madhubani/sacred/example-01.png", display_order: 3, active: true },
           ]);
         } else if (artFormId === "gond") {
@@ -174,7 +184,18 @@ export default function App() {
 
   // Helper function to return fallback exercises synchronously
   const getFallbackExercises = (artFormId: string, categoryId: string): Exercise[] => {
-    if (artFormId === "warli") {
+    let effectiveArtForm = artFormId;
+    if (categoryId.startsWith("madhubani-")) {
+      effectiveArtForm = "madhubani";
+    } else if (categoryId.startsWith("gond-")) {
+      effectiveArtForm = "gond";
+    } else if (categoryId.includes("kolam")) {
+      effectiveArtForm = "kolam";
+    } else if (["basic-figures", "figure-rows", "dancing-circles"].includes(categoryId)) {
+      effectiveArtForm = "warli";
+    }
+
+    if (effectiveArtForm === "warli") {
       if (categoryId === "basic-figures") {
         return [
           {
@@ -365,7 +386,7 @@ export default function App() {
           },
         ];
       }
-    } else {
+    } else if (artFormId === "kolam") {
       // Kolam Categories
       if (categoryId === "simple-dot-kolams") {
         return [
@@ -557,7 +578,199 @@ export default function App() {
           },
         ];
       }
+    } else if (artFormId === "madhubani") {
+      if (categoryId === "madhubani-borders") {
+        return [
+          {
+            exercise_id: "madhubani-border-01",
+            art_form_id: "madhubani",
+            category_id: "madhubani-borders",
+            title: "Mithila Peacock & Triangular Geometry Border",
+            art_form: "Madhubani",
+            difficulty: "beginner",
+            short_description: "Draw an authentic Madhubani border frame featuring twin peacock motifs with expressive eyes, red & blue plumages, green leaf creepers, and alternating red/orange/green triangular geometric bands.",
+            reference_image_path: "/art/madhubani/borders/example-01.png",
+            visible_elements: ["twin peacock motifs with expressive eyes", "red, orange, and blue plumage patterns", "alternating triangular geometric bands", "green leaf creepers"],
+            drawing_guidance: [
+              "Draw two outer double-line borders around the perimeter of your paper.",
+              "Construct two stylized peacocks facing upward along the lower side margins.",
+              "Add alternating green, orange, and red triangular geometric bands along top and bottom borders."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "madhubani-border-02",
+            art_form_id: "madhubani",
+            category_id: "madhubani-borders",
+            title: "Madhubani Fish & Lotus Floral Creeper Border",
+            art_form: "Madhubani",
+            difficulty: "intermediate",
+            short_description: "Draw an authentic Madhubani border frame featuring dual-lined lotus floral vines along vertical sides and a pair of sacred yellow & blue Mithila fish facing lotus blossoms on horizontal borders.",
+            reference_image_path: "/art/madhubani/borders/example-02.png",
+            visible_elements: ["twin sacred fish motifs", "dual-lined lotus floral vines", "central lotus blossom motifs", "diagonal striped inner border"],
+            drawing_guidance: [
+              "Draw a rectangular inner and outer frame with diagonal stripe shading.",
+              "Construct two lotus floral vines climbing along the left and right side borders.",
+              "Draw a pair of facing sacred fish around a central lotus flower at top and bottom margins."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "madhubani-border-03",
+            art_form_id: "madhubani",
+            category_id: "madhubani-borders",
+            title: "Madhubani Red Lotus Blossom & Leaf Vine Border",
+            art_form: "Madhubani",
+            difficulty: "beginner",
+            short_description: "Draw an authentic Madhubani border frame featuring repeating red 5-petal lotus blossoms connected by curving green leaf vines with fine hatching line fills (Kachni) and a yellow dotted inner rim.",
+            reference_image_path: "/art/madhubani/borders/example-03.png",
+            visible_elements: ["repeating red 5-petal lotus blossoms", "curving green leaf vine tendrils", "fine hatching fills (Kachni style)", "yellow dotted inner rim"],
+            drawing_guidance: [
+              "Draw a rectangular double-line frame with a yellow dotted inner border.",
+              "Draw repeating red 5-petal lotus flowers connected by curving green leaf vines.",
+              "Fill leaf interiors with fine parallel hatching lines (Kachni style)."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      } else if (categoryId === "madhubani-nature") {
+        return [
+          {
+            exercise_id: "madhubani-nature-01",
+            art_form_id: "madhubani",
+            category_id: "madhubani-nature",
+            title: "Madhubani Step-by-Step Songbird Motif",
+            art_form: "Madhubani",
+            difficulty: "beginner",
+            short_description: "Draw a step-by-step Madhubani songbird featuring a bright yellow head, double-lined contours, patterned orange wing feathers, and a blue floral belly.",
+            reference_image_path: "/art/madhubani/nature/example-01.png",
+            visible_elements: ["stylized songbird profile", "yellow head with circular eye", "patterned orange wing feathers with dots", "blue belly with floral accents", "double-line body contour"],
+            drawing_guidance: [
+              "Draw the smooth C-curve body contour (Steps 1 & 2).",
+              "Add double-lined wing borders, beak, circular eye, and tail outline (Steps 3 & 4).",
+              "Fill wings and belly with traditional hatching, dots, and vibrant colors (Steps 5 & 6)."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "madhubani-nature-02",
+            art_form_id: "madhubani",
+            category_id: "madhubani-nature",
+            title: "Madhubani Crested Royal Bird on Flowering Branch",
+            art_form: "Madhubani",
+            difficulty: "intermediate",
+            short_description: "Draw a step-by-step Madhubani royal bird perching on a flowering branch with red blossoms, leaf vines, a decorated crown crest, and patterned wing hatching.",
+            reference_image_path: "/art/madhubani/nature/example-02.png",
+            visible_elements: ["crested royal bird perched on branch", "red 5-petal lotus blossoms", "climbing leaf vine branch", "patterned red wing with fine hatching", "decorative crown crest"],
+            drawing_guidance: [
+              "Draw the head circle, beak, and body guide line perching on a branch (Steps 1 & 2).",
+              "Construct double-line wing contours, crown crest, and leaf vine branch (Steps 3 & 4).",
+              "Add fine hatching lines, dot fills, and red floral blossoms (Steps 5 & 6)."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "madhubani-nature-03",
+            art_form_id: "madhubani",
+            category_id: "madhubani-nature",
+            title: "Madhubani Sacred Fish Medallion Motif",
+            art_form: "Madhubani",
+            difficulty: "beginner",
+            short_description: "Draw a step-by-step Madhubani pink & purple fish motif enclosed within a circular blue water medallion with double-lined fins and scalloped dot borders.",
+            reference_image_path: "/art/madhubani/nature/example-03.png",
+            visible_elements: ["pink and purple sacred fish motif", "circular blue water medallion", "scalloped outer dot rim", "double-line fins and scale fills"],
+            drawing_guidance: [
+              "Draw a outer guideline circle and almond-shaped fish body (Step 1).",
+              "Add top, bottom, and tail fins (Step 2).",
+              "Fill fish body with scalloped scales, fine hatching, and enclose in a blue water circle with dotted outer rim (Steps 3 & 4)."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      } else {
+        return [
+          {
+            exercise_id: "madhubani-sacred-01",
+            art_form_id: "madhubani",
+            category_id: "madhubani-sacred",
+            title: "Madhubani Step-by-Step Royal Peacock",
+            art_form: "Madhubani",
+            difficulty: "beginner",
+            short_description: "Draw a step-by-step Madhubani royal peacock featuring a blue body, crown crest pins, patterned wings with fine hatching, fan-tail feather eye-spots, perching on a lotus stem.",
+            reference_image_path: "/art/madhubani/sacred/example-01.png",
+            visible_elements: ["blue royal peacock profile", "crown crest pins with colored tips", "patterned wing with black/grey hatching", "fan-tail feathers with eye-spots", "perching red lotus flower stem"],
+            drawing_guidance: [
+              "Draw head circle and C-curve body contour perching on a lotus stem (Steps 1 & 2).",
+              "Add wing shape, fan-tail outline, and crown crest pins (Steps 3 & 4).",
+              "Fill wings, tail eye-spots, and body with fine hatching and vibrant colors (Steps 5 & 6)."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "madhubani-sacred-02",
+            art_form_id: "madhubani",
+            category_id: "madhubani-sacred",
+            title: "Ceremonial Madhubani Surya Sun Medallion",
+            art_form: "Madhubani",
+            difficulty: "intermediate",
+            short_description: "Draw a ceremonial Madhubani Sun (Surya) medallion featuring a yellow face with tilak, mustache, double-line eyes, concentric hatching rings, and radiating red triangular rays.",
+            reference_image_path: "/art/madhubani/sacred/example-02.png",
+            visible_elements: ["central yellow Sun face with tilak and mustache", "concentric hatching line rings (Kachni)", "radiating red triangular sun rays", "outer double-line rim"],
+            drawing_guidance: [
+              "Draw a central circle for the yellow Sun face with expressive eyes, tilak, and mustache.",
+              "Construct double-line concentric rings filled with fine parallel hatching lines.",
+              "Surround the medallion with radiating red triangular rays and border trim."
+            ],
+            allowed_next_actions: ["repeat", "next_example", "change_category", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+          {
+            exercise_id: "madhubani-sacred-03",
+            art_form_id: "madhubani",
+            category_id: "madhubani-sacred",
+            title: "Mithila Tree of Life & Sacred Birds Mural",
+            art_form: "Madhubani",
+            difficulty: "challenging",
+            short_description: "Draw an authentic Madhubani Tree of Life mural featuring a branching brown trunk, green leaves, red lotus blossoms, and three yellow/blue birds perching among the branches.",
+            reference_image_path: "/art/madhubani/sacred/example-03.png",
+            visible_elements: ["central branching Tree of Life trunk", "three perching yellow and blue songbirds", "red 5-petal lotus blossoms and green leaves", "red geometric border frame"],
+            drawing_guidance: [
+              "Draw a curving brown tree trunk branching out across your paper frame.",
+              "Draw three stylized perching birds on main branches.",
+              "Add dense green leaves, red lotus blossoms, and enclose in a double-line red geometric border."
+            ],
+            allowed_next_actions: ["repeat", "finish"],
+            review_status: "reviewed",
+            estimated_minutes: 5,
+            active: true,
+          },
+        ];
+      }
     }
+    return [];
   };
 
   // Fetch exercises when category is selected

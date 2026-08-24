@@ -46,9 +46,6 @@ frontend/dist/
 .coverage
 htmlcov/
 
-# Local Scratch / Storage / Temporary Scripts
+# Local Scratch / Storage
 uploads/
 scratch/
-deploy_cloud_run.py
-login_gcloud.py
-push_pwa_icons.py

@@ -135,5 +135,6 @@ To run all 43 unit, API, contract, lifecycle, security, expansion art, and AI ev
 - ✅ **ADK Multi-Agent Vision Subsystem**: Implemented `VisualObserverAgent`, `MindfulCoachAgent`, `SafetyAuditorAgent`, and `MultiAgentCoordinator`.
 - ✅ **Expansion Art Modules**: Activated **Madhubani** (Bihar) and **Gond Art** (Madhya Pradesh) with authentic reference imagery across all 3 categories.
 - ✅ **Standardized Progressive Difficulty**: Aligned Category 1 (Beginner), Category 2 (Intermediate), and Category 3 (Challenging) across all 4 art forms.
+- ✅ **Full-Screen Image Lightbox Modal**: Implemented interactive pinch-to-zoom (up to 350%), drag-to-pan, and +/- toolbar controls across example browsing and active drawing screens.
 - ✅ **Instant State Transitions**: Implemented 0ms synchronous category and exercise fallbacks eliminating screen loading flashes.
 - ✅ **100% Test Pass Rate**: 43 / 43 Pytest tests passing cleanly.

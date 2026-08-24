@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Camera, Upload, Timer, CheckCircle, ArrowLeft, Play, Pause, RotateCcw, Sparkles, Eye } from "lucide-react";
+import { Camera, Upload, Timer, CheckCircle, ArrowLeft, Play, Pause, RotateCcw, Sparkles, Eye, Maximize2 } from "lucide-react";
 import { Exercise } from "../api/chittakalaClient";
+import { ImageLightboxModal } from "./ImageLightboxModal";
 
 interface DrawingActivityViewProps {
   exercise: Exercise;
@@ -20,6 +21,7 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
 
   useEffect(() => {
     let interval: any = null;
@@ -83,6 +85,7 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
         </div>
         
         <div
+          onClick={() => setIsLightboxOpen(true)}
           style={{
             width: "100%",
             maxWidth: "260px",
@@ -97,8 +100,32 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
             justifyContent: "center",
             padding: "12px",
             overflow: "hidden",
+            position: "relative",
+            cursor: "pointer",
           }}
+          title="Tap to Zoom Reference Image"
         >
+          {/* Zoom Overlay Badge */}
+          <div
+            style={{
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              background: "rgba(15, 23, 42, 0.75)",
+              color: "#FFFFFF",
+              borderRadius: "9999px",
+              padding: "4px 8px",
+              fontSize: "0.68rem",
+              fontWeight: 800,
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            <Maximize2 size={12} /> Zoom
+          </div>
+
           <img
             src={exercise.reference_image_path}
             alt={exercise.title}
@@ -348,6 +375,16 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
           )}
         </div>
       </div>
+
+      {/* Full-Screen Image Zoom Lightbox Modal */}
+      <ImageLightboxModal
+        isOpen={isLightboxOpen}
+        imagePath={exercise.reference_image_path}
+        title={exercise.title}
+        artForm={exercise.art_form}
+        difficulty={exercise.difficulty}
+        onClose={() => setIsLightboxOpen(false)}
+      />
     </div>
   );
 };

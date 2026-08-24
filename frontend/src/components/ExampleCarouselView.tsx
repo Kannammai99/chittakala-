@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { ArrowLeft, ChevronLeft, ChevronRight, Play, Eye } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Play, Eye, Maximize2 } from "lucide-react";
 import { Exercise } from "../api/chittakalaClient";
+import { ImageLightboxModal } from "./ImageLightboxModal";
 
 interface ExampleCarouselViewProps {
   categoryTitle: string;
@@ -16,6 +17,7 @@ export const ExampleCarouselView: React.FC<ExampleCarouselViewProps> = ({
   onBack,
 }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
 
   if (!exercises || exercises.length === 0) {
     return (
@@ -64,8 +66,9 @@ export const ExampleCarouselView: React.FC<ExampleCarouselViewProps> = ({
 
       {/* Main Gen Z Card */}
       <div className="genz-card" style={{ textAlign: "center", padding: "20px 16px" }}>
-        {/* Real SVG Reference Artwork Image Rendering */}
+        {/* Real SVG Reference Artwork Image Rendering with Lightbox Trigger */}
         <div
+          onClick={() => setIsLightboxOpen(true)}
           style={{
             width: "100%",
             maxWidth: "260px",
@@ -81,8 +84,32 @@ export const ExampleCarouselView: React.FC<ExampleCarouselViewProps> = ({
             padding: "12px",
             overflow: "hidden",
             boxShadow: "0 4px 12px rgba(15, 23, 42, 0.04)",
+            position: "relative",
+            cursor: "pointer",
           }}
+          title="Tap to Zoom Image"
         >
+          {/* Zoom Overlay Badge */}
+          <div
+            style={{
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              background: "rgba(15, 23, 42, 0.75)",
+              color: "#FFFFFF",
+              borderRadius: "9999px",
+              padding: "4px 8px",
+              fontSize: "0.68rem",
+              fontWeight: 800,
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            <Maximize2 size={12} /> Zoom
+          </div>
+
           <img
             src={currentExercise.reference_image_path}
             alt={currentExercise.title}
@@ -181,6 +208,16 @@ export const ExampleCarouselView: React.FC<ExampleCarouselViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Full-Screen Image Zoom Lightbox Modal */}
+      <ImageLightboxModal
+        isOpen={isLightboxOpen}
+        imagePath={currentExercise.reference_image_path}
+        title={currentExercise.title}
+        artForm={currentExercise.art_form}
+        difficulty={currentExercise.difficulty}
+        onClose={() => setIsLightboxOpen(false)}
+      />
     </div>
   );
 };

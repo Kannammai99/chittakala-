@@ -412,19 +412,17 @@ class FirestoreService:
     # --- CATALOG AUTO-SEEDING ---
     @classmethod
     def seed_catalog_if_empty(cls, art_forms: List[ArtForm], categories: List[Category], exercises: List[Exercise]) -> None:
-        """Seed catalog collections into Firestore / in-memory store if catalog is empty."""
+        """Seed or update catalog collections into Firestore / in-memory store."""
         client = cls.get_client()
         if client:
             try:
-                existing = client.collection("art_forms").limit(1).get()
-                if len(existing) == 0:
-                    logger.info("Seeding initial catalog into Cloud Firestore...")
-                    for af in art_forms:
-                        cls.save_art_form(af)
-                    for cat in categories:
-                        cls.save_category(cat)
-                    for ex in exercises:
-                        cls.save_exercise(ex)
+                logger.info("Seeding/updating catalog into Cloud Firestore...")
+                for af in art_forms:
+                    cls.save_art_form(af)
+                for cat in categories:
+                    cls.save_category(cat)
+                for ex in exercises:
+                    cls.save_exercise(ex)
                 return
             except Exception as exc:
                 logger.warning(f"Firestore seed_catalog_if_empty failed, using in-memory fallback: {exc}")

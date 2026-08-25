@@ -166,9 +166,9 @@ export default function App() {
       ];
     } else {
       return [
-        { category_id: "5x5-dots", art_form_id: "kolam", title: "5x5 Dot Grid Pulli Kolams", short_description: "Beginner-friendly dot grids, continuous line loops, and floral blossoms.", thumbnail_path: "/art/kolam/5x5-dots/example-01.png", display_order: 1, active: true },
-        { category_id: "7x7-dots", art_form_id: "kolam", title: "7x7 Dot Grid Pulli Kolams", short_description: "Flowing curved loops, cross-form Sikku matrices, and interlocking strands.", thumbnail_path: "/art/kolam/7x7-dots/example-01.png", display_order: 2, active: true },
-        { category_id: "9x9-dots", art_form_id: "kolam", title: "9x9 Dot Grid Pulli Kolams", short_description: "Intricate multi-loop Sikku matrices, dual triangular grids, and Kambi Kolams.", thumbnail_path: "/art/kolam/9x9-dots/example-01.png", display_order: 3, active: true },
+        { category_id: "simple-dot-kolams", art_form_id: "kolam", title: "Simple Pulli & Line Kolams", short_description: "Beginner-friendly dot grids, continuous line loops, and floral blossoms.", thumbnail_path: "/art/kolam/simple-dot-kolams/example-01.png", display_order: 1, active: true },
+        { category_id: "loop-line-kolams", art_form_id: "kolam", title: "Sikku & Brahma Mudi Kolams", short_description: "Flowing curved loops, cross-form Sikku matrices, and interlocking strands.", thumbnail_path: "/art/kolam/loop-line-kolams/example-01.png", display_order: 2, active: true },
+        { category_id: "decorative-daily-kolams", art_form_id: "kolam", title: "Grand Padma & Sikku Matrices", short_description: "Intricate multi-loop Sikku matrices, dual triangular grids, and Kambi Kolams.", thumbnail_path: "/art/kolam/decorative-daily-kolams/example-01.png", display_order: 3, active: true },
       ];
     }
   };

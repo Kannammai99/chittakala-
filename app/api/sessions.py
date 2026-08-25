@@ -160,11 +160,30 @@ async def generate_gemini_reflection(session_id: str, file: UploadFile = File(..
     "/sessions/{session_id}/check-in",
     response_model=Session,
     summary="Update post-session check-in status",
-    description="Updates the optional post-activity check-in selection ('slower', 'about-the-same', 'faster', 'prefer_not_to_say').",
+    description="Updates the optional post-activity check-in selection and completes session calculation.",
 )
-async def update_post_check_in(session_id: str, check_in_in: SessionCheckInUpdate):
+async def update_post_check_in(session_id: str, check_in_in: SessionCheckInUpdate, background_tasks: BackgroundTasks):
     try:
         session = SessionService.update_post_check_in(session_id, check_in_in.post_check_in)
+        if session.status == "in_progress":
+            session = SessionService.complete_session(session_id)
+
+        # Background task for non-blocking BigQuery streaming telemetry
+        pre_val = session.pre_check_in.value if session.pre_check_in else None
+        post_val = session.post_check_in.value if session.post_check_in else None
+
+        background_tasks.add_task(
+            telemetry_service.log_product_event,
+            session_id=session.session_id,
+            anonymous_user_id=session.anonymous_user_id,
+            art_form_id=session.art_form_id,
+            category_id=session.category_id,
+            exercise_id=session.exercise_id,
+            pre_check_in=pre_val,
+            post_check_in=post_val,
+            duration_seconds=session.duration_seconds,
+            status=session.status,
+        )
         return session
     except KeyError as e:
         raise HTTPException(

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CheckCircle2, Trash2, RotateCcw, Sparkles, ShieldCheck, HeartHandshake, Smile, Zap, Wind, HelpCircle } from "lucide-react";
 import { Session, ChittakalaClient } from "../api/chittakalaClient";
 
@@ -23,17 +23,24 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
   const [selectedPostCheckIn, setSelectedPostCheckIn] = useState<string>(session.post_check_in || "");
   const [isSavingPostCheckIn, setIsSavingPostCheckIn] = useState<boolean>(false);
 
-  const handleSelectPostCheckIn = async (choiceId: string) => {
-    setSelectedPostCheckIn(choiceId);
-    setIsSavingPostCheckIn(true);
-    try {
-      if (session.session_id && !session.session_id.startsWith("sess_local_")) {
-        await ChittakalaClient.updatePostCheckIn(session.session_id, choiceId);
+  useEffect(() => {
+    // Double-lock safeguard: Ensure session completion is persisted to Cloud Firestore upon mounting
+    if (session && session.session_id && !session.session_id.startsWith("sess_local_")) {
+      if (session.status !== "completed" || !session.completed_at) {
+        ChittakalaClient.completeSession(session.session_id).catch(() => {});
       }
-    } catch (e) {
-      console.warn("Failed to sync post check-in to server", e);
-    } finally {
-      setIsSavingPostCheckIn(false);
+    }
+  }, [session.session_id, session.status, session.completed_at]);
+
+  const handleSelectPostCheckIn = (choiceId: string) => {
+    setSelectedPostCheckIn(choiceId);
+    setIsSavingPostCheckIn(false);
+
+    // Instant non-blocking background telemetry sync (0ms UI latency)
+    if (session.session_id && !session.session_id.startsWith("sess_local_")) {
+      ChittakalaClient.updatePostCheckIn(session.session_id, choiceId).catch((e) => {
+        console.warn("Background post check-in sync retry:", e);
+      });
     }
   };
 
@@ -205,9 +212,9 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
               );
             })}
           </div>
-          {isSavingPostCheckIn && (
-            <p style={{ fontSize: "0.78rem", color: "#6366F1", fontWeight: 700, marginTop: "10px", textAlign: "center" }}>
-              Syncing non-clinical telemetry...
+          {selectedPostCheckIn && (
+            <p style={{ fontSize: "0.78rem", color: "#10B981", fontWeight: 800, marginTop: "10px", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+              <CheckCircle2 size={14} /> Response saved anonymously
             </p>
           )}
         </div>

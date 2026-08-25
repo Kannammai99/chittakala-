@@ -134,7 +134,8 @@ async def generate_gemini_reflection(session_id: str, file: UploadFile = File(..
         art_form_title=art_form_title,
     )
 
-    # Save Feedback record and update session feedback_id in Firestore (Section 2.10)
+    # Mark session completed, calculate duration_seconds, and save feedback_id to Cloud Firestore
+    session = SessionService.complete_session(session_id)
     feedback_id = f"fb_{session_id[:8]}"
     session.feedback_id = feedback_id
     FirestoreService.save_session(session)

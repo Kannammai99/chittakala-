@@ -130,6 +130,14 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
             src={exercise.reference_image_path}
             alt={exercise.title}
             style={{ width: "100%", height: "140px", objectFit: "contain", display: "block" }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (target.src.endsWith(".png")) {
+                target.src = target.src.replace(/\.png$/, ".svg");
+              } else if (!target.src.includes("data:image/svg+xml")) {
+                target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='140' viewBox='0 0 200 140'><rect width='200' height='140' fill='%23F8FAFC' rx='12'/><circle cx='100' cy='70' r='35' fill='none' stroke='%23FF523B' stroke-width='3' stroke-dasharray='6 6'/><circle cx='100' cy='70' r='6' fill='%23FF523B'/><circle cx='70' cy='70' r='5' fill='%236366F1'/><circle cx='130' cy='70' r='5' fill='%236366F1'/><circle cx='100' cy='40' r='5' fill='%236366F1'/><circle cx='100' cy='100' r='5' fill='%236366F1'/><text x='100' y='125' font-family='sans-serif' font-size='10' font-weight='bold' fill='%2364748B' text-anchor='middle'>CHITTAKALA PATTERN</text></svg>";
+              }
+            }}
           />
           <span style={{ fontSize: "0.72rem", color: "var(--color-accent-coral)", marginTop: "6px", fontWeight: 800, padding: "2px 10px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)" }}>
             {exercise.art_form.toUpperCase()} • {exercise.difficulty.toUpperCase()}

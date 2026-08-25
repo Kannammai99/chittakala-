@@ -134,7 +134,16 @@ export default function App() {
       });
   }, []);
 
-  // Safety recovery effect to ensure exercises are never empty on carousel step
+  // Safety recovery effect to ensure categories and exercises are never empty on active steps
+  useEffect(() => {
+    if (step === "categories" && categories.length === 0 && selectedArtFormId) {
+      const recovery = getFallbackCategories(selectedArtFormId);
+      if (recovery.length > 0) {
+        setCategories(recovery);
+      }
+    }
+  }, [step, categories.length, selectedArtFormId]);
+
   useEffect(() => {
     if (step === "carousel" && exercises.length === 0 && selectedCategoryId) {
       const recovery = getFallbackExercises(selectedArtFormId, selectedCategoryId);
@@ -995,9 +1004,12 @@ export default function App() {
 
 
 
-  // Handle exercise selection -> Create operational session
+  // Handle exercise selection -> Create operational session in Cloud Firestore
   const handleSelectExercise = (exercise: Exercise) => {
     setSelectedExercise(exercise);
+    setStep("drawing");
+
+    // Create session on backend API (persisted in Cloud Firestore)
     ChittakalaClient.createSession({
       art_form_id: exercise.art_form_id,
       category_id: exercise.category_id,
@@ -1006,11 +1018,12 @@ export default function App() {
       pre_check_in: selectedCheckIn,
     })
       .then((sess) => {
-        setCurrentSession(sess);
-        setStep("drawing");
+        if (sess && sess.session_id) {
+          setCurrentSession(sess);
+        }
       })
-      .catch(() => {
-        // Fallback session object for offline / demo mode
+      .catch((err) => {
+        console.warn("Backend session creation fallback active", err);
         const fallbackSession: Session = {
           session_id: "sess_" + Math.random().toString(36).substring(2, 10),
           anonymous_user_id: "anon_demo",
@@ -1023,7 +1036,6 @@ export default function App() {
           started_at: new Date().toISOString(),
         };
         setCurrentSession(fallbackSession);
-        setStep("drawing");
       });
   };
 
@@ -1035,18 +1047,31 @@ export default function App() {
     }
     try {
       await ChittakalaClient.uploadDrawing(currentSession.session_id, file).catch(() => {});
-      const feedback = await ChittakalaClient.requestReflection(currentSession.session_id, file);
+      const feedback = await ChittakalaClient.requestReflection(currentSession.session_id, file).catch(() => null);
+      const completedSession = await ChittakalaClient.completeSession(currentSession.session_id);
 
       setCurrentSession({
-        ...currentSession,
+        ...completedSession,
         status: "completed",
-        feedback: feedback,
+        feedback: feedback || {
+          visual_observation: "Your drawing shows steady alignment and clean hand-drawn lines on paper.",
+          encouragement: "Taking a 5-minute creative pause brings focus and calm to your day.",
+          next_step: "Try repeating this pattern tomorrow or explore another category.",
+          safety_status: "safe",
+          needs_retake: false,
+          fallback_used: true,
+        },
       });
       setStep("summary");
     } catch (err) {
-      console.warn("Gemini AI reflection error, using local fallback", err);
+      console.warn("Gemini AI reflection error, using fallback and forced completion", err);
+      let completedSession = currentSession;
+      try {
+        completedSession = await ChittakalaClient.completeSession(currentSession.session_id);
+      } catch (e) {}
+
       setCurrentSession({
-        ...currentSession,
+        ...completedSession,
         status: "completed",
         feedback: {
           visual_observation: "Your drawing shows steady alignment and clean hand-drawn lines on paper.",
@@ -1063,8 +1088,10 @@ export default function App() {
 
   // Finish session without AI feedback
   const handleFinishWithoutAI = () => {
-    if (currentSession) {
-      setCurrentSession({ ...currentSession, status: "completed" });
+    if (currentSession && currentSession.session_id) {
+      ChittakalaClient.completeSession(currentSession.session_id)
+        .then((updated) => setCurrentSession(updated))
+        .catch(() => setCurrentSession({ ...currentSession, status: "completed" }));
     }
     setStep("summary");
   };
@@ -1156,7 +1183,11 @@ export default function App() {
                   selectedArtFormId === "madhubani" ? "Madhubani" :
                   selectedArtFormId === "gond" ? "Gond Art" : "Indian Folk Art"
                 }
-                categories={categories}
+                categories={
+                  categories && categories.filter((c) => c.art_form_id === selectedArtFormId).length > 0
+                    ? categories.filter((c) => c.art_form_id === selectedArtFormId)
+                    : getFallbackCategories(selectedArtFormId)
+                }
                 selectedCategoryId={selectedCategoryId}
                 onSelectCategory={handleSelectCategory}
                 onBack={() => setStep("art_forms")}
@@ -1169,7 +1200,11 @@ export default function App() {
                   categories.find((c) => c.category_id === selectedCategoryId)?.title ||
                   selectedCategoryId.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
                 }
-                exercises={exercises}
+                exercises={
+                  exercises && exercises.filter((e) => e.category_id === selectedCategoryId).length > 0
+                    ? exercises.filter((e) => e.category_id === selectedCategoryId)
+                    : getFallbackExercises(selectedArtFormId, selectedCategoryId)
+                }
                 onSelectExercise={handleSelectExercise}
                 onBack={() => setStep("categories")}
               />

@@ -145,11 +145,20 @@ export class ChittakalaClient {
     return res.json();
   }
 
-  static async completeSession(sessionId: string): Promise<Session> {
-    const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}/complete`, {
-      method: "POST",
-    });
-    if (!res.ok) throw new Error("Failed to complete session");
-    return res.json();
+  static async completeSession(sessionId: string, retries = 3): Promise<Session> {
+    for (let attempt = 0; attempt < retries; attempt++) {
+      try {
+        const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}/complete`, {
+          method: "POST",
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (err) {
+        if (attempt === retries - 1) throw err;
+      }
+      await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+    }
+    throw new Error("Failed to complete session after retries");
   }
 }

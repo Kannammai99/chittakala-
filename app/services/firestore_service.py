@@ -96,16 +96,15 @@ class FirestoreService:
     # --- ART FORMS ---
     @classmethod
     def save_art_form(cls, art_form: ArtForm) -> None:
-        client = cls.get_client()
         doc_data = cls._serialize_doc(art_form.model_dump())
+        cls._in_memory_docs["art_forms"][art_form.art_form_id] = doc_data
+        client = cls.get_client()
         if client:
             try:
                 client.collection("art_forms").document(art_form.art_form_id).set(doc_data)
-                return
             except Exception as exc:
-                logger.warning(f"Firestore save_art_form failed, using in-memory fallback: {exc}")
+                logger.warning(f"Firestore save_art_form failed: {exc}")
                 cls._use_firestore = False
-        cls._in_memory_docs["art_forms"][art_form.art_form_id] = doc_data
 
     @classmethod
     def get_art_forms(cls) -> List[ArtForm]:
@@ -153,16 +152,15 @@ class FirestoreService:
     # --- CATEGORIES ---
     @classmethod
     def save_category(cls, category: Category) -> None:
-        client = cls.get_client()
         doc_data = cls._serialize_doc(category.model_dump())
+        cls._in_memory_docs["categories"][category.category_id] = doc_data
+        client = cls.get_client()
         if client:
             try:
                 client.collection("categories").document(category.category_id).set(doc_data)
-                return
             except Exception as exc:
-                logger.warning(f"Firestore save_category failed, using in-memory fallback: {exc}")
+                logger.warning(f"Firestore save_category failed: {exc}")
                 cls._use_firestore = False
-        cls._in_memory_docs["categories"][category.category_id] = doc_data
 
     @classmethod
     def get_categories_by_art_form(cls, art_form_id: str) -> List[Category]:
@@ -210,16 +208,15 @@ class FirestoreService:
     # --- EXERCISES ---
     @classmethod
     def save_exercise(cls, exercise: Exercise) -> None:
-        client = cls.get_client()
         doc_data = cls._serialize_doc(exercise.model_dump())
+        cls._in_memory_docs["exercises"][exercise.exercise_id] = doc_data
+        client = cls.get_client()
         if client:
             try:
                 client.collection("exercises").document(exercise.exercise_id).set(doc_data)
-                return
             except Exception as exc:
-                logger.warning(f"Firestore save_exercise failed, using in-memory fallback: {exc}")
+                logger.warning(f"Firestore save_exercise failed: {exc}")
                 cls._use_firestore = False
-        cls._in_memory_docs["exercises"][exercise.exercise_id] = doc_data
 
     @classmethod
     def get_exercises_by_category(cls, category_id: str) -> List[Exercise]:

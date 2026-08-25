@@ -87,83 +87,76 @@ class GeminiReflectionService:
             )
             return fallback_res
 
-        try:
-            from google import genai
-            from google.genai import types
+        model_candidates = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.1-flash-lite"]
+        last_error = None
 
-            system_instruction = MultiAgentCoordinator.get_orchestrated_system_instruction(
-                art_form_title=art_form_title,
-                exercise_title=exercise_title
-            )
+        for model_name in model_candidates:
+            try:
+                from google import genai
+                from google.genai import types
 
-            prompt = (
-                f"Analyze this hand-drawn {art_form_title} sketch of '{exercise_title}'.\n"
-                f"Observe the hand-drawn lines, dots, curves, or geometric motifs on paper.\n"
-                f"Provide a warm, encouraging 3-part reflection adhering strictly to the JSON schema."
-            )
-
-            response = self.client.models.generate_content(
-                model=model_name,
-                contents=[
-                    types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
-                    prompt
-                ],
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    response_mime_type="application/json",
-                    response_schema=GeminiReflectionResponse,
-                    temperature=0.4,
-                    max_output_tokens=800,
+                system_instruction = MultiAgentCoordinator.get_orchestrated_system_instruction(
+                    art_form_title=art_form_title,
+                    exercise_title=exercise_title
                 )
-            )
 
-            latency_ms = int((time.time() - start_time) * 1000)
-
-            if response and response.text:
-                text = response.text.strip()
-                if "```" in text:
-                    lines = [line for line in text.split("\n") if not line.strip().startswith("```")]
-                    text = "\n".join(lines).strip()
-                reflection = GeminiReflectionResponse.model_validate_json(text)
-                reflection.fallback_used = False
-
-                telemetry_service.log_ai_reliability_event(
-                    session_id=session_id,
-                    model_name=model_name,
-                    latency_ms=latency_ms,
-                    fallback_used=False,
-                    safety_status=reflection.safety_status,
-                    needs_retake=reflection.needs_retake
+                prompt = (
+                    f"Analyze this hand-drawn {art_form_title} sketch of '{exercise_title}'.\n"
+                    f"Observe the hand-drawn lines, dots, curves, or geometric motifs on paper.\n"
+                    f"Provide a warm, encouraging 3-part reflection adhering strictly to the JSON schema."
                 )
-                return reflection
-            else:
-                logger.warning("Empty response from Gemini API. Using fallback.")
-                fallback_res = self.generate_fallback_reflection(art_form_title)
-                telemetry_service.log_ai_reliability_event(
-                    session_id=session_id,
-                    model_name=model_name,
-                    latency_ms=latency_ms,
-                    fallback_used=True,
-                    safety_status="safe",
-                    needs_retake=False,
-                    error_message="Empty API response"
-                )
-                return fallback_res
 
-        except Exception as e:
-            logger.error(f"Gemini API reflection error: {e}. Falling back safely.")
-            latency_ms = int((time.time() - start_time) * 1000)
-            fallback_res = self.generate_fallback_reflection(art_form_title)
-            telemetry_service.log_ai_reliability_event(
-                session_id=session_id,
-                model_name=model_name,
-                latency_ms=latency_ms,
-                fallback_used=True,
-                safety_status="safe",
-                needs_retake=False,
-                error_message=str(e)
-            )
-            return fallback_res
+                response = self.client.models.generate_content(
+                    model=model_name,
+                    contents=[
+                        types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                        prompt
+                    ],
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_instruction,
+                        response_mime_type="application/json",
+                        response_schema=GeminiReflectionResponse,
+                        temperature=0.4,
+                        max_output_tokens=800,
+                    )
+                )
+
+                latency_ms = int((time.time() - start_time) * 1000)
+
+                if response and response.text:
+                    text = response.text.strip()
+                    if "```" in text:
+                        lines = [line for line in text.split("\n") if not line.strip().startswith("```")]
+                        text = "\n".join(lines).strip()
+                    reflection = GeminiReflectionResponse.model_validate_json(text)
+                    reflection.fallback_used = False
+
+                    telemetry_service.log_ai_reliability_event(
+                        session_id=session_id,
+                        model_name=model_name,
+                        latency_ms=latency_ms,
+                        fallback_used=False,
+                        safety_status=reflection.safety_status,
+                        needs_retake=reflection.needs_retake
+                    )
+                    return reflection
+            except Exception as e:
+                logger.warning(f"Gemini API model {model_name} failed: {e}. Trying next model...")
+                last_error = e
+
+        logger.error(f"All Gemini API model candidates failed. Last error: {last_error}. Falling back safely to local synthesis.")
+        latency_ms = int((time.time() - start_time) * 1000)
+        fallback_res = self.generate_fallback_reflection(art_form_title)
+        telemetry_service.log_ai_reliability_event(
+            session_id=session_id,
+            model_name="fallback_adk",
+            latency_ms=latency_ms,
+            fallback_used=True,
+            safety_status="safe",
+            needs_retake=False,
+            error_message=str(last_error) if last_error else "Model candidates exhausted"
+        )
+        return fallback_res
 
 
 # Global singleton instance

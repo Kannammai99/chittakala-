@@ -115,7 +115,12 @@ export const ExampleCarouselView: React.FC<ExampleCarouselViewProps> = ({
             alt={currentExercise.title}
             style={{ width: "100%", height: "120px", objectFit: "contain", display: "block" }}
             onError={(e) => {
-              (e.target as HTMLElement).style.display = "none";
+              const target = e.target as HTMLImageElement;
+              if (target.src.endsWith(".png")) {
+                target.src = target.src.replace(/\.png$/, ".svg");
+              } else if (!target.src.includes("data:image/svg+xml")) {
+                target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='120' viewBox='0 0 200 120'><rect width='200' height='120' fill='%23F8FAFC' rx='12'/><circle cx='100' cy='60' r='30' fill='none' stroke='%23FF523B' stroke-width='3' stroke-dasharray='5 5'/><circle cx='100' cy='60' r='5' fill='%23FF523B'/><circle cx='75' cy='60' r='4' fill='%236366F1'/><circle cx='125' cy='60' r='4' fill='%236366F1'/><circle cx='100' cy='35' r='4' fill='%236366F1'/><circle cx='100' cy='85' r='4' fill='%236366F1'/><text x='100' y='108' font-family='sans-serif' font-size='9' font-weight='bold' fill='%2364748B' text-anchor='middle'>CHITTAKALA PATTERN</text></svg>";
+              }
             }}
           />
           <span style={{ fontSize: "0.7rem", color: "var(--color-accent-coral)", marginTop: "6px", fontWeight: 800, padding: "2px 10px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.1)" }}>

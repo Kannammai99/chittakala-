@@ -1,6 +1,8 @@
 from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile, status
+from app.models.feedback import Feedback
 from app.models.session import Session, SessionCheckInUpdate, SessionCreate, SessionSummary
 from app.services.session_service import SessionService
+from app.services.firestore_service import FirestoreService
 from app.services.upload_service import UploadService
 from app.services.telemetry_service import telemetry_service
 
@@ -132,9 +134,24 @@ async def generate_gemini_reflection(session_id: str, file: UploadFile = File(..
         art_form_title=art_form_title,
     )
 
-    # Attach reflection JSON payload to session state
-    if session_id in SessionService._sessions:
-        SessionService._sessions[session_id].feedback_id = "fb_" + session_id[:8]
+    # Save Feedback record and update session feedback_id in Firestore (Section 2.10)
+    feedback_id = f"fb_{session_id[:8]}"
+    session.feedback_id = feedback_id
+    FirestoreService.save_session(session)
+    model_name = reflection.model_name if hasattr(reflection, "model_name") else "gemini-2.5-flash"
+    latency_ms = reflection.latency_ms if hasattr(reflection, "latency_ms") else 0
+    feedback_record = Feedback(
+        feedback_id=feedback_id,
+        session_id=session_id,
+        visual_observation=reflection.visual_observation,
+        encouragement=reflection.encouragement,
+        next_step=reflection.next_step,
+        safety_status=reflection.safety_status,
+        fallback_used=reflection.fallback_used,
+        model_name=model_name,
+        latency_ms=latency_ms,
+    )
+    FirestoreService.save_feedback(feedback_record)
 
     return reflection.model_dump()
 

@@ -3,15 +3,18 @@ from datetime import datetime, timezone
 from typing import Dict, Optional
 from app.models.session import PostCheckInOption, Session, SessionCreate, SessionSummary
 from app.services.art_service import ArtService
+from app.services.firestore_service import FirestoreService
 
 
 class SessionService:
-    # In-memory session store (ready to swap with Firestore implementation)
-    _sessions: Dict[str, Session] = {}
+    """
+    Operational Session Management Engine backed by Firestore (Section 2.10).
+    Manages session creation, active state tracking, drawing attachments, completions, and privacy deletion.
+    """
 
     @classmethod
     def create_session(cls, data: SessionCreate) -> Session:
-        """Validate exercise hierarchy and create a new operational session."""
+        """Validate exercise hierarchy and create a new persistent operational session."""
         exercise = ArtService.get_exercise_by_id(data.exercise_id)
         if not exercise:
             raise ValueError(f"Exercise '{data.exercise_id}' not found or inactive.")
@@ -37,16 +40,13 @@ class SessionService:
             started_at=datetime.now(timezone.utc),
         )
 
-        cls._sessions[session_id] = session
+        FirestoreService.save_session(session)
         return session
 
     @classmethod
     def get_session(cls, session_id: str) -> Optional[Session]:
         """Retrieve an operational session by ID if not deleted."""
-        session = cls._sessions.get(session_id)
-        if session and session.status == "deleted":
-            return None
-        return session
+        return FirestoreService.get_session(session_id)
 
     @classmethod
     def attach_drawing(cls, session_id: str, drawing_path: str) -> Session:
@@ -58,6 +58,7 @@ class SessionService:
             raise ValueError(f"Cannot upload drawing for session in '{session.status}' status.")
         
         session.drawing_path = drawing_path
+        FirestoreService.save_session(session)
         return session
 
     @classmethod
@@ -67,6 +68,7 @@ class SessionService:
         if not session:
             raise KeyError(f"Session '{session_id}' not found or deleted.")
         session.post_check_in = post_check_in
+        FirestoreService.save_session(session)
         return session
 
     @classmethod
@@ -80,6 +82,7 @@ class SessionService:
         session.completed_at = now
         session.duration_seconds = max(0, int((now - session.started_at).total_seconds()))
         session.status = "completed"
+        FirestoreService.save_session(session)
         return session
 
     @classmethod
@@ -89,6 +92,12 @@ class SessionService:
         if not session:
             raise KeyError(f"Session '{session_id}' not found or deleted.")
         
+        feedback_data = None
+        if getattr(session, "feedback_id", None):
+            feedback_obj = FirestoreService.get_feedback(session.feedback_id)
+            if feedback_obj:
+                feedback_data = feedback_obj.model_dump()
+
         return SessionSummary(
             session_id=session.session_id,
             display_name=session.display_name,
@@ -102,21 +111,15 @@ class SessionService:
             completed_at=session.completed_at,
             duration_seconds=session.duration_seconds,
             drawing_path=session.drawing_path,
-            feedback=None,  # Will be populated when Gemini reflection service is connected
+            feedback=feedback_data,
         )
 
     @classmethod
     def delete_session(cls, session_id: str) -> Dict[str, str]:
         """Delete operational session record and drawing reference (FR-15)."""
-        session = cls._sessions.get(session_id)
-        if not session or session.status == "deleted":
+        success = FirestoreService.delete_session(session_id)
+        if not success:
             raise KeyError(f"Session '{session_id}' not found or already deleted.")
-
-        session.status = "deleted"
-        session.display_name = None  # Privacy NFR: remove display_name on deletion
-        session.drawing_path = None  # Delete private drawing reference
-        # Remove from active map
-        cls._sessions.pop(session_id, None)
 
         return {
             "session_id": session_id,
@@ -126,5 +129,5 @@ class SessionService:
 
     @classmethod
     def clear_all(cls) -> None:
-        """Reset in-memory session store (used in test setup)."""
-        cls._sessions.clear()
+        """Reset operational session store (used in test setup)."""
+        FirestoreService.clear_all()

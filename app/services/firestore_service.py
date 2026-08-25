@@ -117,8 +117,9 @@ class FirestoreService:
                 for doc in docs:
                     data = cls._deserialize_doc(doc.to_dict())
                     art_forms.append(ArtForm(**data))
-                art_forms.sort(key=lambda x: x.display_order)
-                return art_forms
+                if art_forms:
+                    art_forms.sort(key=lambda x: x.display_order)
+                    return art_forms
             except Exception as exc:
                 logger.warning(f"Firestore get_art_forms failed, using in-memory fallback: {exc}")
                 cls._use_firestore = False
@@ -173,8 +174,9 @@ class FirestoreService:
                 for doc in docs:
                     data = cls._deserialize_doc(doc.to_dict())
                     categories.append(Category(**data))
-                categories.sort(key=lambda x: x.display_order)
-                return categories
+                if categories:
+                    categories.sort(key=lambda x: x.display_order)
+                    return categories
             except Exception as exc:
                 logger.warning(f"Firestore get_categories_by_art_form failed, using in-memory fallback: {exc}")
                 cls._use_firestore = False
@@ -229,7 +231,8 @@ class FirestoreService:
                 for doc in docs:
                     data = cls._deserialize_doc(doc.to_dict())
                     exercises.append(Exercise(**data))
-                return exercises
+                if exercises:
+                    return exercises
             except Exception as exc:
                 logger.warning(f"Firestore get_exercises_by_category failed, using in-memory fallback: {exc}")
                 cls._use_firestore = False

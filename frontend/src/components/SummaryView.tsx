@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, Trash2, RotateCcw, Sparkles, ShieldCheck, HeartHandshake, Smile, Zap, Wind, HelpCircle } from "lucide-react";
+import { CheckCircle2, Trash2, RotateCcw, Sparkles, ShieldCheck, HeartHandshake, Smile, Zap, Wind, HelpCircle, AlertTriangle } from "lucide-react";
 import { Session, ChittakalaClient } from "../api/chittakalaClient";
 
 interface SummaryViewProps {
@@ -115,52 +115,90 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
           {session.display_name ? `Awesome job, ${session.display_name}!` : "Great job completing your 5-minute creative pause!"}
         </p>
 
-        {/* Gemini AI Multimodal Vision Reflection Display */}
-        <div
-          style={{
-            background: "linear-gradient(135deg, #FFF5F3 0%, #FFFFFF 100%)",
-            border: "2px solid #FFE4E0",
-            borderRadius: "20px",
-            padding: "20px",
-            marginBottom: "24px",
-            textAlign: "left",
-            boxShadow: "0 8px 24px rgba(255, 82, 59, 0.08)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-            <Sparkles size={20} color="var(--color-accent-coral)" />
-            <h3 style={{ fontSize: "1.05rem", fontWeight: 900, color: "#0F172A" }}>
-              Creative Reflection Feedback
-            </h3>
-          </div>
-
-          <div style={{ marginBottom: "14px" }}>
-            <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--color-accent-coral)", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "3px" }}>
-              Visual Observation
-            </span>
-            <p style={{ fontSize: "0.92rem", color: "#334155", lineHeight: 1.55, fontWeight: 500 }}>
-              {reflection.visual_observation}
+        {/* Gemini AI Multimodal Vision Reflection / Transparent Fallback Banner Display */}
+        {reflection.fallback_used ? (
+          <div
+            style={{
+              background: "#FFFBEB",
+              border: "2px solid #FDE68A",
+              borderRadius: "20px",
+              padding: "20px",
+              marginBottom: "24px",
+              textAlign: "left",
+              boxShadow: "0 6px 18px rgba(245, 158, 11, 0.08)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+              <AlertTriangle size={20} color="#D97706" />
+              <h3 style={{ fontSize: "1.02rem", fontWeight: 900, color: "#92400E" }}>
+                AI Analysis Unavailable
+              </h3>
+            </div>
+            <p style={{ fontSize: "0.9rem", color: "#B45309", lineHeight: 1.55, fontWeight: 500, margin: 0 }}>
+              We couldn't analyze the photograph right now. Your activity is safely recorded, and you can retry the reflection or continue without AI.
             </p>
           </div>
+        ) : (
+          <div
+            style={{
+              background: "linear-gradient(135deg, #FFF5F3 0%, #FFFFFF 100%)",
+              border: "2px solid #FFE4E0",
+              borderRadius: "20px",
+              padding: "20px",
+              marginBottom: "24px",
+              textAlign: "left",
+              boxShadow: "0 8px 24px rgba(255, 82, 59, 0.08)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Sparkles size={20} color="var(--color-accent-coral)" />
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 900, color: "#0F172A" }}>
+                  Gemini AI Vision Reflection
+                </h3>
+              </div>
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  padding: "3px 10px",
+                  borderRadius: "9999px",
+                  background: "rgba(16, 185, 129, 0.12)",
+                  color: "#10B981",
+                  fontWeight: 800,
+                }}
+              >
+                ✓ Live Gemini Vision
+              </span>
+            </div>
 
-          <div style={{ marginBottom: "14px" }}>
-            <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "3px" }}>
-              Affirmation & Encouragement
-            </span>
-            <p style={{ fontSize: "0.92rem", color: "#334155", lineHeight: 1.55, fontWeight: 500 }}>
-              {reflection.encouragement}
-            </p>
-          </div>
+            <div style={{ marginBottom: "14px" }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--color-accent-coral)", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "3px" }}>
+                Visual Observation
+              </span>
+              <p style={{ fontSize: "0.92rem", color: "#334155", lineHeight: 1.55, fontWeight: 500 }}>
+                {reflection.visual_observation}
+              </p>
+            </div>
 
-          <div>
-            <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "3px" }}>
-              Next Creative Step
-            </span>
-            <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, fontWeight: 500 }}>
-              {reflection.next_step}
-            </p>
+            <div style={{ marginBottom: "14px" }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "3px" }}>
+                Affirmation & Encouragement
+              </span>
+              <p style={{ fontSize: "0.92rem", color: "#334155", lineHeight: 1.55, fontWeight: 500 }}>
+                {reflection.encouragement}
+              </p>
+            </div>
+
+            <div>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "3px" }}>
+                Next Creative Step
+              </span>
+              <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, fontWeight: 500 }}>
+                {reflection.next_step}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Interactive Post-Activity Check-In Card */}
         <div

@@ -87,7 +87,13 @@ class GeminiReflectionService:
             )
             return fallback_res
 
-        model_candidates = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.1-flash-lite"]
+        model_candidates = [
+            "gemini-3.5-flash",
+            "gemini-3.6-flash",
+            "gemini-3.7-flash",
+            "gemini-3.5-flash-lite",
+            "gemini-flash-latest"
+        ]
         last_error = None
 
         for model_name in model_candidates:

@@ -131,8 +131,9 @@ export class ChittakalaClient {
   ): Promise<any> {
     let targetSessionId = sessionId;
 
-    // 1. If local session, create real session on backend first
-    if (targetSessionId.startsWith("sess_local_") && exerciseData) {
+    // 1. If local / demo / unconfirmed session, create real session on backend first
+    const isServerSession = targetSessionId && targetSessionId.length === 17 && !targetSessionId.includes("demo") && !targetSessionId.includes("local");
+    if (!isServerSession && exerciseData) {
       try {
         const newSess = await this.createSession(exerciseData);
         if (newSess && newSess.session_id) {

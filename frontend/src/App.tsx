@@ -1047,9 +1047,10 @@ export default function App() {
     }
 
     let activeSessionId = currentSession.session_id;
+    const isServerSession = activeSessionId && activeSessionId.length === 17 && !activeSessionId.includes("demo") && !activeSessionId.includes("local");
 
     // Ensure session is registered on backend before requesting reflection
-    if (activeSessionId.startsWith("sess_local_") && selectedExercise) {
+    if (!isServerSession && selectedExercise) {
       try {
         const realSess = await ChittakalaClient.createSession({
           art_form_id: selectedExercise.art_form_id,

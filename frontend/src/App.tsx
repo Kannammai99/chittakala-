@@ -1098,9 +1098,6 @@ export default function App() {
 
   // Delete session
   const handleDeleteSession = () => {
-    if (currentSession) {
-      fetch(`/api/sessions/${currentSession.session_id}`, { method: "DELETE" }).catch(() => {});
-    }
     setCurrentSession(null);
     setStep("welcome");
     setActiveTab("home");

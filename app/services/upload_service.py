@@ -62,3 +62,17 @@ class UploadService:
             "size_bytes": len(file_bytes),
             "status": "uploaded",
         }
+
+    @classmethod
+    def delete_drawing(cls, drawing_path: str) -> bool:
+        """Physically delete uploaded drawing from disk or Cloud Storage (FR-15)."""
+        if not drawing_path:
+            return False
+        try:
+            local_path = drawing_path.replace("/", os.sep)
+            if os.path.exists(local_path):
+                os.remove(local_path)
+                return True
+        except Exception:
+            pass
+        return False

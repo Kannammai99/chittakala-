@@ -117,6 +117,14 @@ class SessionService:
     @classmethod
     def delete_session(cls, session_id: str) -> Dict[str, str]:
         """Delete operational session record and drawing reference (FR-15)."""
+        session = FirestoreService.get_session(session_id)
+        if not session or session.status == "deleted":
+            raise KeyError(f"Session '{session_id}' not found or already deleted.")
+
+        if session.drawing_path:
+            from app.services.upload_service import UploadService
+            UploadService.delete_drawing(session.drawing_path)
+
         success = FirestoreService.delete_session(session_id)
         if not success:
             raise KeyError(f"Session '{session_id}' not found or already deleted.")

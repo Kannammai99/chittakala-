@@ -47,8 +47,7 @@ def test_full_session_lifecycle_happy_path():
 
     # 5. Delete session (FR-15 Privacy requirement)
     delete_resp = client.delete(f"/sessions/{session_id}")
-    assert delete_resp.status_code == 200
-    assert delete_resp.json()["status"] == "deleted"
+    assert delete_resp.status_code == 204
 
     # 6. Verify session no longer exists (404 Not Found)
     verify_resp = client.get(f"/sessions/{session_id}/summary")

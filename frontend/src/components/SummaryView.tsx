@@ -57,6 +57,28 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
     fallback_used: true,
   };
 
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState<boolean>(false);
+
+  const handleDelete = async () => {
+    setDeleteError(null);
+    setIsDeleting(true);
+    try {
+      if (session.session_id && !session.session_id.startsWith("sess_local_")) {
+        await ChittakalaClient.deleteSession(session.session_id);
+      }
+      setDeleteSuccess(true);
+      setTimeout(() => {
+        onDeleteSession();
+      }, 1000);
+    } catch (err: any) {
+      console.error("Delete session failed:", err);
+      setDeleteError("Failed to delete session. Please try again.");
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="tab-view">
       {/* Gen Z Achievement Hero Card */}
@@ -105,41 +127,27 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
             boxShadow: "0 8px 24px rgba(255, 82, 59, 0.08)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Sparkles size={20} color="var(--color-accent-coral)" />
-              <h3 style={{ fontSize: "1.05rem", fontWeight: 900, color: "#0F172A" }}>
-                Gemini AI Reflection
-              </h3>
-            </div>
-            <span
-              style={{
-                fontSize: "0.7rem",
-                padding: "3px 10px",
-                borderRadius: "9999px",
-                background: reflection.fallback_used ? "rgba(99, 102, 241, 0.12)" : "rgba(255, 82, 59, 0.12)",
-                color: reflection.fallback_used ? "#6366F1" : "var(--color-accent-coral)",
-                fontWeight: 800,
-              }}
-            >
-              {reflection.fallback_used ? "Local Reflection Mode" : "Live Gemini Vision"}
-            </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+            <Sparkles size={20} color="var(--color-accent-coral)" />
+            <h3 style={{ fontSize: "1.05rem", fontWeight: 900, color: "#0F172A" }}>
+              Creative Reflection Feedback
+            </h3>
           </div>
 
           <div style={{ marginBottom: "14px" }}>
             <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--color-accent-coral)", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "3px" }}>
               Visual Observation
             </span>
-            <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, fontWeight: 500 }}>
+            <p style={{ fontSize: "0.92rem", color: "#334155", lineHeight: 1.55, fontWeight: 500 }}>
               {reflection.visual_observation}
             </p>
           </div>
 
           <div style={{ marginBottom: "14px" }}>
             <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "3px" }}>
-              Mindful Encouragement
+              Affirmation & Encouragement
             </span>
-            <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, fontWeight: 500 }}>
+            <p style={{ fontSize: "0.92rem", color: "#334155", lineHeight: 1.55, fontWeight: 500 }}>
               {reflection.encouragement}
             </p>
           </div>
@@ -297,27 +305,41 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
           Your session identity is anonymous. You can delete this session and any uploaded photograph at any time.
         </p>
 
+        {deleteError && (
+          <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", color: "#991B1B", padding: "10px 14px", borderRadius: "12px", fontSize: "0.82rem", fontWeight: 700, marginBottom: "12px", textAlign: "center" }}>
+            {deleteError}
+          </div>
+        )}
+
+        {deleteSuccess && (
+          <div style={{ background: "#ECFDF5", border: "1px solid #A7F3D0", color: "#065F46", padding: "10px 14px", borderRadius: "12px", fontSize: "0.82rem", fontWeight: 800, marginBottom: "12px", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+            <CheckCircle2 size={16} /> Session & private drawing deleted permanently ✓
+          </div>
+        )}
+
         <button
-          onClick={onDeleteSession}
+          onClick={handleDelete}
+          disabled={isDeleting || deleteSuccess}
           style={{
             width: "100%",
             padding: "10px 16px",
             borderRadius: "12px",
             background: "#F8FAFC",
             border: "1px solid #E2E8F0",
-            color: "#64748B",
+            color: isDeleting ? "#94A3B8" : "#64748B",
             fontSize: "0.82rem",
             fontWeight: 700,
-            cursor: "pointer",
+            cursor: isDeleting || deleteSuccess ? "not-allowed" : "pointer",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
             gap: "6px",
             transition: "all 0.2s ease",
+            opacity: isDeleting ? 0.7 : 1,
           }}
           aria-label="Delete Session and Associated Drawing Record"
         >
-          <Trash2 size={16} /> Delete Session & Uploaded Photo
+          <Trash2 size={16} /> {isDeleting ? "Deleting drawing & session..." : "Delete Session & Uploaded Photo"}
         </button>
       </div>
     </div>

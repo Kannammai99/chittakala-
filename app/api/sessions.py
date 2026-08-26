@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, File, HTTPException, Response, UploadFile, status
 from app.models.feedback import Feedback
 from app.models.session import Session, SessionCheckInUpdate, SessionCreate, SessionSummary
 from app.services.session_service import SessionService
@@ -245,14 +245,14 @@ async def get_session_summary(session_id: str):
 
 @router.delete(
     "/sessions/{session_id}",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete session and associated drawing (FR-15)",
     description="Deletes operational session record and removes private drawing path to protect user privacy.",
 )
 async def delete_session(session_id: str):
     try:
-        res = SessionService.delete_session(session_id)
-        return res
+        SessionService.delete_session(session_id)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     except KeyError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

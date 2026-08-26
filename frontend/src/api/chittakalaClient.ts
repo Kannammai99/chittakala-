@@ -161,4 +161,14 @@ export class ChittakalaClient {
     }
     throw new Error("Failed to complete session after retries");
   }
+
+  static async deleteSession(sessionId: string): Promise<boolean> {
+    const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}`, {
+      method: "DELETE",
+    });
+    if (res.status === 204 || res.ok) {
+      return true;
+    }
+    throw new Error(`Failed to delete session (Status ${res.status})`);
+  }
 }

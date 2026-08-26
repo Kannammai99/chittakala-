@@ -92,7 +92,7 @@ export default function App() {
     setDisplayName(val);
     localStorage.setItem("chittakala_display_name", val);
   };
-  const [selectedCheckIn, setSelectedCheckIn] = useState<string>("busy");
+  const [selectedCheckIn, setSelectedCheckIn] = useState<string>("skipped");
   const [backendStatus, setBackendStatus] = useState<string>("Checking API...");
   
   const [artForms, setArtForms] = useState<ArtForm[]>(ALL_INDIAN_ART_FORMS);
@@ -1159,7 +1159,10 @@ export default function App() {
                 selectedCheckIn={selectedCheckIn}
                 onSelectCheckIn={setSelectedCheckIn}
                 onContinue={() => setStep("art_forms")}
-                onSkip={() => setStep("art_forms")}
+                onSkip={() => {
+                  setSelectedCheckIn("skipped");
+                  setStep("art_forms");
+                }}
                 onBackToHome={() => setStep("welcome")}
               />
             )}

@@ -11,6 +11,7 @@ class PreCheckInOption(str, Enum):
     RESTLESS = "restless"
     BUSY = "busy"
     PREFER_NOT_TO_SAY = "prefer_not_to_say"
+    SKIPPED = "skipped"
 
 
 class PostCheckInOption(str, Enum):

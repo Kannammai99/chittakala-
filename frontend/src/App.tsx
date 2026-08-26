@@ -1045,13 +1045,39 @@ export default function App() {
       setStep("summary");
       return;
     }
+
+    let activeSessionId = currentSession.session_id;
+
+    // Ensure session is registered on backend before requesting reflection
+    if (activeSessionId.startsWith("sess_local_") && selectedExercise) {
+      try {
+        const realSess = await ChittakalaClient.createSession({
+          art_form_id: selectedExercise.art_form_id,
+          category_id: selectedExercise.category_id,
+          exercise_id: selectedExercise.exercise_id,
+          display_name: displayName || undefined,
+          pre_check_in: selectedCheckIn || undefined,
+        });
+        if (realSess && realSess.session_id) {
+          activeSessionId = realSess.session_id;
+        }
+      } catch (e) {
+        console.warn("Session creation retry before reflect:", e);
+      }
+    }
+
     try {
-      await ChittakalaClient.uploadDrawing(currentSession.session_id, file).catch(() => {});
-      const feedback = await ChittakalaClient.requestReflection(currentSession.session_id, file).catch(() => null);
-      const completedSession = await ChittakalaClient.completeSession(currentSession.session_id);
+      await ChittakalaClient.uploadDrawing(activeSessionId, file).catch(() => {});
+      const feedback = await ChittakalaClient.requestReflection(activeSessionId, file).catch(() => null);
+      const completedSession = await ChittakalaClient.completeSession(activeSessionId).catch(() => ({
+        ...currentSession,
+        session_id: activeSessionId,
+        status: "completed",
+      }));
 
       setCurrentSession({
         ...completedSession,
+        session_id: activeSessionId,
         status: "completed",
         feedback: feedback || {
           visual_observation: "Your drawing shows steady alignment and clean hand-drawn lines on paper.",
@@ -1065,13 +1091,14 @@ export default function App() {
       setStep("summary");
     } catch (err) {
       console.warn("Gemini AI reflection error, using fallback and forced completion", err);
-      let completedSession = currentSession;
+      let completedSession = { ...currentSession, session_id: activeSessionId };
       try {
-        completedSession = await ChittakalaClient.completeSession(currentSession.session_id);
+        completedSession = await ChittakalaClient.completeSession(activeSessionId);
       } catch (e) {}
 
       setCurrentSession({
         ...completedSession,
+        session_id: activeSessionId,
         status: "completed",
         feedback: {
           visual_observation: "Your drawing shows steady alignment and clean hand-drawn lines on paper.",

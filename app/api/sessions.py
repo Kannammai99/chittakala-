@@ -37,10 +37,24 @@ async def upload_drawing(session_id: str, file: UploadFile = File(...)):
     # 1. Verify session existence & status
     session = SessionService.get_session(session_id)
     if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Session '{session_id}' not found or deleted.",
-        )
+        if session_id.startswith("sess_local_"):
+            session = SessionService.create_session(
+                SessionCreate(
+                    art_form_id="warli",
+                    category_id="basic-figures",
+                    exercise_id="warli-basic-01",
+                    display_name=None,
+                    pre_check_in=None,
+                )
+            )
+            session.session_id = session_id
+            FirestoreService.save_session(session)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Session '{session_id}' not found or deleted.",
+            )
+
     if session.status != "in_progress":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -101,10 +115,23 @@ async def generate_gemini_reflection(session_id: str, file: UploadFile = File(..
 
     session = SessionService.get_session(session_id)
     if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Session '{session_id}' not found or deleted.",
-        )
+        if session_id.startswith("sess_local_"):
+            session = SessionService.create_session(
+                SessionCreate(
+                    art_form_id="warli",
+                    category_id="basic-figures",
+                    exercise_id="warli-basic-01",
+                    display_name=None,
+                    pre_check_in=None,
+                )
+            )
+            session.session_id = session_id
+            FirestoreService.save_session(session)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Session '{session_id}' not found or deleted.",
+            )
 
     try:
         file_bytes = await file.read()

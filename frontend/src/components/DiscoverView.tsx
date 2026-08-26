@@ -27,12 +27,12 @@ const HERITAGE_STORIES: HeritageStory[] = [
     id: "warli",
     title: "Warli Tribal Art",
     shortTitle: "Warli Art",
-    vibeBadge: "10,000-Yr Geometry",
+    vibeBadge: "Ancient Tribal Geometry",
     origin: "Sahyadri Hills, Maharashtra",
     shortOrigin: "Maharashtra",
-    teaser: "Mud wall geometry & Tarpa dance rings",
-    hook: "Long before Instagram stories, the Warli tribe painted rice paste on red mud walls to celebrate harvests and weddings. Everything is drawn using just 3 basic shapes: circles (sun/moon), triangles (mountains), and squares (sacred land).",
-    funFact: "No paintbrushes! Warli artists traditionally chew the tip of a soft bamboo stick to create a natural brush.",
+    teaser: "Prehistoric roots & Tarpa dance rings",
+    hook: "Deeply rooted in ancient Sahyadri tribal traditions, Warli artists paint rice paste on red mud walls to celebrate harvests and community events. Everything is constructed from 3 fundamental geometric shapes: circles (sun & moon), triangles (mountains & trees), and squares (sacred land).",
+    funFact: "No paintbrushes! Warli artists traditionally chew the tip of a soft bamboo twig to create a natural fibrous brush.",
     signatures: ["Triangular torsos", "Tarpa dance circles", "Harvest seed sowing"],
     color: "var(--color-accent-coral)",
     bgColor: "rgba(255, 82, 59, 0.12)",
@@ -43,12 +43,12 @@ const HERITAGE_STORIES: HeritageStory[] = [
     id: "kolam",
     title: "Kolam Threshold Art",
     shortTitle: "Kolam Art",
-    vibeBadge: "Daily Meditation",
+    vibeBadge: "Threshold Art Ritual",
     origin: "Tamil Nadu & South India",
     shortOrigin: "Tamil Nadu",
-    teaser: "Daily sunrise dot grid focus ritual",
-    hook: "Before morning alarm apps, South Indian homes drew rice flour dot grids every single sunrise. It was a dual hack: a 5-minute morning focus ritual AND an eco-friendly gift to feed ants and birds!",
-    funFact: "Sikku Kolams are drawn with continuous curved lines that loop around dot grids without ever lifting the hand or breaking the line.",
+    teaser: "Traditional morning dot grid routine",
+    hook: "A micro-mindfulness morning ritual in South India, rice flour dot grids are drawn at household thresholds at sunrise. It serves a dual purpose: a 5-minute creative focus pause AND an eco-friendly gift to feed ants and small birds.",
+    funFact: "Sikku Kolams are drawn with continuous curved lines that loop around dot matrices (Pulli) without ever lifting the hand or breaking line symmetry.",
     signatures: ["Pulli dot matrices", "Continuous curved loops", "Floral lotus symmetry"],
     color: "var(--color-accent-indigo)",
     bgColor: "rgba(99, 102, 241, 0.12)",
@@ -59,13 +59,13 @@ const HERITAGE_STORIES: HeritageStory[] = [
     id: "madhubani",
     title: "Madhubani Folk Painting",
     shortTitle: "Madhubani",
-    vibeBadge: "Dual-Line Symmetry",
+    vibeBadge: "Mithila Dual Lines",
     origin: "Mithila Region, Bihar",
     shortOrigin: "Bihar",
     teaser: "Dual-line peacocks & flower dyes",
-    hook: "No paintbrushes? No problem! Mithila women originally used bamboo twigs, matchsticks, and natural flower dyes to paint vibrant peacocks, fish, and lotus motifs on village walls. Rule #1: Every outline MUST be a double line!",
-    funFact: "Empty spaces are never left blank in Madhubani; they are filled with delicate hatching lines, leaves, and flowers.",
-    signatures: ["Double-line outlines", "Symbolic fish of fertility", "Lotus flower creepers"],
+    hook: "Traditional Mithila women originally used bamboo twigs, matchsticks, and natural plant dyes to paint vibrant peacocks, fish, and lotus motifs on mud walls. Signature rule: Every outline MUST be drawn with double parallel lines!",
+    funFact: "Empty spaces are never left blank in Madhubani; they are filled with delicate line hatching, leaves, and flower motifs.",
+    signatures: ["Double-line outlines", "Symbolic fish of vitality", "Lotus flower creepers"],
     color: "#EC4899",
     bgColor: "rgba(236, 72, 153, 0.12)",
     thumbnail: "/art/madhubani/borders/example-01.png",
@@ -75,11 +75,11 @@ const HERITAGE_STORIES: HeritageStory[] = [
     id: "gond",
     title: "Gond Indigenous Art",
     shortTitle: "Gond Art",
-    vibeBadge: "Nature Textures",
+    vibeBadge: "Signature Dot Patterns",
     origin: "Central Belt, Madhya Pradesh",
     shortOrigin: "MP",
     teaser: "Forest animal dots & line textures",
-    hook: "Gond artists believe that seeing good art brings good fortune. They fill flowing animal and tree contours with thousands of signature dots, dashes, and wavy lines so the artwork literally vibrates with energy!",
+    hook: "Gond artists believe that viewing sacred art brings positive energy. They fill flowing animal and tree contours with thousands of signature dots, dashes, and wavy lines so the artwork vibrantly expresses nature.",
     funFact: "Every Gond artist creates their own signature line & dot pattern, almost like a visual fingerprint!",
     signatures: ["Fine vertical dashes", "Wavy line clusters", "Perching forest birds"],
     color: "#10B981",
@@ -396,6 +396,36 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Sources and Cultural Context Section */}
+      <div
+        className="genz-card"
+        style={{
+          marginTop: "20px",
+          padding: "18px 16px",
+          borderRadius: "20px",
+          background: "#F8FAFC",
+          border: "1.5px solid #E2E8F0",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+          <BookOpen size={18} color="var(--color-accent-coral)" />
+          <h4 style={{ fontSize: "0.92rem", fontWeight: 800, color: "#0F172A", margin: 0 }}>
+            Sources & Cultural Context
+          </h4>
+        </div>
+        <p style={{ fontSize: "0.8rem", color: "#475569", lineHeight: 1.5, fontWeight: 500, marginBottom: "10px" }}>
+          Cultural narratives and design elements in Chittakala are grounded in archaeological, ethnographic, and museum archives, including:
+        </p>
+        <ul style={{ fontSize: "0.78rem", color: "#64748B", lineHeight: 1.55, fontWeight: 500, paddingLeft: "18px", margin: 0 }}>
+          <li><strong>Indira Gandhi National Centre for the Arts (IGNCA)</strong> – Folk & Tribal Art Manuscripts</li>
+          <li><strong>Crafts Council of India</strong> – Heritage Craft Documentation</li>
+          <li><strong>UNESCO Intangible Cultural Heritage (ICH)</strong> – Traditional Craftsmanship Guidelines</li>
+        </ul>
+        <p style={{ fontSize: "0.74rem", color: "#94A3B8", lineHeight: 1.4, fontWeight: 500, marginTop: "10px", fontStyle: "italic" }}>
+          Note: Chittakala adapts traditional folk art motifs as gentle, non-clinical creative pauses for focus and relaxation.
+        </p>
       </div>
     </div>
   );

@@ -124,13 +124,47 @@ export class ChittakalaClient {
     return res.json();
   }
 
-  static async requestReflection(sessionId: string, file: File): Promise<any> {
+  static async requestReflection(
+    sessionId: string,
+    file: File,
+    exerciseData?: { art_form_id: string; category_id: string; exercise_id: string }
+  ): Promise<any> {
+    let targetSessionId = sessionId;
+
+    // 1. If local session, create real session on backend first
+    if (targetSessionId.startsWith("sess_local_") && exerciseData) {
+      try {
+        const newSess = await this.createSession(exerciseData);
+        if (newSess && newSess.session_id) {
+          targetSessionId = newSess.session_id;
+        }
+      } catch (e) {
+        console.warn("Failed to create backend session before reflect:", e);
+      }
+    }
+
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}/reflect`, {
+    let res = await fetch(`${getBaseUrl()}/sessions/${targetSessionId}/reflect`, {
       method: "POST",
       body: formData,
     });
+
+    // 2. If 404 (session not found on backend), create a real session and retry /reflect
+    if (res.status === 404 && exerciseData) {
+      try {
+        const fallbackSess = await this.createSession(exerciseData);
+        if (fallbackSess && fallbackSess.session_id) {
+          const retryFormData = new FormData();
+          retryFormData.append("file", file);
+          res = await fetch(`${getBaseUrl()}/sessions/${fallbackSess.session_id}/reflect`, {
+            method: "POST",
+            body: retryFormData,
+          });
+        }
+      } catch (e) {}
+    }
+
     if (!res.ok) throw new Error("Failed to generate reflection");
     return res.json();
   }

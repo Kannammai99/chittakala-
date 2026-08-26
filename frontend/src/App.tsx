@@ -1068,7 +1068,15 @@ export default function App() {
 
     try {
       await ChittakalaClient.uploadDrawing(activeSessionId, file).catch(() => {});
-      const feedback = await ChittakalaClient.requestReflection(activeSessionId, file).catch(() => null);
+      const feedback = await ChittakalaClient.requestReflection(
+        activeSessionId,
+        file,
+        selectedExercise ? {
+          art_form_id: selectedExercise.art_form_id,
+          category_id: selectedExercise.category_id,
+          exercise_id: selectedExercise.exercise_id,
+        } : undefined
+      ).catch(() => null);
       const completedSession = await ChittakalaClient.completeSession(activeSessionId).catch(() => ({
         ...currentSession,
         session_id: activeSessionId,

@@ -117,7 +117,7 @@ class GeminiReflectionService:
                         response_mime_type="application/json",
                         response_schema=GeminiReflectionResponse,
                         temperature=0.4,
-                        max_output_tokens=800,
+                        max_output_tokens=2048,
                     )
                 )
 

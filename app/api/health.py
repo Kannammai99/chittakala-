@@ -10,7 +10,7 @@ class HealthResponse(BaseModel):
     version: str
 
 
-@router.get("/health", response_model=HealthResponse)
+@router.api_route("/health", methods=["GET", "OPTIONS", "HEAD"], response_model=HealthResponse)
 async def get_health():
     return HealthResponse(
         status="ok",

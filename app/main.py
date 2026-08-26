@@ -11,10 +11,11 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Enable CORS for frontend PWA cross-origin API calls (localhost & production domains)
+# Enable CORS for frontend PWA cross-origin API calls (localhost, Vercel & production domains)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,7 +27,7 @@ app.include_router(exercises_router)
 app.include_router(sessions_router)
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "OPTIONS", "HEAD"])
 async def root():
     return {
         "message": "Welcome to Chittakala API",

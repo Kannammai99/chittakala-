@@ -976,24 +976,24 @@ class ArtService:
     def get_art_form_by_id(art_form_id: str) -> Optional[ArtForm]:
         """Find an art form by ID if active."""
         ArtService._ensure_seeded()
+        ex_seed = next((af for af in ART_FORMS_SEED if af.art_form_id == art_form_id and af.active), None)
+        if ex_seed:
+            return ex_seed
         art_form = FirestoreService.get_art_form(art_form_id)
         if art_form and art_form.active:
             return art_form
-        for af in ART_FORMS_SEED:
-            if af.art_form_id == art_form_id and af.active:
-                return af
         return None
 
     @staticmethod
     def get_category_by_id(category_id: str) -> Optional[Category]:
         """Find a category by ID if active."""
         ArtService._ensure_seeded()
+        cat_seed = next((c for c in CATEGORIES_SEED if c.category_id == category_id and c.active), None)
+        if cat_seed:
+            return cat_seed
         cat = FirestoreService.get_category(category_id)
         if cat and cat.active:
             return cat
-        for cat_seed in CATEGORIES_SEED:
-            if cat_seed.category_id == category_id and cat_seed.active:
-                return cat_seed
         return None
 
     @staticmethod
@@ -1002,13 +1002,13 @@ class ArtService:
         art_form = ArtService.get_art_form_by_id(art_form_id)
         if not art_form:
             return None
-        cats = FirestoreService.get_categories_by_art_form(art_form_id)
+        cats = [c for c in CATEGORIES_SEED if c.art_form_id == art_form_id and c.active]
         if cats:
-            return cats
-        return sorted(
-            [c for c in CATEGORIES_SEED if c.art_form_id == art_form_id and c.active],
-            key=lambda x: x.display_order,
-        )
+            return sorted(cats, key=lambda x: x.display_order)
+        cats_fs = FirestoreService.get_categories_by_art_form(art_form_id)
+        if cats_fs:
+            return cats_fs
+        return None
 
     @staticmethod
     def get_exercises_by_category(category_id: str) -> Optional[List[Exercise]]:
@@ -1016,32 +1016,28 @@ class ArtService:
         category = ArtService.get_category_by_id(category_id)
         if not category:
             return None
-        exs = FirestoreService.get_exercises_by_category(category_id)
+        exs = [ex for ex in EXERCISES_SEED if ex.category_id == category_id and ex.active]
         if exs:
             return exs
-        return [ex for ex in EXERCISES_SEED if ex.category_id == category_id and ex.active]
+        exs_fs = FirestoreService.get_exercises_by_category(category_id)
+        if exs_fs:
+            return exs_fs
+        return None
 
     @staticmethod
     def get_exercise_by_id(exercise_id: str) -> Optional[Exercise]:
         """Find an exercise by ID if active."""
         ArtService._ensure_seeded()
+        ex_seed = next((ex for ex in EXERCISES_SEED if ex.exercise_id == exercise_id and ex.active), None)
+        if ex_seed:
+            return ex_seed
         ex = FirestoreService.get_exercise(exercise_id)
         if ex and ex.active:
             return ex
-        for ex_seed in EXERCISES_SEED:
-            if ex_seed.exercise_id == exercise_id and ex_seed.active:
-                return ex_seed
         return None
 
     @staticmethod
     def get_all_exercises() -> List[Exercise]:
         """Return all active exercises."""
         ArtService._ensure_seeded()
-        all_exs = []
-        for cat in CATEGORIES_SEED:
-            cat_exs = FirestoreService.get_exercises_by_category(cat.category_id)
-            if cat_exs:
-                all_exs.extend(cat_exs)
-        if all_exs:
-            return all_exs
         return [ex for ex in EXERCISES_SEED if ex.active]

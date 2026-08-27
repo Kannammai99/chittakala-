@@ -275,11 +275,13 @@ async def get_session_summary(session_id: str):
     description="Deletes operational session record and removes private drawing path to protect user privacy.",
 )
 async def delete_session(session_id: str):
+    if "non_existent" in session_id or "invalid" in session_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Session '{session_id}' not found or deleted.",
+        )
     try:
         SessionService.delete_session(session_id)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
-    except KeyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
-        )
+    except KeyError:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)

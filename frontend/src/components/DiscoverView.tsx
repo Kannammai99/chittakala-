@@ -317,13 +317,13 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
       </div>
 
       {/* 2x3 Square Tile Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", flex: 1, width: "100%", boxSizing: "border-box" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "10px", flex: 1, width: "100%", boxSizing: "border-box" }}>
         {HERITAGE_STORIES.map((story) => (
           <div
             key={story.id}
             className="genz-card genz-card-interactive"
             style={{
-              padding: "12px 12px",
+              padding: "12px 10px",
               marginBottom: 0,
               borderRadius: "18px",
               borderTop: `4px solid ${story.color}`,
@@ -334,6 +334,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
               flexDirection: "column",
               justifyContent: "space-between",
               minHeight: "135px",
+              overflow: "hidden",
             }}
             onClick={() => handleOpenStory(story.id)}
           >
@@ -352,6 +353,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
+                    minWidth: 0,
                   }}
                 >
                   ⚡ {story.vibeBadge}

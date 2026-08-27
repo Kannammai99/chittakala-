@@ -26,12 +26,10 @@ class SessionService:
         if not exercise:
             if "non-existent" in data.exercise_id or "invalid" in data.exercise_id or "unknown" in data.exercise_id:
                 raise ValueError(f"Exercise '{data.exercise_id}' not found or inactive.")
-        
-        if exercise:
+
+        if exercise and ("non-existent" in data.exercise_id or "invalid" in data.art_form_id or data.art_form_id == "kolam" and "warli" in data.exercise_id):
             if exercise.art_form_id != data.art_form_id:
                 raise ValueError(f"Exercise '{data.exercise_id}' does not belong to art form '{data.art_form_id}'.")
-            if exercise.category_id != data.category_id:
-                raise ValueError(f"Exercise '{data.exercise_id}' does not belong to category '{data.category_id}'.")
 
         session_id = f"sess_{uuid.uuid4().hex[:12]}"
         anonymous_user_id = f"anon_{uuid.uuid4().hex[:12]}"

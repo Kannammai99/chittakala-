@@ -216,7 +216,7 @@ export class ChittakalaClient {
     const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}`, {
       method: "DELETE",
     });
-    if (res.status === 204 || res.ok) {
+    if (res.status === 204 || res.status === 404 || res.ok) {
       return true;
     }
     throw new Error(`Failed to delete session (Status ${res.status})`);

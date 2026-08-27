@@ -1089,6 +1089,7 @@ export default function App() {
         });
         if (realSess && realSess.session_id) {
           activeSessionId = realSess.session_id;
+          setCurrentSession(realSess);
         }
       } catch (e) {
         console.warn("Session creation retry before reflect:", e);

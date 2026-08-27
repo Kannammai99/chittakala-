@@ -1039,12 +1039,40 @@ export default function App() {
       });
   };
 
+  const [lastUploadedFile, setLastUploadedFile] = useState<File | null>(null);
+  const [isRetryingReflection, setIsRetryingReflection] = useState<boolean>(false);
+
+  const handleRetryReflection = async () => {
+    if (!currentSession || isRetryingReflection) return;
+    setIsRetryingReflection(true);
+    try {
+      const fileToUse = lastUploadedFile || new File(["dummy"], "drawing.png", { type: "image/png" });
+      const feedback = await ChittakalaClient.requestReflection(
+        currentSession.session_id,
+        fileToUse,
+        selectedExercise ? {
+          art_form_id: selectedExercise.art_form_id,
+          category_id: selectedExercise.category_id,
+          exercise_id: selectedExercise.exercise_id,
+        } : undefined
+      );
+      if (feedback) {
+        setCurrentSession((prev) => prev ? { ...prev, feedback } : prev);
+      }
+    } catch (err) {
+      console.warn("Retry reflection failed:", err);
+    } finally {
+      setIsRetryingReflection(false);
+    }
+  };
+
   // Handle drawing upload & request Gemini AI Multimodal Reflection
   const handleUploadDrawing = async (file: File) => {
     if (!currentSession) {
       setStep("summary");
       return;
     }
+    setLastUploadedFile(file);
 
     let activeSessionId = currentSession.session_id;
     const isServerSession = activeSessionId && activeSessionId.length === 17 && !activeSessionId.includes("demo") && !activeSessionId.includes("local");
@@ -1274,6 +1302,8 @@ export default function App() {
                   setStep("art_forms");
                 }}
                 onDeleteSession={handleDeleteSession}
+                onRetryReflection={handleRetryReflection}
+                isRetryingReflection={isRetryingReflection}
               />
             )}
           </>

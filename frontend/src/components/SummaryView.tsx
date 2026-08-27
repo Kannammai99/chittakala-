@@ -6,6 +6,8 @@ interface SummaryViewProps {
   session: Session;
   onStartAnother: () => void;
   onDeleteSession: () => void;
+  onRetryReflection?: () => void;
+  isRetryingReflection?: boolean;
 }
 
 const POST_CHECK_IN_OPTIONS = [
@@ -19,6 +21,8 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
   session,
   onStartAnother,
   onDeleteSession,
+  onRetryReflection,
+  isRetryingReflection = false,
 }) => {
   const [selectedPostCheckIn, setSelectedPostCheckIn] = useState<string>(session.post_check_in || "");
   const [isSavingPostCheckIn, setIsSavingPostCheckIn] = useState<boolean>(false);
@@ -137,6 +141,31 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
             <p style={{ fontSize: "0.9rem", color: "#B45309", lineHeight: 1.55, fontWeight: 500, margin: 0 }}>
               We couldn't analyze the photograph right now. Your activity is safely recorded, and you can retry the reflection or continue without AI.
             </p>
+            {onRetryReflection && (
+              <button
+                type="button"
+                onClick={onRetryReflection}
+                disabled={isRetryingReflection}
+                style={{
+                  marginTop: "14px",
+                  padding: "10px 18px",
+                  background: "linear-gradient(135deg, #D97706, #B45309)",
+                  color: "#FFFFFF",
+                  border: "none",
+                  borderRadius: "14px",
+                  fontSize: "0.86rem",
+                  fontWeight: 800,
+                  cursor: isRetryingReflection ? "wait" : "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  boxShadow: "0 4px 12px rgba(217, 119, 6, 0.25)",
+                }}
+              >
+                <RotateCcw size={16} className={isRetryingReflection ? "animate-spin" : ""} />
+                {isRetryingReflection ? "Analyzing with Gemini AI..." : "Retry AI Analysis"}
+              </button>
+            )}
           </div>
         ) : (
           <div

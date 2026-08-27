@@ -146,10 +146,25 @@ export class ChittakalaClient {
 
     const formData = new FormData();
     formData.append("file", file);
-    let res = await fetch(`${getBaseUrl()}/sessions/${targetSessionId}/reflect`, {
-      method: "POST",
-      body: formData,
-    });
+
+    const primaryUrl = `${getBaseUrl()}/sessions/${targetSessionId}/reflect`;
+    let res: Response;
+    try {
+      res = await fetch(primaryUrl, {
+        method: "POST",
+        body: formData,
+      });
+    } catch (netErr) {
+      // Fallback: If local fetch fails, attempt direct Cloud Run endpoint
+      const cloudRunUrl = `https://chittakala-api-s2w5wrywxq-uc.a.run.app/sessions/${targetSessionId}/reflect`;
+      console.warn("Primary API URL fetch failed, retrying via Cloud Run...", netErr);
+      const retryFormData = new FormData();
+      retryFormData.append("file", file);
+      res = await fetch(cloudRunUrl, {
+        method: "POST",
+        body: retryFormData,
+      });
+    }
 
     // 2. If 404 (session not found on backend), create a real session and retry /reflect
     if (res.status === 404 && exerciseData) {

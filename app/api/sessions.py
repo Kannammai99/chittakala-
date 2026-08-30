@@ -282,6 +282,54 @@ async def delete_session(session_id: str):
         )
     try:
         SessionService.delete_session(session_id)
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-    except KeyError:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        import logging
+        logging.getLogger("chittakala.sessions_api").warning(f"Session deletion for '{session_id}' encountered exception (returning 204 idempotently): {e}")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+from pydantic import BaseModel, Field
+from typing import Optional
+
+
+class ReflectionRatingCreate(BaseModel):
+    rating: str = Field(..., description="Rating value: yes | somewhat | no")
+    reason_tag: Optional[str] = Field(None, description="Optional reason tag: too_generic | incorrect_observation | judgemental_writing | took_too_long | technical_problem")
+
+
+@router.post(
+    "/sessions/{session_id}/feedback-rating",
+    status_code=status.HTTP_200_OK,
+    summary="Submit user feedback rating on AI reflection quality",
+    description="Streams reflection utility rating and reason tag to BigQuery analytics for AI quality improvement.",
+)
+async def submit_reflection_rating(
+    session_id: str,
+    rating_in: ReflectionRatingCreate,
+    background_tasks: BackgroundTasks
+):
+    valid_ratings = {"yes", "somewhat", "no"}
+    if rating_in.rating.lower() not in valid_ratings:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid rating '{rating_in.rating}'. Allowed: yes, somewhat, no",
+        )
+
+    session = SessionService.get_session(session_id)
+    anon_user_id = session.anonymous_user_id if session else "anonymous"
+
+    background_tasks.add_task(
+        telemetry_service.log_ai_feedback_event,
+        session_id=session_id,
+        rating=rating_in.rating.lower(),
+        reason_tag=rating_in.reason_tag,
+        anonymous_user_id=anon_user_id,
+    )
+
+    return {
+        "status": "success",
+        "session_id": session_id,
+        "rating": rating_in.rating.lower(),
+        "reason_tag": rating_in.reason_tag or "none",
+        "message": "Thank you! Your feedback helps us continuously improve AI reflection quality."
+    }

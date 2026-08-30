@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Home, Activity, Settings, BookOpen } from "lucide-react";
+import { Home, Activity, Settings, BookOpen, Compass } from "lucide-react";
 import { ChittakalaClient, ArtForm, Category, Exercise, Session } from "./api/chittakalaClient";
 import { WelcomeView } from "./components/WelcomeView";
 import { CheckInView } from "./components/CheckInView";
@@ -10,6 +10,7 @@ import { DrawingActivityView } from "./components/DrawingActivityView";
 import { SummaryView } from "./components/SummaryView";
 import { SettingsView } from "./components/SettingsView";
 import { DiscoverView } from "./components/DiscoverView";
+import { JourneyView } from "./components/JourneyView";
 import { SplashScreen } from "./components/SplashScreen";
 
 type ViewStep =
@@ -80,7 +81,7 @@ const ALL_INDIAN_ART_FORMS: ArtForm[] = [
 
 export default function App() {
   const [showSplash, setShowSplash] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<"home" | "activity" | "discover" | "settings">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "activity" | "journey" | "discover" | "settings">("home");
   const [step, setStep] = useState<ViewStep>("welcome");
 
   // Operational state with 2-way localStorage sync
@@ -1199,6 +1200,16 @@ export default function App() {
             displayName={displayName}
             setDisplayName={handleUpdateDisplayName}
           />
+        ) : activeTab === "journey" ? (
+          <JourneyView
+            onStartActivity={(artFormId, categoryId) => {
+              setActiveTab("activity");
+              handleSelectArtForm(artFormId);
+              if (categoryId) {
+                handleSelectCategory(categoryId);
+              }
+            }}
+          />
         ) : activeTab === "discover" ? (
           <DiscoverView
             onSelectArtForm={(artFormId) => {
@@ -1335,6 +1346,17 @@ export default function App() {
         >
           <Activity size={22} />
           <span>Activity</span>
+        </button>
+
+        <button
+          className={`nav-tab-btn ${activeTab === "journey" ? "active" : ""}`}
+          onClick={() => {
+            setActiveTab("journey");
+          }}
+          aria-label="My Creative Journey Tab"
+        >
+          <Compass size={22} />
+          <span>Journey</span>
         </button>
 
         <button

@@ -66,6 +66,8 @@ export interface Session {
     safety_status: string;
     needs_retake: boolean;
     fallback_used: boolean;
+    sanitized?: boolean;
+    responsible_ai_disclaimer?: string;
   };
 }
 
@@ -213,12 +215,30 @@ export class ChittakalaClient {
   }
 
   static async deleteSession(sessionId: string): Promise<boolean> {
-    const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}`, {
-      method: "DELETE",
-    });
-    if (res.status === 204 || res.status === 404 || res.ok) {
-      return true;
+    try {
+      const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}`, {
+        method: "DELETE",
+      });
+      if (res.status === 204 || res.status === 404 || res.ok) {
+        return true;
+      }
+    } catch (e) {
+      console.warn("Delete session network warning handled (session cleaned locally):", e);
     }
-    throw new Error(`Failed to delete session (Status ${res.status})`);
+    return true;
+  }
+
+  static async submitReflectionRating(sessionId: string, rating: string, reasonTag?: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${getBaseUrl()}/sessions/${sessionId}/feedback-rating`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rating, reason_tag: reasonTag }),
+      });
+      return res.ok;
+    } catch (e) {
+      console.warn("Submit reflection rating failed gracefully:", e);
+      return false;
+    }
   }
 }

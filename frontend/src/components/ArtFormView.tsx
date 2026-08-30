@@ -32,16 +32,16 @@ export const ArtFormView: React.FC<ArtFormViewProps> = ({
 
   return (
     <div className="tab-view">
-      <div style={{ marginBottom: "20px" }}>
-        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.45rem", fontWeight: 900, marginBottom: "4px", color: "#0F172A", letterSpacing: "-0.02em" }}>
+      <div style={{ marginBottom: "24px" }}>
+        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", fontWeight: 900, marginBottom: "8px", color: "#0F172A", letterSpacing: "-0.02em" }}>
           Indian Art Traditions
         </h2>
-        <p style={{ color: "#64748B", fontSize: "0.88rem", fontWeight: 500, lineHeight: 1.4 }}>
+        <p style={{ color: "#475569", fontSize: "0.92rem", fontWeight: 500, lineHeight: 1.55, margin: 0 }}>
           Explore curated Indian folk art forms designed for 5-minute creative routines.
         </p>
       </div>
 
-      <div style={{ display: "grid", gap: "16px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {artForms.map((af) => {
           const isSelected = selectedArtFormId === af.art_form_id;
           const isActive = af.active;
@@ -66,24 +66,24 @@ export const ArtFormView: React.FC<ArtFormViewProps> = ({
               style={{
                 marginBottom: 0,
                 borderLeft: `5px solid ${style.color}`,
-                padding: "16px 16px",
+                padding: "20px",
                 opacity: isActive ? 1 : 0.85,
                 cursor: isActive ? "pointer" : "default",
                 boxSizing: "border-box",
                 width: "100%",
-                borderRadius: "20px",
+                borderRadius: "22px",
               }}
               onClick={() => {
                 if (isActive) onSelectArtForm(af.art_form_id);
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", gap: "10px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
                   <div
                     style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "12px",
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "14px",
                       backgroundColor: style.bg,
                       display: "flex",
                       alignItems: "center",
@@ -91,13 +91,13 @@ export const ArtFormView: React.FC<ArtFormViewProps> = ({
                       flexShrink: 0,
                     }}
                   >
-                    <Palette size={20} color={style.color} />
+                    <Palette size={22} color={style.color} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.2rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.2 }}>
+                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.25, margin: 0 }}>
                       {af.title}
                     </h3>
-                    <span style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 700, display: "block", marginTop: "2px" }}>
+                    <span style={{ fontSize: "0.78rem", color: "#64748B", fontWeight: 700, display: "block", marginTop: "4px" }}>
                       {isActive ? "3 Categories • 9 Activities" : "Expansion Module"}
                     </span>
                   </div>
@@ -112,19 +112,19 @@ export const ArtFormView: React.FC<ArtFormViewProps> = ({
                 )}
               </div>
 
-              <p style={{ fontSize: "0.86rem", color: "#334155", lineHeight: 1.5, marginBottom: "12px", fontWeight: 500 }}>
+              <p style={{ fontSize: "0.88rem", color: "#475569", lineHeight: 1.6, marginTop: "12px", marginBottom: "16px", fontWeight: 500 }}>
                 {af.short_description}
               </p>
 
-              <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: "12px", border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", width: "100%", boxSizing: "border-box" }}>
+              <div style={{ background: "#F8FAFC", padding: "10px 14px", borderRadius: "14px", border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", width: "100%", boxSizing: "border-box" }}>
                 <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
-                  <span style={{ fontSize: "0.74rem", color: style.color, fontWeight: 800, display: "flex", alignItems: "center", gap: "5px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    <Sparkles size={13} style={{ flexShrink: 0 }} /> {getConciseSource(af.art_form_id, af.source_note)}
+                  <span style={{ fontSize: "0.76rem", color: style.color, fontWeight: 800, display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <Sparkles size={14} style={{ flexShrink: 0 }} /> {getConciseSource(af.art_form_id, af.source_note)}
                   </span>
                 </div>
 
                 {isActive && (
-                  <span style={{ fontSize: "0.7rem", padding: "3px 9px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.12)", color: "var(--color-accent-coral)", fontWeight: 800, flexShrink: 0, whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: "0.72rem", padding: "4px 10px", borderRadius: "9999px", background: "rgba(255, 82, 59, 0.12)", color: "var(--color-accent-coral)", fontWeight: 800, flexShrink: 0, whiteSpace: "nowrap" }}>
                     Active Practice
                   </span>
                 )}

@@ -43,10 +43,12 @@ class BigQueryTelemetryService:
         self.dataset_id = "chittakala_analytics"
         self.product_events_table = "product_events"
         self.ai_events_table = "ai_reliability_events"
+        self.ai_feedback_table = "ai_feedback_events"
 
         self._bq_client = None
         self._local_product_events_buffer: List[Dict[str, Any]] = []
         self._local_ai_events_buffer: List[Dict[str, Any]] = []
+        self._local_feedback_events_buffer: List[Dict[str, Any]] = []
 
         self._init_client()
 
@@ -132,6 +134,29 @@ class BigQueryTelemetryService:
         self._stream_row(self.ai_events_table, row, self._local_ai_events_buffer)
         return row
 
+    def log_ai_feedback_event(
+        self,
+        session_id: str,
+        rating: str,
+        reason_tag: Optional[str] = None,
+        anonymous_user_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Record user reflection feedback rating and reason tag for AI quality analytics."""
+        event_id = f"evt_fb_{uuid.uuid4().hex[:12]}"
+        now_utc = datetime.now(timezone.utc).isoformat()
+
+        row = {
+            "event_id": event_id,
+            "session_id": session_id,
+            "anonymous_user_id": anonymous_user_id or "anonymous",
+            "rating": rating,
+            "reason_tag": reason_tag or "none",
+            "timestamp": now_utc,
+        }
+
+        self._stream_row(self.ai_feedback_table, row, self._local_feedback_events_buffer)
+        return row
+
     def _stream_row(self, table_name: str, row: Dict[str, Any], buffer: List[Dict[str, Any]]):
         """Asynchronously stream row to BigQuery or append to local memory buffer."""
         buffer.append(row)
@@ -155,10 +180,15 @@ class BigQueryTelemetryService:
         """Return buffered AI reliability telemetry events (for unit testing)."""
         return list(self._local_ai_events_buffer)
 
+    def get_local_feedback_events(self) -> List[Dict[str, Any]]:
+        """Return buffered AI feedback telemetry events (for unit testing)."""
+        return list(self._local_feedback_events_buffer)
+
     def clear_buffers(self):
         """Clear local buffers."""
         self._local_product_events_buffer.clear()
         self._local_ai_events_buffer.clear()
+        self._local_feedback_events_buffer.clear()
 
 
 # Global telemetry service singleton

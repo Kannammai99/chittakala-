@@ -99,3 +99,33 @@ def test_mismatched_art_form_returns_400():
     assert response.status_code == 400
     data = response.json()
     assert "does not belong to art form" in data["detail"].lower()
+
+
+def test_submit_reflection_rating_valid():
+    # 1. Create a session
+    sess_res = client.post("/sessions", json={
+        "art_form_id": "warli",
+        "category_id": "basic-figures",
+        "exercise_id": "warli-basic-01",
+    })
+    session_id = sess_res.json()["session_id"]
+
+    # 2. Submit rating feedback
+    payload = {
+        "rating": "somewhat",
+        "reason_tag": "too_generic"
+    }
+    res = client.post(f"/sessions/{session_id}/feedback-rating", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert data["rating"] == "somewhat"
+    assert data["reason_tag"] == "too_generic"
+
+
+def test_submit_reflection_rating_invalid():
+    res = client.post("/sessions/sess_test/feedback-rating", json={
+        "rating": "invalid_rating_value"
+    })
+    assert res.status_code == 400
+    assert "invalid rating" in res.json()["detail"].lower()

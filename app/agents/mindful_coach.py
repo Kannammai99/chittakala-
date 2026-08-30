@@ -21,7 +21,7 @@ class MindfulCoachAgent:
         art_lower = art_form_title.lower()
         if "kolam" in art_lower:
             return (
-                "Taking this 5-minute pause to connect lines and dots brings a wonderful moment of focus.",
+                "Taking this 5-minute pause to connect lines and dots brings a satisfying creative rhythm.",
                 "Try adding a small corner accent loop or repeat this simple pattern tomorrow."
             )
         elif "madhubani" in art_lower:

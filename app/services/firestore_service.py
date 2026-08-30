@@ -301,6 +301,7 @@ class FirestoreService:
     @classmethod
     def delete_session(cls, session_id: str) -> bool:
         client = cls.get_client()
+        deleted = False
         if client:
             try:
                 doc_ref = client.collection("sessions").document(session_id)
@@ -311,8 +312,7 @@ class FirestoreService:
                         "display_name": None,
                         "drawing_path": None,
                     })
-                    cls._in_memory_docs.pop(session_id, None)
-                    return True
+                    deleted = True
             except Exception as exc:
                 logger.warning(f"Firestore delete_session failed, using in-memory fallback: {exc}")
                 cls._use_firestore = False
@@ -323,8 +323,9 @@ class FirestoreService:
             doc_data["display_name"] = None
             doc_data["drawing_path"] = None
             cls._in_memory_docs["sessions"].pop(session_id, None)
-            return True
-        return False
+            deleted = True
+
+        return deleted
 
     # --- FEEDBACK ---
     @classmethod

@@ -27,7 +27,8 @@ class MultiAgentCoordinator:
             "COORDINATION RULES:\n"
             "1. Synthesize the findings of all 3 agents into the JSON response schema.\n"
             "2. If Safety Auditor flags non-art photo, return needs_retake=True with retake prompts.\n"
-            "3. Enforce zero numerical scores, zero clinical terms, and zero artistic judgment.\n"
+            "3. Enforce zero numerical scores, zero clinical/medical claims, and zero artistic judgment.\n"
+            "4. Never judge artistic quality (e.g. 'beautiful', 'talented'), psychological state ('calm', 'focused'), or effort ('patient'). Comment ONLY on physical lines and shapes drawn on paper.\n"
         )
 
     @classmethod

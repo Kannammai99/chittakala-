@@ -297,35 +297,35 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
     );
   }
 
-  // LEVEL 1 (L1): 2x3 Square Tile Grid (100% Single-Screen Viewport Fit)
+  // LEVEL 1 (L1): 2x3 Square Tile Grid
   return (
     <div className="tab-view fade-in-view" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Header Title Section */}
-      <div style={{ marginBottom: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+      <div style={{ marginBottom: "24px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}>
           <BookOpen size={18} color="var(--color-accent-coral)" />
           <span style={{ color: "var(--color-accent-coral)", fontSize: "0.78rem", fontWeight: 800, letterSpacing: "0.06em", textTransform: "uppercase" }}>
             Heritage Vibe Check
           </span>
         </div>
-        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.4rem", fontWeight: 900, marginBottom: "2px", color: "#0F172A", letterSpacing: "-0.02em" }}>
+        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", fontWeight: 900, marginBottom: "8px", color: "#0F172A", letterSpacing: "-0.02em" }}>
           Discover Indian Art Traditions
         </h2>
-        <p style={{ color: "#64748B", fontSize: "0.82rem", fontWeight: 500, lineHeight: 1.35 }}>
+        <p style={{ color: "#475569", fontSize: "0.88rem", fontWeight: 500, lineHeight: 1.5, margin: 0 }}>
           Tap any square tile to explore origin stories & design secrets.
         </p>
       </div>
 
       {/* 2x3 Square Tile Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "10px", flex: 1, width: "100%", boxSizing: "border-box" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "14px", flex: 1, width: "100%", boxSizing: "border-box" }}>
         {HERITAGE_STORIES.map((story) => (
           <div
             key={story.id}
             className="genz-card genz-card-interactive"
             style={{
-              padding: "12px 10px",
+              padding: "16px 14px",
               marginBottom: 0,
-              borderRadius: "18px",
+              borderRadius: "20px",
               borderTop: `4px solid ${story.color}`,
               cursor: "pointer",
               boxSizing: "border-box",
@@ -333,27 +333,27 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
-              minHeight: "135px",
+              minHeight: "160px",
               overflow: "hidden",
             }}
             onClick={() => handleOpenStory(story.id)}
           >
             {/* Top Row: Vibe Tag & Icon */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px", gap: "4px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px", gap: "6px" }}>
                 <span
                   style={{
-                    fontSize: "0.65rem",
+                    fontSize: "0.68rem",
                     fontWeight: 800,
-                    padding: "2px 6px",
-                    borderRadius: "6px",
+                    padding: "3px 8px",
+                    borderRadius: "8px",
                     background: story.bgColor,
                     color: story.color,
                     letterSpacing: "0.02em",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    minWidth: 0,
+                    maxWidth: "80%",
                   }}
                 >
                   ⚡ {story.vibeBadge}
@@ -361,9 +361,9 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
 
                 <div
                   style={{
-                    width: "28px",
-                    height: "28px",
-                    borderRadius: "8px",
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "10px",
                     background: story.bgColor,
                     display: "flex",
                     alignItems: "center",
@@ -371,28 +371,28 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
                     flexShrink: 0,
                   }}
                 >
-                  <Palette size={14} color={story.color} />
+                  <Palette size={15} color={story.color} />
                 </div>
               </div>
 
               {/* Art Form Short Title */}
-              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.05rem", fontWeight: 900, color: "#0F172A", lineHeight: 1.15, marginBottom: "4px" }}>
+              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.1rem", fontWeight: 900, color: "#0F172A", lineHeight: 1.25, marginBottom: "6px" }}>
                 {story.shortTitle}
               </h3>
 
               {/* Micro-Teaser */}
-              <p style={{ color: "#475569", fontSize: "0.74rem", fontWeight: 500, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+              <p style={{ color: "#475569", fontSize: "0.8rem", fontWeight: 500, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                 {story.teaser}
               </p>
             </div>
 
             {/* Bottom Row: Location & Read Arrow */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", marginTop: "8px", paddingTop: "6px", borderTop: "1px solid #F1F5F9" }}>
-              <span style={{ fontSize: "0.7rem", color: "#64748B", fontWeight: 700, display: "flex", alignItems: "center", gap: "3px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                <MapPin size={11} color={story.color} style={{ flexShrink: 0 }} /> {story.shortOrigin}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", marginTop: "10px", paddingTop: "8px", borderTop: "1px solid #F1F5F9" }}>
+              <span style={{ fontSize: "0.74rem", color: "#64748B", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <MapPin size={12} color={story.color} style={{ flexShrink: 0 }} /> {story.shortOrigin}
               </span>
 
-              <span style={{ fontSize: "0.72rem", color: story.color, fontWeight: 800, display: "flex", alignItems: "center", flexShrink: 0 }}>
+              <span style={{ fontSize: "0.76rem", color: story.color, fontWeight: 800, display: "flex", alignItems: "center", flexShrink: 0 }}>
                 Read <ChevronRight size={14} />
               </span>
             </div>
@@ -404,28 +404,28 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ onSelectArtForm }) =
       <div
         className="genz-card"
         style={{
-          marginTop: "20px",
-          padding: "18px 16px",
-          borderRadius: "20px",
+          marginTop: "24px",
+          padding: "20px",
+          borderRadius: "22px",
           background: "#F8FAFC",
           border: "1.5px solid #E2E8F0",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
           <BookOpen size={18} color="var(--color-accent-coral)" />
-          <h4 style={{ fontSize: "0.92rem", fontWeight: 800, color: "#0F172A", margin: 0 }}>
+          <h4 style={{ fontSize: "0.95rem", fontWeight: 800, color: "#0F172A", margin: 0 }}>
             Sources & Cultural Context
           </h4>
         </div>
-        <p style={{ fontSize: "0.8rem", color: "#475569", lineHeight: 1.5, fontWeight: 500, marginBottom: "10px" }}>
+        <p style={{ fontSize: "0.84rem", color: "#475569", lineHeight: 1.6, fontWeight: 500, marginBottom: "12px" }}>
           Cultural narratives and design elements in Chittakala are grounded in archaeological, ethnographic, and museum archives, including:
         </p>
-        <ul style={{ fontSize: "0.78rem", color: "#64748B", lineHeight: 1.55, fontWeight: 500, paddingLeft: "18px", margin: 0 }}>
-          <li><strong>Indira Gandhi National Centre for the Arts (IGNCA)</strong> – Folk & Tribal Art Manuscripts</li>
-          <li><strong>Crafts Council of India</strong> – Heritage Craft Documentation</li>
-          <li><strong>UNESCO Intangible Cultural Heritage (ICH)</strong> – Traditional Craftsmanship Guidelines</li>
+        <ul style={{ fontSize: "0.82rem", color: "#475569", lineHeight: 1.65, fontWeight: 500, paddingLeft: "20px", margin: 0 }}>
+          <li style={{ marginBottom: "6px" }}><strong>Indira Gandhi National Centre for the Arts (IGNCA)</strong> – Folk & Tribal Art Manuscripts</li>
+          <li style={{ marginBottom: "6px" }}><strong>Crafts Council of India</strong> – Heritage Craft Documentation</li>
+          <li style={{ marginBottom: "6px" }}><strong>UNESCO Intangible Cultural Heritage (ICH)</strong> – Traditional Craftsmanship Guidelines</li>
         </ul>
-        <p style={{ fontSize: "0.74rem", color: "#94A3B8", lineHeight: 1.4, fontWeight: 500, marginTop: "10px", fontStyle: "italic" }}>
+        <p style={{ fontSize: "0.76rem", color: "#94A3B8", lineHeight: 1.45, fontWeight: 500, marginTop: "12px", fontStyle: "italic" }}>
           Note: Chittakala adapts traditional folk art motifs as gentle, non-clinical creative pauses for focus and relaxation.
         </p>
       </div>

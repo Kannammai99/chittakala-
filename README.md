@@ -7,12 +7,13 @@
 
 ## 🏗️ Project Architecture & Tech Stack
 
-- **Frontend**: React 18, TypeScript, Vite 5, PWA Manifest (`manifest.json`), Offline Service Worker (`sw.js`), Gen Z Sunset Coral & Dark Mode Design System (`#F8FAFC` canvas, `#FF523B` coral accents).
+- **Frontend**: React 18, TypeScript, Vite 5, PWA Manifest (`manifest.json`), Offline Service Worker (`sw.js`), Gen Z Sunset Coral Design System (`#F8FAFC` canvas, `#FF523B` coral accents, 4-point spacing scale, 1.6 line-height typography).
 - **Backend API**: Python 3.11+, FastAPI, Pydantic v2, Uvicorn, Pytest.
 - **AI & Multi-Agent Vision**: Google AI Studio / Vertex AI Gemini Multimodal API (`google-genai` SDK), Google ADK (Agent Development Kit Multi-Agent Architecture: VisualObserver, MindfulCoach, SafetyAuditor, Coordinator).
-- **Database & Cloud Storage**: Cloud Firestore (Operational store), Cloud Storage (`gs://chittakala-user-drawings/`).
+- **Responsible AI Guardrails**: `ProhibitedLanguageValidator` zero-trust post-LLM deterministic regex sanitizer downstream of ADK agents, guaranteeing zero artistic scoring, clinical diagnosis, or evaluative phrasing.
+- **Database & Cloud Storage**: Cloud Firestore (Operational store), Cloud Storage (`gs://chittakala-user-drawings/`), Local Storage privacy-first Journey history.
 - **Cloud Infrastructure**: Google Cloud Run (Containerized FastAPI service with `--min-instances=0` scale-to-zero safeguard), Docker.
-- **Telemetry & Executive Dashboards**: BigQuery Telemetry Engine (`chittakala_analytics`) & Looker Studio Executive Dashboard (`v_mood_shift_summary`, `v_ai_performance_summary`).
+- **Telemetry & Executive Dashboards**: BigQuery Telemetry Engine (`chittakala_analytics`) streaming `product_events`, `ai_reliability_events`, and `ai_feedback_events` to Looker Studio Executive Dashboards (`v_mood_shift_summary`, `v_ai_performance_summary`).
 
 ---
 
@@ -21,12 +22,17 @@
 ```text
 chittakala/
 ├── app/
-│   ├── agents/                 # ADK Multi-Agent Architecture (VisualObserver, MindfulCoach, SafetyAuditor, Coordinator)
+│   ├── agents/                 # ADK Multi-Agent Architecture & Responsible AI Sanitizer
+│   │   ├── coordinator.py      # MultiAgentCoordinator
+│   │   ├── mindful_coach.py    # MindfulCoachAgent
+│   │   ├── prohibited_language_validator.py # Deterministic Regex Post-LLM Sanitizer
+│   │   ├── safety_auditor.py   # SafetyAuditorAgent
+│   │   └── visual_observer.py  # VisualObserverAgent
 │   ├── api/
 │   │   ├── art_forms.py        # GET /art-forms, GET /art-forms/{id}/categories
 │   │   ├── exercises.py        # GET /categories/{id}/exercises, GET /exercises/{id}
 │   │   ├── health.py           # GET /health
-│   │   └── sessions.py         # POST /sessions, PATCH /check-in, POST /complete, GET /summary, DELETE /sessions/{id}, POST /drawing, POST /reflect
+│   │   └── sessions.py         # POST /sessions, PATCH /check-in, POST /complete, GET /summary, DELETE /sessions/{id}, POST /drawing, POST /reflect, POST /feedback-rating
 │   ├── models/
 │   │   ├── art_form.py         # ArtForm Pydantic schema
 │   │   ├── category.py         # Category Pydantic schema
@@ -35,26 +41,24 @@ chittakala/
 │   ├── services/
 │   │   ├── art_service.py      # Domain repository (Warli, Kolam, Madhubani & Gond 36 activities)
 │   │   ├── gemini_service.py   # ADK Multi-Agent Gemini Vision reflection service
-│   │   ├── session_service.py  # Session lifecycle repository
-│   │   ├── telemetry_service.py# BigQuery telemetry streaming engine
+│   │   ├── session_service.py  # Session lifecycle repository (safe unlinking & deletion)
+│   │   ├── telemetry_service.py# BigQuery telemetry streaming engine (Product, AI Reliability & AI Feedback)
 │   │   └── upload_service.py   # 5 MB limit, JPEG/PNG & Pillow image header verification
 │   └── main.py                 # FastAPI application launcher with CORSMiddleware
 ├── dashboards/
 │   └── README.md               # Looker Studio Executive Dashboard integration guide
 ├── frontend/
 │   ├── public/
-│   │   ├── art/
-│   │   │   ├── gond/           # Authentic Gond Art assets (patterns, fauna, tree)
-│   │   │   ├── kolam/          # Authentic Kolam assets (5x5, 7x7, 9x9 dot grids)
-│   │   │   ├── madhubani/      # Authentic Madhubani assets (borders, nature, sacred)
-│   │   │   └── warli/          # Authentic Warli assets (basic, rows, circles)
+│   │   ├── art/                # Authentic Warli, Kolam, Madhubani & Gond assets
 │   │   ├── manifest.json       # PWA Manifest (standalone, portrait)
 │   │   └── sw.js               # Service Worker offline caching strategy
 │   ├── src/
 │   │   ├── api/
 │   │   │   └── chittakalaClient.ts # Typed API Client with dynamic host resolution
-│   │   ├── components/         # Modular Screen Components (Welcome, CheckIn, ArtForm, Category, Carousel, Drawing, Summary)
-│   │   ├── App.tsx             # SPA Shell (Header, Scroll Viewport, Navigation)
+│   │   ├── components/         # Modular Components (Welcome, CheckIn, ArtForm, Category, Discover, JourneyView, Drawing, Summary)
+│   │   ├── services/
+│   │   │   └── journeyService.ts # LocalStorage privacy-first session journal
+│   │   ├── App.tsx             # SPA Shell (Header, Scroll Viewport, 5-Tab Navigation)
 │   │   ├── index.css           # Gen Z Sunset Coral & Touch Bounding Targets
 │   │   └── main.tsx            # React entry point
 │   ├── package.json            # React 18, Vite 5, Lucide Icons
@@ -67,7 +71,7 @@ chittakala/
 │   ├── api/                    # Health, Art Forms, Exercises, Sessions, Expansion Art & Deployed Smoke Tests
 │   ├── contract/               # OpenAPI schema compliance tests
 │   ├── security/               # 5 MB limit, MIME type, Pillow spoofing & corruption protection tests
-│   └── unit/                   # Art Service, Gemini Service, Session Service, Telemetry Service & Multi-Agent tests
+│   └── unit/                   # Art Service, Gemini Service, Session Service, Telemetry Service, Multi-Agent & Prohibited Language Validator tests
 ├── Dockerfile                  # Production container for Cloud Run
 ├── requirements.txt            # Python dependencies (google-genai, google-cloud-bigquery)
 └── README.md
@@ -120,7 +124,7 @@ npm run dev
 
 ## 🧪 Running Automated Test Suite
 
-To run all 43 unit, API, contract, lifecycle, security, expansion art, and AI evaluation tests:
+To run all 54 unit, API, contract, lifecycle, security, expansion art, prohibited language validator, and AI evaluation tests:
 
 ```powershell
 .\.venv\Scripts\pytest
@@ -128,13 +132,15 @@ To run all 43 unit, API, contract, lifecycle, security, expansion art, and AI ev
 
 ---
 
-## 📅 Stage 2 Accomplishments & Status
+## 📅 Accomplishments & Status
 
-- ✅ **BigQuery Telemetry Engine**: Streamed `product_events` and `ai_reliability_events` to GCP (`chittakala-12345`).
+- ✅ **Deterministic Responsible AI Sanitizer**: Post-LLM regex filter (`ProhibitedLanguageValidator`) eliminating artistic scoring and psychological claims.
+- ✅ **"My Creative Journey" Progress Page**: Privacy-first metadata tracker, gentle non-competitive stats, dynamic tradition recommendations, and clear history teardown.
+- ✅ **AI Reflection Feedback Rating Loop**: Interactive in-app rating (`Yes`, `Somewhat`, `No`) with reason tags streaming to BigQuery `chittakala_analytics.ai_feedback_events`.
+- ✅ **App-Wide UI Spacing Overhaul**: Standardized 4-point spacing scale, 1.6 line-height typography, expanded 20px card padding, and fixed pill tag formatting.
+- ✅ **BigQuery Telemetry Engine**: Streamed `product_events`, `ai_reliability_events`, and `ai_feedback_events` to GCP (`chittakala-12345`).
 - ✅ **Looker Studio Dashboards**: Provisioned `v_mood_shift_summary` and `v_ai_performance_summary` analytical views.
 - ✅ **ADK Multi-Agent Vision Subsystem**: Implemented `VisualObserverAgent`, `MindfulCoachAgent`, `SafetyAuditorAgent`, and `MultiAgentCoordinator`.
 - ✅ **Expansion Art Modules**: Activated **Madhubani** (Bihar) and **Gond Art** (Madhya Pradesh) with authentic reference imagery across all 3 categories.
-- ✅ **Standardized Progressive Difficulty**: Aligned Category 1 (Beginner), Category 2 (Intermediate), and Category 3 (Challenging) across all 4 art forms.
 - ✅ **Full-Screen Image Lightbox Modal**: Implemented interactive pinch-to-zoom (up to 350%), drag-to-pan, and +/- toolbar controls across example browsing and active drawing screens.
-- ✅ **Instant State Transitions**: Implemented 0ms synchronous category and exercise fallbacks eliminating screen loading flashes.
-- ✅ **100% Test Pass Rate**: 43 / 43 Pytest tests passing cleanly.
+- ✅ **100% Test Pass Rate**: 54 / 54 Pytest tests passing cleanly.

@@ -51,7 +51,7 @@ class FirestoreService:
             gcp_project = os.environ.get("GOOGLE_CLOUD_PROJECT")
 
             if FIRESTORE_SDK_AVAILABLE and (gcp_project or emulator_host or creds_file or cloud_run):
-                target_project = gcp_project or "chittakala"
+                target_project = gcp_project or os.getenv("GCP_PROJECT_ID", "chittakala-12345")
                 try:
                     if emulator_host:
                         logger.info(f"Connecting to Firestore Emulator at {emulator_host}")

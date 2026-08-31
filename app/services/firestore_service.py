@@ -62,6 +62,7 @@ class FirestoreService:
                 except Exception as exc:
                     logger.warning(f"Firestore Client initialization falling back to in-memory mode: {exc}")
                     cls._use_firestore = False
+                    cls._initialized = False
             else:
                 logger.info("Firestore running in in-memory persistence mode.")
                 cls._use_firestore = False

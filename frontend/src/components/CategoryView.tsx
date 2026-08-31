@@ -97,21 +97,26 @@ export const CategoryView: React.FC<CategoryViewProps> = ({
               style={{
                 cursor: "pointer",
                 marginBottom: 0,
-                padding: "16px 16px",
+                padding: "18px",
+                border: isSelected ? `1px solid ${colorTheme.main}` : "1px solid var(--color-border)",
                 borderLeft: `5px solid ${colorTheme.main}`,
+                backgroundColor: isSelected ? colorTheme.bg : "var(--color-surface-card)",
+                boxShadow: isSelected ? `0 0 0 2px ${colorTheme.main}, 0 8px 24px rgba(15, 23, 42, 0.06)` : undefined,
                 boxSizing: "border-box",
                 width: "100%",
-                borderRadius: "20px",
+                borderRadius: "22px",
+                ["--theme-color" as any]: colorTheme.main,
+                ["--theme-bg" as any]: colorTheme.bg,
               }}
               onClick={() => onSelectCategory(cat.category_id)}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", gap: "10px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
                   <div
                     style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "12px",
+                      width: "42px",
+                      height: "42px",
+                      borderRadius: "14px",
                       backgroundColor: colorTheme.bg,
                       display: "flex",
                       alignItems: "center",
@@ -122,10 +127,10 @@ export const CategoryView: React.FC<CategoryViewProps> = ({
                     <Layers size={20} color={colorTheme.main} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.18rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.2 }}>
+                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.2rem", fontWeight: 800, color: "#0F172A", lineHeight: 1.25, margin: 0 }}>
                       {cat.title}
                     </h3>
-                    <span style={{ fontSize: "0.76rem", color: colorTheme.main, fontWeight: 800, display: "block", marginTop: "2px" }}>
+                    <span style={{ fontSize: "0.78rem", color: colorTheme.main, fontWeight: 800, display: "block", marginTop: "3px" }}>
                       3 Standalone Activities
                     </span>
                   </div>
@@ -133,17 +138,17 @@ export const CategoryView: React.FC<CategoryViewProps> = ({
                 <ChevronRight size={20} color="#94A3B8" style={{ flexShrink: 0 }} />
               </div>
 
-              <p style={{ fontSize: "0.86rem", color: "#334155", lineHeight: 1.5, marginBottom: "12px", fontWeight: 500 }}>
+              <p style={{ fontSize: "0.88rem", color: "#475569", lineHeight: 1.6, marginTop: "10px", marginBottom: "14px", fontWeight: 500 }}>
                 {cat.short_description}
               </p>
 
-              <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: "12px", border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", width: "100%", boxSizing: "border-box" }}>
+              <div style={{ background: "#F8FAFC", padding: "10px 12px", borderRadius: "14px", border: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", width: "100%", boxSizing: "border-box" }}>
                 <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
-                  <span style={{ fontSize: "0.74rem", color: "#64748B", fontWeight: 700, display: "flex", alignItems: "center", gap: "5px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    <Sparkles size={13} color={colorTheme.main} style={{ flexShrink: 0 }} /> 5-min creative routine
+                  <span style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <Sparkles size={14} color={colorTheme.main} style={{ flexShrink: 0 }} /> 5-min creative routine
                   </span>
                 </div>
-                <span style={{ fontSize: "0.7rem", padding: "3px 9px", borderRadius: "9999px", background: "rgba(99, 102, 241, 0.12)", color: "#6366F1", fontWeight: 800, flexShrink: 0, whiteSpace: "nowrap" }}>
+                <span style={{ fontSize: "0.72rem", padding: "4px 10px", borderRadius: "9999px", background: colorTheme.bg, color: colorTheme.main, fontWeight: 800, flexShrink: 0, whiteSpace: "nowrap" }}>
                   Explore ➔
                 </span>
               </div>

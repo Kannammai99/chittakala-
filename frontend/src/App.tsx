@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Home, Activity, Settings, BookOpen, Compass } from "lucide-react";
+import { Home, Activity, Settings, BookOpen, Compass, WifiOff, RefreshCw } from "lucide-react";
 import { ChittakalaClient, ArtForm, Category, Exercise, Session } from "./api/chittakalaClient";
 import { WelcomeView } from "./components/WelcomeView";
 import { CheckInView } from "./components/CheckInView";
@@ -12,6 +12,7 @@ import { SettingsView } from "./components/SettingsView";
 import { DiscoverView } from "./components/DiscoverView";
 import { JourneyView } from "./components/JourneyView";
 import { SplashScreen } from "./components/SplashScreen";
+import { JourneyService } from "./services/journeyService";
 
 type ViewStep =
   | "welcome"
@@ -95,10 +96,14 @@ export default function App() {
   };
   const [selectedCheckIn, setSelectedCheckIn] = useState<string>("skipped");
   const [backendStatus, setBackendStatus] = useState<string>("Checking API...");
-  
+
+  // Online / Offline tracking & background sync toast state
+  const [isOnline, setIsOnline] = useState<boolean>(() => navigator.onLine);
+  const [syncToast, setSyncToast] = useState<string | null>(null);
+
   const [artForms, setArtForms] = useState<ArtForm[]>(ALL_INDIAN_ART_FORMS);
   const [selectedArtFormId, setSelectedArtFormId] = useState<string>("warli");
-  
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("basic-figures");
 
@@ -106,6 +111,42 @@ export default function App() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   const [currentSession, setCurrentSession] = useState<Session | null>(null);
+
+  // Online / Offline event listeners & auto background sync trigger
+  useEffect(() => {
+    const handleOnline = async () => {
+      setIsOnline(true);
+      setBackendStatus("Online");
+      // Trigger background sync of offline queued sessions
+      try {
+        const syncedCount = await JourneyService.syncOfflineQueue(ChittakalaClient);
+        if (syncedCount > 0) {
+          setSyncToast(`🟢 Back online! Synced ${syncedCount} offline session${syncedCount > 1 ? "s" : ""} to cloud analytics.`);
+          setTimeout(() => setSyncToast(null), 4500);
+        }
+      } catch (e) {
+        console.warn("Background sync warning:", e);
+      }
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      setBackendStatus("Offline Mode");
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    // Initial check on load
+    if (navigator.onLine) {
+      handleOnline();
+    }
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   // Auto scroll to top on every navigation step or tab change
   useEffect(() => {
@@ -117,9 +158,14 @@ export default function App() {
   }, [step, activeTab]);
 
   useEffect(() => {
+    if (!isOnline) {
+      setArtForms(ALL_INDIAN_ART_FORMS);
+      return;
+    }
+
     ChittakalaClient.checkHealth()
       .then(() => setBackendStatus("Online"))
-      .catch(() => setBackendStatus("Online"));
+      .catch(() => setBackendStatus("Offline Mode"));
 
     ChittakalaClient.getArtForms()
       .then((data) => {
@@ -133,7 +179,7 @@ export default function App() {
       .catch(() => {
         setArtForms(ALL_INDIAN_ART_FORMS);
       });
-  }, []);
+  }, [isOnline]);
 
   // Safety recovery effect to ensure categories and exercises are never empty on active steps
   useEffect(() => {
@@ -1152,13 +1198,58 @@ export default function App() {
     }
   };
 
-  // Finish session without AI feedback
+  // Finish session without AI feedback (Offline or direct choice)
   const handleFinishWithoutAI = () => {
-    if (currentSession && currentSession.session_id) {
+    const activeSessionId = currentSession?.session_id || `sess_off_${Math.random().toString(36).substring(2, 8)}`;
+    const record = {
+      session_id: activeSessionId,
+      art_form_id: selectedExercise?.art_form_id || selectedArtFormId || "warli",
+      art_form_title: selectedExercise?.art_form || "Indian Art",
+      category_id: selectedExercise?.category_id || selectedCategoryId || "basic-figures",
+      exercise_id: selectedExercise?.exercise_id || "exercise-01",
+      exercise_title: selectedExercise?.title || "5-Minute Creative Pause",
+      completed_at: new Date().toISOString(),
+      duration_seconds: 300,
+      pre_check_in: selectedCheckIn,
+      post_check_in: "slower",
+    };
+
+    if (!isOnline) {
+      JourneyService.saveOfflineSession(record);
+    } else if (currentSession && currentSession.session_id) {
       ChittakalaClient.completeSession(currentSession.session_id)
-        .then((updated) => setCurrentSession(updated))
-        .catch(() => setCurrentSession({ ...currentSession, status: "completed" }));
+        .then(() => JourneyService.saveCompletedSession(record))
+        .catch(() => JourneyService.saveOfflineSession(record));
+    } else {
+      JourneyService.saveCompletedSession(record);
     }
+
+    setCurrentSession({
+      session_id: activeSessionId,
+      anonymous_user_id: currentSession?.anonymous_user_id || "anon_offline",
+      display_name: displayName || undefined,
+      art_form_id: record.art_form_id,
+      category_id: record.category_id,
+      exercise_id: record.exercise_id,
+      status: "completed",
+      pre_check_in: selectedCheckIn,
+      started_at: currentSession?.started_at || new Date().toISOString(),
+      completed_at: new Date().toISOString(),
+      duration_seconds: 300,
+      feedback: {
+        visual_observation: "You completed your 5-minute creative pause on paper.",
+        encouragement: "Taking regular offline drawing breaks supports focus and presence.",
+        next_step: "Your activity is saved in your local journal and will sync to cloud analytics when connected.",
+        safety_status: "safe",
+        needs_retake: false,
+        fallback_used: true,
+        sanitized: true,
+        responsible_ai_disclaimer: !isOnline
+          ? "Offline Mode: Reflection saved locally without cloud AI evaluation."
+          : "Chittakala comments only on visible patterns. It does not score artistic ability or assess mental health.",
+      },
+    });
+
     setStep("summary");
   };
 
@@ -1174,6 +1265,32 @@ export default function App() {
       {/* 0. ANIMATED PWA SPLASH SCREEN */}
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
 
+      {/* 0.5 AUTO SYNC BACKGROUND TOAST */}
+      {syncToast && (
+        <div
+          style={{
+            position: "fixed",
+            top: "65px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 9999,
+            background: "#10B981",
+            color: "#FFFFFF",
+            padding: "10px 18px",
+            borderRadius: "9999px",
+            fontSize: "0.82rem",
+            fontWeight: 800,
+            boxShadow: "0 8px 24px rgba(16, 185, 129, 0.35)",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <RefreshCw size={14} /> {syncToast}
+        </div>
+      )}
+
       {/* 1. FIXED TOP HEADER */}
       <header className="app-header">
         <div className="app-brand">
@@ -1187,6 +1304,24 @@ export default function App() {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {!isOnline && (
+            <span
+              style={{
+                fontSize: "0.7rem",
+                padding: "3px 8px",
+                borderRadius: "9999px",
+                background: "#FEF2F2",
+                color: "#EF4444",
+                border: "1px solid #FCA5A5",
+                fontWeight: 800,
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <WifiOff size={11} /> Offline
+            </span>
+          )}
           <span style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", fontWeight: 600 }}>
             {displayName ? `Hello, ${displayName}` : "✨ Chittakala App"}
           </span>

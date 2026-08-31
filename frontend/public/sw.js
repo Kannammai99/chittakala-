@@ -1,15 +1,20 @@
-const CACHE_NAME = 'chittakala-pwa-v3';
+const CACHE_NAME = 'chittakala-pwa-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/hero_concept1.jpg',
   '/apple-touch-icon.png',
   '/favicon.png',
   '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/icons/icon-512.png',
+  '/art/warli/basic-figures/example-01.svg',
+  '/art/kolam/simple-dot-kolams/example-01.png',
+  '/art/madhubani/preview.png',
+  '/art/gond/preview.png'
 ];
 
-// Install Event - Pre-cache critical static shell
+// Install Event - Pre-cache critical static shell & key art assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -33,19 +38,49 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Network First for API & Navigation, Cache Fallback for Offline
+// Fetch Event - Network First with Cache Fallback for API/Images, Cache First for Static Assets
 self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
 
-  // Never cache POST requests or user uploads
-  if (event.request.method !== 'GET' || requestUrl.pathname.includes('/api/sessions')) {
+  // Never intercept non-GET or session mutations
+  if (event.request.method !== 'GET') {
     return;
   }
 
+  // Cache-first for local static images & art assets (/art/**, .svg, .png, .jpg)
+  const isStaticAsset = requestUrl.pathname.startsWith('/art/') ||
+                        requestUrl.pathname.endsWith('.png') ||
+                        requestUrl.pathname.endsWith('.jpg') ||
+                        requestUrl.pathname.endsWith('.svg');
+
+  if (isStaticAsset) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          // Serve cached asset immediately, revalidate in background if online
+          fetch(event.request).then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
+            }
+          }).catch(() => {});
+          return cachedResponse;
+        }
+        return fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
+          return networkResponse;
+        });
+      })
+    );
+    return;
+  }
+
+  // Network-First for navigation & API endpoints with Cache Fallback
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        // Cache successful GET responses for static assets
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -55,7 +90,6 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       })
       .catch(() => {
-        // Offline fallback: Serve cached asset or main app shell
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) return cachedResponse;
           if (event.request.mode === 'navigate') {

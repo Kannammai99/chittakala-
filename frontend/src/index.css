@@ -274,9 +274,9 @@ html, body {
 }
 
 .genz-card-interactive.selected {
-  border-color: var(--color-accent-coral);
-  background-color: #FFF5F3;
-  box-shadow: 0 0 0 2px var(--color-accent-coral);
+  border-color: var(--theme-color, var(--color-accent-coral));
+  background-color: var(--theme-bg, #FFF5F3);
+  box-shadow: 0 0 0 2px var(--theme-color, var(--color-accent-coral));
 }
 
 /* Hero Card Container */

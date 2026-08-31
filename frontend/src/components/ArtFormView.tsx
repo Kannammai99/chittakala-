@@ -65,13 +65,18 @@ export const ArtFormView: React.FC<ArtFormViewProps> = ({
               className={`genz-card ${isActive ? "genz-card-interactive" : ""} ${isSelected && isActive ? "selected" : ""}`}
               style={{
                 marginBottom: 0,
-                borderLeft: `5px solid ${style.color}`,
                 padding: "20px",
+                border: isSelected && isActive ? `1px solid ${style.color}` : "1px solid var(--color-border)",
+                borderLeft: `5px solid ${style.color}`,
+                backgroundColor: isSelected && isActive ? style.bg : "var(--color-surface-card)",
+                boxShadow: isSelected && isActive ? `0 0 0 2px ${style.color}, 0 8px 24px rgba(15, 23, 42, 0.06)` : undefined,
                 opacity: isActive ? 1 : 0.85,
                 cursor: isActive ? "pointer" : "default",
                 boxSizing: "border-box",
                 width: "100%",
                 borderRadius: "22px",
+                ["--theme-color" as any]: style.color,
+                ["--theme-bg" as any]: style.bg,
               }}
               onClick={() => {
                 if (isActive) onSelectArtForm(af.art_form_id);

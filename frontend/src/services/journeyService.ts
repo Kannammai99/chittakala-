@@ -25,8 +25,83 @@ export interface JourneyStats {
 }
 
 const STORAGE_KEY = "chittakala_journey_history";
+const OFFLINE_QUEUE_KEY = "chittakala_offline_queue";
 
 export class JourneyService {
+  /**
+   * Saves an offline completed session to the pending sync queue.
+   */
+  static saveOfflineSession(record: JourneySessionRecord): void {
+    try {
+      const queue = this.getOfflineQueue();
+      queue.push(record);
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+      // Also save to local Journey history immediately so user sees their progress offline!
+      this.saveCompletedSession(record);
+    } catch (e) {
+      console.warn("Failed to queue offline session:", e);
+    }
+  }
+
+  /**
+   * Retrieves pending offline session queue.
+   */
+  static getOfflineQueue(): JourneySessionRecord[] {
+    try {
+      const data = localStorage.getItem(OFFLINE_QUEUE_KEY);
+      if (!data) return [];
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
+   * Clears pending offline session queue.
+   */
+  static clearOfflineQueue(): void {
+    try {
+      localStorage.removeItem(OFFLINE_QUEUE_KEY);
+    } catch (e) {
+      console.warn("Failed to clear offline queue:", e);
+    }
+  }
+
+  /**
+   * Flushes and synchronizes pending offline sessions with backend telemetry.
+   */
+  static async syncOfflineQueue(chittakalaClient: any): Promise<number> {
+    const queue = this.getOfflineQueue();
+    if (queue.length === 0) return 0;
+
+    let syncedCount = 0;
+    const remainingQueue: JourneySessionRecord[] = [];
+
+    for (const record of queue) {
+      try {
+        if (chittakalaClient && typeof chittakalaClient.completeSession === "function") {
+          await chittakalaClient.completeSession(record.session_id, {
+            post_check_in: record.post_check_in,
+            duration_seconds: record.duration_seconds,
+          });
+        }
+        syncedCount++;
+      } catch (e) {
+        console.warn(`Failed to sync queued offline session ${record.session_id}:`, e);
+        remainingQueue.push(record);
+      }
+    }
+
+    if (remainingQueue.length > 0) {
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(remainingQueue));
+    } else {
+      this.clearOfflineQueue();
+    }
+
+    return syncedCount;
+  }
+
   /**
    * Retrieves stored session metadata history (capped at 50 most recent sessions).
    */

@@ -7,12 +7,23 @@
 
 ## 🏗️ Project Architecture & Tech Stack
 
+```mermaid
+graph TD
+    A["📱 Mobile PWA (React 18 / Vite 5 / SW v4)"] -->|HTTPS REST| B["🚀 Cloud Run (FastAPI Serverless)"]
+    B -->|Session Auth & State| C["🔥 Cloud Firestore (Native Mode)"]
+    B -->|Drawing Uploads| D["📦 Cloud Storage (gs://chittakala-12345-user-drawings)"]
+    B -->|Agentic Workflow| E["🤖 Gemini 2.5 Flash & Google ADK"]
+    E -->|Post-LLM Safety| F["🛡️ Prohibited Language Validator (Regex Sanitizer)"]
+    B -->|Async Telemetry Stream| G["📊 BigQuery Data Warehouse (chittakala_analytics)"]
+    G -->|Executive BI Reporting| H["📈 Looker Studio Dashboards"]
+```
+
 - **Frontend**: React 18, TypeScript, Vite 5, PWA Manifest (`manifest.json`), Offline Service Worker (`sw.js`), Gen Z Sunset Coral Design System (`#F8FAFC` canvas, `#FF523B` coral accents, 4-point spacing scale, 1.6 line-height typography).
 - **Backend API**: Python 3.11+, FastAPI, Pydantic v2, Uvicorn, Pytest.
-- **AI & Multi-Agent Vision**: Google AI Studio / Vertex AI Gemini Multimodal API (`google-genai` SDK), Google ADK (Agent Development Kit Multi-Agent Architecture: VisualObserver, MindfulCoach, SafetyAuditor, Coordinator).
+- **AI & Multi-Agent Vision**: Google AI Studio / Vertex AI Gemini Multimodal API (`google-genai` SDK), Google ADK (Agent Development Kit Multi-Agent Architecture: `VisualObserver`, `MindfulCoach`, `SafetyAuditor`, `Coordinator`).
 - **Responsible AI Guardrails**: `ProhibitedLanguageValidator` zero-trust post-LLM deterministic regex sanitizer downstream of ADK agents, guaranteeing zero artistic scoring, clinical diagnosis, or evaluative phrasing.
-- **Database & Cloud Storage**: Cloud Firestore (Operational store), Cloud Storage (`gs://chittakala-user-drawings/`), Local Storage privacy-first Journey history.
-- **Cloud Infrastructure**: Google Cloud Run (Containerized FastAPI service with `--min-instances=0` scale-to-zero safeguard), Docker.
+- **Database & Cloud Storage**: Cloud Firestore (Operational store), Cloud Storage (`gs://chittakala-12345-user-drawings/`), Local Storage privacy-first Journey history.
+- **Cloud Infrastructure**: Google Cloud Run (Containerized FastAPI service deployed in `us-central1` with `--min-instances=0` scale-to-zero safeguard), Docker.
 - **Telemetry & Executive Dashboards**: BigQuery Telemetry Engine (`chittakala_analytics`) streaming `product_events`, `ai_reliability_events`, and `ai_feedback_events` to Looker Studio Executive Dashboards (`v_mood_shift_summary`, `v_ai_performance_summary`).
 
 ---
@@ -143,5 +154,5 @@ To run all 54 unit, API, contract, lifecycle, security, expansion art, prohibite
 - ✅ **ADK Multi-Agent Vision Subsystem**: Implemented `VisualObserverAgent`, `MindfulCoachAgent`, `SafetyAuditorAgent`, and `MultiAgentCoordinator`.
 - ✅ **Expansion Art Modules**: Activated **Madhubani** (Bihar) and **Gond Art** (Madhya Pradesh) with authentic reference imagery across all 3 categories.
 - ✅ **Full-Screen Image Lightbox Modal**: Implemented interactive pinch-to-zoom (up to 350%), drag-to-pan, and +/- toolbar controls across example browsing and active drawing screens.
-- ✅ **100% Test Pass Rate**: 54 / 54 Pytest tests passing cleanly.
+- ✅ **100% Test Pass Rate**: 56 / 56 Pytest tests passing cleanly.
  

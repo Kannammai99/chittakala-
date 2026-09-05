@@ -5,7 +5,7 @@
 
 ---
 
-## 🏗️ Project Architecture & Tech Stack  
+## 🏗️ Project Architecture & Tech Stack   
 
 ```mermaid
 graph TD

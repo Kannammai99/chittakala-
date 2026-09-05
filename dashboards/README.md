@@ -1,6 +1,7 @@
 # 📊 Looker Studio Executive Dashboard — Chittakala (चित्तकला)
 
-This directory contains connection instructions, SQL view references, and chart configurations for connecting **Looker Studio** to the **Google Cloud BigQuery Telemetry Engine** for Chittakala.
+## 🌐 Live Executive Telemetry Dashboard
+👉 **[Chittakala Live Looker Studio Dashboard](https://datastudio.google.com/reporting/bb8dbdee-4d95-4f39-a8ce-a5a5831ec89f)**
 
 ---
 

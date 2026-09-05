@@ -9,8 +9,11 @@
 
 ```mermaid
 graph TD
-    A["📱 Mobile PWA (React 18 / Vite 5 / SW v4)"] -->|HTTPS REST| B["🚀 Cloud Run (FastAPI Serverless)"]
-    B -->|Session Auth & State| C["🔥 Cloud Firestore (Native Mode)"]
+    A["📱 Mobile PWA (React 18 / Vite 5 / SW v4)"] -->|Voluntary Break Schedule| R["🔔 Mindful Reminder Widget (15m / 30m / 60m)"]
+    R -->|Web Notification API / sw.js| N["📲 Service Worker Push & Deep-Link Banner"]
+    N -->|Tap Notification| A
+    A -->|HTTPS REST| B["🚀 Cloud Run (FastAPI Serverless)"]
+    B -->|Session Auth & Reminders| C["🔥 Cloud Firestore (Native Mode)"]
     B -->|Drawing Uploads| D["📦 Cloud Storage (gs://chittakala-12345-user-drawings)"]
     B -->|Agentic Workflow| E["🤖 Gemini 2.5 Flash & Google ADK"]
     E -->|Post-LLM Safety| F["🛡️ Prohibited Language Validator (Regex Sanitizer)"]
@@ -154,5 +157,6 @@ To run all 54 unit, API, contract, lifecycle, security, expansion art, prohibite
 - ✅ **ADK Multi-Agent Vision Subsystem**: Implemented `VisualObserverAgent`, `MindfulCoachAgent`, `SafetyAuditorAgent`, and `MultiAgentCoordinator`.
 - ✅ **Expansion Art Modules**: Activated **Madhubani** (Bihar) and **Gond Art** (Madhya Pradesh) with authentic reference imagery across all 3 categories.
 - ✅ **Full-Screen Image Lightbox Modal**: Implemented interactive pinch-to-zoom (up to 350%), drag-to-pan, and +/- toolbar controls across example browsing and active drawing screens.
+- ✅ **Voluntary Mindful Break Reminder System**: Quick-select 15m/30m/60m break scheduling, Web Notification API permission wrapper, Service Worker deep-link push notification handler, and active status cancellation.
 - ✅ **100% Test Pass Rate**: 56 / 56 Pytest tests passing cleanly.
  

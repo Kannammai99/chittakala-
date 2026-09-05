@@ -241,4 +241,19 @@ export class ChittakalaClient {
       return false;
     }
   }
+
+  static async scheduleReminder(minutes: number, deepLink?: string): Promise<any> {
+    try {
+      const res = await fetch(`${getBaseUrl()}/reminders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ minutes, deep_link: deepLink || "/start?source=reminder" }),
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn("Failed to schedule reminder on API backend:", e);
+    }
+    return null;
+  }
 }
+

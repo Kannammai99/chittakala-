@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Bell, CheckCircle, Clock, X } from "lucide-react";
+import { ChittakalaClient } from "../api/chittakalaClient";
 
 export const MindfulReminderWidget: React.FC = () => {
     const [activeMinutes, setActiveMinutes] = useState<number | null>(null);
@@ -47,19 +48,33 @@ export const MindfulReminderWidget: React.FC = () => {
         setNoticeMessage(`✓ Mindful break scheduled for ${targetTime}!`);
         setTimeout(() => setNoticeMessage(null), 4000);
 
+        // 1. Call Backend API to register scheduled reminder in GCP Cloud Tasks pipeline
+        ChittakalaClient.scheduleReminder(minutes, "/start?source=reminder").catch((e) =>
+            console.warn("Backend reminder scheduling warning:", e)
+        );
+
+        // 2. Register background notification trigger in Service Worker
         if ("serviceWorker" in navigator && typeof Notification !== "undefined" && Notification.permission === "granted") {
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: "SCHEDULE_REMINDER",
+                    minutes: minutes,
+                });
+            }
+
             navigator.serviceWorker.ready.then((registration) => {
                 setTimeout(() => {
                     registration.showNotification("🌿 Time for your Chittakala Creative Reset!", {
                         body: "Take a 5-minute pause on paper with Warli, Kolam, or Madhubani art.",
                         icon: "/hero_concept1.jpg",
                         badge: "/hero_concept1.jpg",
-                        data: { url: "/?action=start" },
+                        data: { url: "/start?source=reminder" },
                     });
                 }, minutes * 60 * 1000);
             });
         }
     };
+
 
     const handleCancel = () => {
         localStorage.removeItem("chittakala_scheduled_reminder");

@@ -104,7 +104,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const targetUrl = new URL(event.notification.data?.url || '/', self.location.origin).href;
+  const targetUrl = new URL(event.notification.data?.url || '/start?source=reminder', self.location.origin).href;
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
@@ -119,3 +119,55 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
+
+// Push Event - Background FCM / Web Push notification handler
+self.addEventListener('push', (event) => {
+  let data = {
+    title: '🌿 Time for your Chittakala Creative Reset!',
+    body: 'Take a 5-minute pause on paper with Warli, Kolam, or Madhubani art.',
+    icon: '/hero_concept1.jpg',
+    badge: '/hero_concept1.jpg',
+    url: '/start?source=reminder'
+  };
+
+  if (event.data) {
+    try {
+      data = { ...data, ...event.data.json() };
+    } catch (e) {
+      if (typeof event.data.text === 'function') {
+        data.body = event.data.text() || data.body;
+      }
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon,
+    badge: data.badge,
+    vibrate: [100, 50, 100],
+    data: { url: data.url || '/start?source=reminder' }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Message Event - Handle client background notification requests
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SCHEDULE_REMINDER') {
+    const minutes = event.data.minutes || 15;
+    const delayMs = minutes * 60 * 1000;
+    
+    setTimeout(() => {
+      self.registration.showNotification('🌿 Time for your Chittakala Creative Reset!', {
+        body: 'Take a 5-minute pause on paper with Warli, Kolam, or Madhubani art.',
+        icon: '/hero_concept1.jpg',
+        badge: '/hero_concept1.jpg',
+        vibrate: [100, 50, 100],
+        data: { url: '/start?source=reminder' }
+      });
+    }, delayMs);
+  }
+});
+

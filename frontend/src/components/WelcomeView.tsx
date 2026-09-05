@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowRight, ShieldCheck, Palette, Sparkles } from "lucide-react";
+import { MindfulReminderWidget } from "./MindfulReminderWidget";
 
 interface WelcomeViewProps {
   displayName: string;
@@ -14,6 +15,7 @@ export const WelcomeView: React.FC<WelcomeViewProps> = ({
 }) => {
   return (
     <div className="tab-view" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <MindfulReminderWidget />
       {/* Concept 1 Visual Storytelling Hero Card (Natural Height) */}
       <div
         style={{

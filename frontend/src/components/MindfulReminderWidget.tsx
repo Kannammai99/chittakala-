@@ -27,13 +27,17 @@ export const MindfulReminderWidget: React.FC = () => {
     }, []);
 
     const handleSchedule = async (minutes: number) => {
-        if (typeof Notification !== "undefined" && Notification.permission === "default") {
+        let currentPermission = typeof Notification !== "undefined" ? Notification.permission : "denied";
+
+        if (typeof Notification !== "undefined" && currentPermission === "default") {
             try {
-                await Notification.requestPermission();
+                currentPermission = await Notification.requestPermission();
             } catch (e) {
                 console.warn("Notification permission error:", e);
             }
         }
+
+        const isGranted = currentPermission === "granted" || (typeof Notification !== "undefined" && Notification.permission === "granted");
 
         const expiryTimestamp = Date.now() + minutes * 60 * 1000;
         const targetTime = new Date(expiryTimestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -54,15 +58,29 @@ export const MindfulReminderWidget: React.FC = () => {
         );
 
         // 2. Register background notification trigger in Service Worker
-        if ("serviceWorker" in navigator && typeof Notification !== "undefined" && Notification.permission === "granted") {
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: "SCHEDULE_REMINDER",
-                    minutes: minutes,
-                });
-            }
+        if ("serviceWorker" in navigator && typeof Notification !== "undefined") {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                
+                // Show instant confirmation notification if permission granted
+                if (isGranted) {
+                    registration.showNotification("🌿 Mindful Break Scheduled!", {
+                        body: `Your Chittakala break alert is set for ${targetTime} (${minutes} min).`,
+                        icon: "/hero_concept1.jpg",
+                        badge: "/hero_concept1.jpg",
+                        data: { url: "/start?source=reminder" },
+                    });
+                }
 
-            navigator.serviceWorker.ready.then((registration) => {
+                // Post message to Service Worker for background scheduling
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: "SCHEDULE_REMINDER",
+                        minutes: minutes,
+                    });
+                }
+
+                // Schedule target notification in Service Worker context
                 setTimeout(() => {
                     registration.showNotification("🌿 Time for your Chittakala Creative Reset!", {
                         body: "Take a 5-minute pause on paper with Warli, Kolam, or Madhubani art.",
@@ -71,9 +89,54 @@ export const MindfulReminderWidget: React.FC = () => {
                         data: { url: "/start?source=reminder" },
                     });
                 }, minutes * 60 * 1000);
-            });
+            } catch (swErr) {
+                console.warn("Service Worker notification schedule error:", swErr);
+            }
         }
     };
+
+    const handleTestNotification = async () => {
+        let currentPermission = typeof Notification !== "undefined" ? Notification.permission : "denied";
+
+        if (typeof Notification !== "undefined" && currentPermission === "default") {
+            try {
+                currentPermission = await Notification.requestPermission();
+            } catch (e) {
+                console.warn("Notification permission error:", e);
+            }
+        }
+
+        setNoticeMessage("⚡ Triggering test alert in 5 seconds...");
+        
+        setTimeout(async () => {
+            if ("serviceWorker" in navigator && typeof Notification !== "undefined") {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    registration.showNotification("🌿 Chittakala Test Reminder!", {
+                        body: "Tap here to start your 5-minute pen & paper art routine.",
+                        icon: "/hero_concept1.jpg",
+                        badge: "/hero_concept1.jpg",
+                        data: { url: "/start?source=reminder" },
+                    });
+                    setNoticeMessage("✓ Test notification sent!");
+                    setTimeout(() => setNoticeMessage(null), 3000);
+                } catch (e) {
+                    if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+                        new Notification("🌿 Chittakala Test Reminder!", {
+                            body: "Tap here to start your 5-minute pen & paper art routine.",
+                            icon: "/hero_concept1.jpg",
+                        });
+                    }
+                }
+            } else if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+                new Notification("🌿 Chittakala Test Reminder!", {
+                    body: "Tap here to start your 5-minute pen & paper art routine.",
+                    icon: "/hero_concept1.jpg",
+                });
+            }
+        }, 5000);
+    };
+
 
 
     const handleCancel = () => {
@@ -189,6 +252,25 @@ export const MindfulReminderWidget: React.FC = () => {
                 </div>
             )}
 
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px" }}>
+                <button
+                    type="button"
+                    onClick={handleTestNotification}
+                    style={{
+                        background: "none",
+                        border: "none",
+                        color: "#64748B",
+                        fontSize: "0.74rem",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        padding: 0,
+                    }}
+                >
+                    ⚡ Test 5s Alert
+                </button>
+            </div>
+
             {noticeMessage && (
                 <div
                     style={{
@@ -196,7 +278,7 @@ export const MindfulReminderWidget: React.FC = () => {
                         textAlign: "center",
                         fontSize: "0.78rem",
                         fontWeight: 700,
-                        color: noticeMessage.startsWith("✓") ? "#16A34A" : "#64748B",
+                        color: noticeMessage.startsWith("✓") ? "#16A34A" : "var(--color-accent-coral)",
                     }}
                 >
                     {noticeMessage}
@@ -204,4 +286,4 @@ export const MindfulReminderWidget: React.FC = () => {
             )}
         </div>
     );
-};
+};

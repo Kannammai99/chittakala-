@@ -159,29 +159,54 @@ export const MindfulReminderWidget: React.FC = () => {
                 boxShadow: "0 8px 24px rgba(255, 82, 59, 0.06)",
             }}
         >
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <div
+                        style={{
+                            width: "36px",
+                            height: "36px",
+                            borderRadius: "12px",
+                            background: "rgba(255, 82, 59, 0.12)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                        }}
+                    >
+                        <Bell size={18} color="var(--color-accent-coral)" />
+                    </div>
+                    <div>
+                        <h3 style={{ fontSize: "0.98rem", fontWeight: 900, color: "#0F172A", margin: 0, lineHeight: 1.2 }}>
+                            Schedule a Mindful Break
+                        </h3>
+                        <span style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 500, display: "block", marginTop: "2px" }}>
+                            A voluntary 5-minute creative pause on paper
+                        </span>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={handleTestNotification}
                     style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "12px",
-                        background: "rgba(255, 82, 59, 0.12)",
+                        background: "rgba(100, 116, 139, 0.08)",
+                        border: "1px solid #E2E8F0",
+                        borderRadius: "9999px",
+                        padding: "4px 10px",
+                        fontSize: "0.68rem",
+                        fontWeight: 800,
+                        color: "#64748B",
+                        cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
+                        gap: "3px",
                         flexShrink: 0,
+                        transition: "all 0.2s ease",
                     }}
+                    title="Test notification on your device in 5 seconds"
                 >
-                    <Bell size={18} color="var(--color-accent-coral)" />
-                </div>
-                <div>
-                    <h3 style={{ fontSize: "0.98rem", fontWeight: 900, color: "#0F172A", margin: 0, lineHeight: 1.2 }}>
-                        Schedule a Mindful Break
-                    </h3>
-                    <span style={{ fontSize: "0.76rem", color: "#64748B", fontWeight: 500, display: "block", marginTop: "2px" }}>
-                        A voluntary 5-minute creative pause on paper
-                    </span>
-                </div>
+                    ⚡ Test 5s
+                </button>
             </div>
 
             {activeMinutes ? (
@@ -252,25 +277,6 @@ export const MindfulReminderWidget: React.FC = () => {
                 </div>
             )}
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px" }}>
-                <button
-                    type="button"
-                    onClick={handleTestNotification}
-                    style={{
-                        background: "none",
-                        border: "none",
-                        color: "#64748B",
-                        fontSize: "0.74rem",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                        padding: 0,
-                    }}
-                >
-                    ⚡ Test 5s Alert
-                </button>
-            </div>
-
             {noticeMessage && (
                 <div
                     style={{
@@ -286,4 +292,5 @@ export const MindfulReminderWidget: React.FC = () => {
             )}
         </div>
     );
-};
+};
+

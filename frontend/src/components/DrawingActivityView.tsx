@@ -35,10 +35,67 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
     return () => clearInterval(interval);
   }, [timerActive, timerSeconds]);
 
-  const handleSubmit = () => {
+  const compressImageIfNeeded = (file: File): Promise<File> => {
+    if (file.size <= 2 * 1024 * 1024) return Promise.resolve(file);
+
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(img.src);
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 1600;
+        const MAX_HEIGHT = 1600;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return resolve(file);
+
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          0.85
+        );
+      };
+      img.onerror = () => resolve(file);
+    });
+  };
+
+  const handleSubmit = async () => {
     if (selectedFile && !isUploading) {
       setIsUploading(true);
-      onUpload(selectedFile);
+      try {
+        const fileToUpload = await compressImageIfNeeded(selectedFile);
+        onUpload(fileToUpload);
+      } catch (e) {
+        onUpload(selectedFile);
+      }
     }
   };
 
@@ -48,13 +105,20 @@ export const DrawingActivityView: React.FC<DrawingActivityViewProps> = ({
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      const originalFile = e.target.files[0];
+      try {
+        const processedFile = await compressImageIfNeeded(originalFile);
+        setSelectedFile(processedFile);
+        setPreviewUrl(URL.createObjectURL(processedFile));
+      } catch (err) {
+        setSelectedFile(originalFile);
+        setPreviewUrl(URL.createObjectURL(originalFile));
+      }
     }
   };
+
 
   return (
     <div className="tab-view">
